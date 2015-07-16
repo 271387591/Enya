@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.ozstrategy</groupId>
+        <artifactId>Enya</artifactId>
+        <version>1.0.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>Enya-web</artifactId>
+    <packaging>war</packaging>
+    <name>Enya- Web (Spring MVC)</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <version>6.1.20</version>
+        <configuration>
+          <contextPath>/Enya</contextPath>
+          <!--<webAppSourceDirectory>webapp</webAppSourceDirectory>-->
+          <!--<webDefaultXml>webdefault.xml</webDefaultXml>-->
+          <scanIntervalSeconds>0</scanIntervalSeconds>
+          <scanTargetPatterns>
+            <scanTargetPattern>
+              <directory>src/main/webapp/WEB-INF</directory>
+              <excludes>
+                <exclude>**/*.jsp</exclude>
+              </excludes>
+              <includes>
+                <include>**/*.properties</include>
+                <include>**/*.xml</include>
+              </includes>
+            </scanTargetPattern>
+          </scanTargetPatterns>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.0.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Implementation-Build>${buildNumber}</Implementation-Build>
+            </manifestEntries>
+          </archive>
+          <dependentWarExcludes>
+            **/jdbc.properties,**/sql-map-config.xml,**/web.xml,WEB-INF/classes/META-INF/**,**/license.bin
+          </dependentWarExcludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>native2ascii-maven-plugin</artifactId>
+        <version>1.0-alpha-1</version>
+        <configuration>
+          <dest>target/classes</dest>
+          <src>src/main/resources</src>
+        </configuration>
+        <executions>
+          <execution>
+            <id>native2ascii-utf8</id>
+            <goals>
+              <goal>native2ascii</goal>
+            </goals>
+            <configuration>
+              <encoding>UTF8</encoding>
+              <includes>
+                ApplicationResources.properties,
+                ApplicationResources_zh*.properties
+              </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>native2ascii-8859_1</id>
+            <goals>
+              <goal>native2ascii</goal>
+            </goals>
+            <configuration>
+              <encoding>8859_1</encoding>
+              <includes>
+                  ApplicationResources.properties,
+                  ApplicationResources_zh*.properties
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>ApplicationResources.properties</exclude>
+          <exclude>ApplicationResources_zh*.properties</exclude>
+          <exclude>applicationContext-resources.xml</exclude>
+        </excludes>
+        <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>applicationContext-resources.xml</include>
+        </includes>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/main/webapp</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.xml</include>
+        </includes>
+      </testResource>
+    </testResources>
+  </build>
+  <!-- Dependencies calculated by AppFuse when running full-source plugin -->
+  <dependencies>
+      <dependency>
+          <groupId>com.ozstrategy</groupId>
+          <artifactId>Enya-core</artifactId>
+          <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+          <version>${servlet.version}</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>javax.servlet</groupId>
+          <artifactId>jstl</artifactId>
+          <version>${jstl.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>javax.servlet</groupId>
+          <artifactId>jsp-api</artifactId>
+          <version>${jsp.version}</version>
+          <scope>provided</scope>
+      </dependency>
+    <dependency>
+      <groupId>org.tuckey</groupId>
+      <artifactId>urlrewritefilter</artifactId>
+      <version>${urlrewrite.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>ant</artifactId>
+          <groupId>ant</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>servlet-api</artifactId>
+          <groupId>javax.servlet</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+      <version>${jstl.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
+      <version>1.3.1</version>
+    </dependency>
+      
+      <dependency>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+          <version>1.4.01</version>
+      </dependency>
+      <dependency>
+          <groupId>com.google.zxing</groupId>
+          <artifactId>core</artifactId>
+          <version>3.2.0</version>
+      </dependency>
+      <dependency>
+          <groupId>com.google.zxing</groupId>
+          <artifactId>javase</artifactId>
+          <version>3.2.0</version>
+      </dependency>
+
+      <!--<dependency>-->
+          <!--<groupId>commons-fileupload</groupId>-->
+          <!--<artifactId>commons-fileupload</artifactId>-->
+          <!--<version>1.2.2</version>-->
+      <!--</dependency>-->
+      <!--<dependency>-->
+          <!--<groupId>ue</groupId>-->
+          <!--<artifactId>ueditor-mini</artifactId>-->
+          <!--<version>1.2.2</version>-->
+      <!--</dependency>-->
+
+
+
+
+  </dependencies>
+
+    <profiles>
+        <profile>
+            <id>prod</id>
+            <activation>
+                <property>
+                    <name>!dev</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>net.alchim31.maven</groupId>
+                        <artifactId>yuicompressor-maven-plugin</artifactId>
+                        <version>1.4.0</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>compress</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <nosuffix>true</nosuffix>
+                            <jswarn>false</jswarn>
+                            <gzip>false</gzip>
+                            <preserveAllSemiColons>true</preserveAllSemiColons>
+                            <disableOptimizations>false</disableOptimizations>
+                            <nomunge>false</nomunge>
+                            <excludes>
+                                <exclude>**/*.xml</exclude>
+                                <exclude>resources/lib/umeditor/**</exclude>
+                            </excludes>
+                            <resources>
+                                <resource>${basedir}/src/main/webapp/**/*</resource>
+                            </resources>
+
+
+
+                            <aggregations>
+                                <aggregation>
+                                    <removeIncluded>true</removeIncluded>
+                                    <!--insert new line after each concatenation (default: false)-->
+                                    <insertNewLine>false</insertNewLine>
+                                    <output>${project.build.directory}/${project.build.finalName}/runtime/js/runtime.js</output>
+                                    <inputDir>${project.build.directory}/${project.build.finalName}/</inputDir>
+                                    <!--files to include, path relative to output's directory or absolute path-->
+                                    <includes>
+                                        <include>resources/lib/bootstrap/bootstrap.min.js</include>
+                                        <include>resources/lib/bootstrap/typeahead-bs2.min.js</include>
+                                        <include>resources/lib/jplugin/jNotify.jquery.js</include>
+                                        <include>resources/lib/jplugin/jquery.pager.js</include>
+                                        <include>resources/lib/jplugin/ajaxfileupload.js</include>
+                                        <include>resources/lib/jplugin/jquery.dropkick-min.js</include>
+                                        <include>resources/lib/jplugin/labelauty.js</include>
+                                        <include>resources/lib/jplugin/common.js</include>
+                                    </includes>
+                                </aggregation>
+                                <aggregation>
+                                    <removeIncluded>true</removeIncluded>
+                                    <!--insert new line after each concatenation (default: false)-->
+                                    <insertNewLine>false</insertNewLine>
+                                    <output>${project.build.directory}/${project.build.finalName}/runtime/css/runtime.css</output>
+                                    <inputDir>${project.build.directory}/${project.build.finalName}/</inputDir>
+                                    <!--files to include, path relative to output's directory or absolute path-->
+                                    <includes>
+
+                                        <include>resources/css/bootstrap.min.css</include>
+                                        <include>resources/css/font-awesome.min.css</include>
+                                        <include>resources/css/jNotify.jquery.css</include>
+                                        <include>resources/css/labelauty.css</include>
+                                        <include>resources/css/dropkick.css</include>
+                                        <include>resources/css/style.css</include>
+
+                                    </includes>
+                                </aggregation>
+
+
+
+                            </aggregations>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.2</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-deploy</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <copy todir="${project.build.directory}/${project.build.finalName}/common/" file="${basedir}/src/main/webapp/deploy/pages/taglibs.jsp" overwrite="true">
+                                        </copy>
+                                        <copy todir="${project.build.directory}/${project.build.finalName}/WEB-INF/pages/admin/" file="${basedir}/src/main/webapp/deploy/pages/login.jsp" overwrite="true">
+                                        </copy>
+
+                                        <echo>Copy deploy file ...</echo>
+
+                                        <echo>Copy deploy file ...</echo>
+
+                                        <!--<copy todir="${project.build.directory}/${project.build.finalName}/runtime/css/image" overwrite="true">-->
+                                            <!--<fileset dir="${basedir}/src/main/webapp/resources/css/image"/>-->
+                                        <!--</copy>-->
+                                        <copy todir="${project.build.directory}/${project.build.finalName}/runtime/css/fonts" overwrite="true">
+                                            <fileset dir="${basedir}/src/main/webapp/resources/css/fonts"/>
+                                        </copy>
+
+                                        <echo>Copy deploy file ...</echo>
+
+
+
+
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <configuration>
+                            <warSourceExcludes>
+                                updload/**,resources/lib/ace/**,resources/lib/bootstrap/**,resources/lib/jplugin/**,resources/css/**.css
+                            </warSourceExcludes>
+                            <packagingExcludes>updload/**,resources/lib/ace/**,resources/lib/bootstrap/**,resources/lib/jplugin/**,resources/css/**.css</packagingExcludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
+</project>
