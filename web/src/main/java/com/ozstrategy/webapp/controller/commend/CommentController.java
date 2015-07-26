@@ -38,6 +38,7 @@ public class CommentController extends BaseController {
         try{
             map.put("typeId", CommendType.valueOf(type).ordinal());
             map.put("itemId",parseLong(itemId));
+            map.put("Q_r.createDate","DESC");
             List<Map<String,Object>> models= commentManager.findByNamedQuery("getComments", map, obtainStart(request), obtainLimit(request));
             Integer count=commentManager.findByNamedQueryClass("getCommentsCount",Integer.class,map);
             return new JsonReaderResponse(models,true,count,"");

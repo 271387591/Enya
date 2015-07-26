@@ -54,13 +54,14 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 
     public List<T> listPage(Map<String, Object> params, Integer start, Integer limit) {
         String sql=EntityBuilder.select(this.clazz);
-        if(log.isDebugEnabled()){
-            log.debug("sql:====>"+sql.replaceAll("\\n"," "));
-        }
+
         QuerySearch queryField=new QuerySearch(sql,params);
         queryField.addSort(EntityBuilder.getIdColumn(this.clazz),"DESC");
         Object[] args = queryField.getArgs();
         sql=queryField.pageSql(start, limit);
+        if(log.isDebugEnabled()){
+            log.debug("sql:====>"+sql.replaceAll("\\n"," "));
+        }
         return (List<T>) jdbcTemplate.query(sql, args, BeanPropertyRowMapper.newInstance(this.clazz));
     }
 
@@ -109,15 +110,11 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     }
 
     public Map<String, Object> findByNamedQueryMap(String queryName, Map<String, Object> params) {
-        String sql=EntityBuilder.nameQueries(this.clazz,queryName);
-        QuerySearch querySearch=new QuerySearch(sql,params);
-        querySearch.getSortMap().clear();
-        sql=querySearch.sql();
-        if(log.isDebugEnabled()){
-            log.debug("sql:====>"+sql.replaceAll("\\n"," "));
+        List<Map<String,Object>> list=findByNamedQuery(queryName,params,0,1);
+        if(list!=null && list.size()>0){
+            return  list.get(0);
         }
-        Object[] args = querySearch.getArgs();
-        return jdbcTemplate.queryForMap(sql,args);
+        return null;
     }
 
     public List<Map<String, Object>> findByNamedQuery(String queryName, Map<String, Object> params) {
@@ -127,12 +124,29 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     public List<Map<String, Object>> findByNamedQuery(String queryName, Map<String, Object> params, Integer start, Integer limit) {
         String sql=EntityBuilder.nameQueries(this.clazz,queryName);
         QuerySearch querySearch=new QuerySearch(sql,params);
-//        querySearch.addSort(EntityBuilder.getIdColumn(this.clazz),"DESC");
         sql=querySearch.pageSql(start, limit);
         if(log.isDebugEnabled()){
             log.debug("sql:====>"+sql.replaceAll("\\n"," "));
         }
         Object[] args = querySearch.getArgs();
+        return jdbcTemplate.queryForList(sql,args);
+    }
+
+    @Override
+    public List<Map<String, Object>> listMap(Map<String, Object> params) {
+        return listPageMap(params,0,Integer.MAX_VALUE);
+    }
+
+    @Override
+    public List<Map<String, Object>> listPageMap(Map<String, Object> params, Integer start, Integer limit) {
+        String sql=EntityBuilder.select(this.clazz);
+        QuerySearch queryField=new QuerySearch(sql,params);
+        queryField.addSort(EntityBuilder.getIdColumn(this.clazz),"DESC");
+        Object[] args = queryField.getArgs();
+        sql=queryField.pageSql(start, limit);
+        if(log.isDebugEnabled()){
+            log.debug("sql:====>"+sql.replaceAll("\\n"," "));
+        }
         return jdbcTemplate.queryForList(sql,args);
     }
 
@@ -222,6 +236,15 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
         return null;
     }
 
+    @Override
+    public Map<String, Object> queryMap(Map<String, Object> params) {
+        List<Map<String,Object>> list=listPageMap(params,0,1);
+        if(list!=null && list.size()>0){
+            return list.get(0);
+        }
+        return new HashMap<String, Object>();
+    }
+
     public int deleteById(Serializable id) {
         final String sql=EntityBuilder.delete(this.clazz);
         if(log.isDebugEnabled()){
@@ -237,6 +260,9 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
         String sql=SqlBuilder.SQL();
         QuerySearch querySearch=new QuerySearch(sql,map);
         sql=querySearch.sql();
+        if(log.isDebugEnabled()){
+            log.debug("sql:====>"+sql.replaceAll("\\n"," "));
+        }
         Object[] args=querySearch.getArgs();
         return jdbcTemplate.update(sql,args);
     }

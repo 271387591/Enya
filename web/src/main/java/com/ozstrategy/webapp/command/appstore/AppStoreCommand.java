@@ -18,20 +18,20 @@ public class AppStoreCommand {
     private String qrUrl;
     private String version;
     private Boolean enabled;
+    private Integer type;
     public AppStoreCommand() {
     }
     public AppStoreCommand(AppStore model) {
         this.id=model.getId();
         this.plat=model.getPlat();
         this.pacUrl=model.getPacUrl();
-        this.pacPath=model.getPacPath();
         this.qrName=model.getQrName();
-        this.qrPath=model.getQrPath();
         this.pacName=model.getPacName();
         this.createDate=model.getCreateDate();
         this.qrUrl=model.getQrUrl();
         this.version=model.getVersion();
         this.enabled=model.getEnabled();
+        this.type=model.getType();
     }
     public Long getId() {
         return id;
@@ -100,5 +100,13 @@ public class AppStoreCommand {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

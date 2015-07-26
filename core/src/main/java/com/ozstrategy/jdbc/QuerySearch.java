@@ -68,6 +68,7 @@ public class QuerySearch {
         }
         return sql;
     }
+
     public String pageSql(Integer start,Integer limit){
         sql();
         if(start!=null && limit!=null){

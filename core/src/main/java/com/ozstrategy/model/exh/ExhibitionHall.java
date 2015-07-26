@@ -1,6 +1,8 @@
 package com.ozstrategy.model.exh;
 
 import com.ozstrategy.annotations.Id;
+import com.ozstrategy.annotations.NamedQueries;
+import com.ozstrategy.annotations.NamedQuery;
 import com.ozstrategy.annotations.Table;
 import com.ozstrategy.model.BaseEntity;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -12,6 +14,11 @@ import java.util.Date;
  * Created by lihao1 on 7/13/15.
  */
 @Table(name = "t_exhibitionhall")
+@NamedQueries({
+        @NamedQuery(name = "getHall",query = "select t.*,t1.commentCount from (select h.*,(CASE WHEN GROUP_CONCAT(e.id) is NULL THEN 'false' ELSE 'true' END) as hasExh from t_exhibitionhall h left join t_exhibition e on h.id=e.hallId group by h.id)t left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=1 GROUP BY c.itemId )t1 on t.id=t1.itemId where t.id=:id "),
+        @NamedQuery(name = "getHalls",query = "select t.*,t1.commentCount from (select h.*,(CASE WHEN GROUP_CONCAT(e.id) is NULL THEN 'false' ELSE 'true' END) as hasExh from t_exhibitionhall h left join t_exhibition e on h.id=e.hallId group by h.id)t left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=1 GROUP BY c.itemId )t1 on t.id=t1.itemId where 1=1"),
+        @NamedQuery(name = "getHallsCount",query = "select count(*) from (select h.*,(CASE WHEN GROUP_CONCAT(e.id) is NULL THEN 'false' ELSE 'true' END) as hasExh from t_exhibitionhall h left join t_exhibition e on h.id=e.hallId group by h.id)t where 1=1 ")
+})
 public class ExhibitionHall extends BaseEntity{
     @Id
     private Long id;
@@ -29,6 +36,8 @@ public class ExhibitionHall extends BaseEntity{
     private Float lng;
     private Float lat;
     private Boolean hot=Boolean.FALSE;
+    private Integer previewCount=0;
+    private Integer shareCount=0;
 
     public ExhibitionHall() {
     }
@@ -151,6 +160,22 @@ public class ExhibitionHall extends BaseEntity{
 
     public void setHot(Boolean hot) {
         this.hot = hot;
+    }
+
+    public Integer getPreviewCount() {
+        return previewCount;
+    }
+
+    public void setPreviewCount(Integer previewCount) {
+        this.previewCount = previewCount;
+    }
+
+    public Integer getShareCount() {
+        return shareCount;
+    }
+
+    public void setShareCount(Integer shareCount) {
+        this.shareCount = shareCount;
     }
 
     @Override

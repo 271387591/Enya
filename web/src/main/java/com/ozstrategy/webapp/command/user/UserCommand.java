@@ -10,6 +10,7 @@ import java.util.List;
 * Created by lihao1 on 2015-06-10.
 */
 public class UserCommand implements Serializable {
+    private static final long serialVersionUID = -6327217309225839725L;
     private Boolean enabled;
     private Boolean accountExpired;
     private String password;
@@ -34,6 +35,7 @@ public class UserCommand implements Serializable {
     private String country;
     private String postalCode;
     private String province;
+    private String email;
     private List<RoleCommand> roles=new ArrayList<RoleCommand>();
     public UserCommand() {
     }
@@ -52,7 +54,6 @@ public class UserCommand implements Serializable {
         this.roleId=model.getRoleId();
         this.credits=model.getCredits();
         this.portraitName=model.getPortraitName();
-        this.portraitPath=model.getPortraitPath();
         this.portraitUrl=model.getPortraitUrl();
         this.birth=model.getBirth();
         this.address=model.getAddress();
@@ -60,6 +61,7 @@ public class UserCommand implements Serializable {
         this.country=model.getCountry();
         this.postalCode=model.getPostalCode();
         this.province= model.getProvince();
+        this.email=model.getEmail();
     }
     public Boolean getEnabled() {
         return enabled;
@@ -234,5 +236,13 @@ public class UserCommand implements Serializable {
 
     public void setProvince(String province) {
         this.province = province;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

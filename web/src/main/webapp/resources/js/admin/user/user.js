@@ -22,7 +22,7 @@ function saveAdvert(type){
 }
 function changeUserPwd(modal){
     var form=$('#changeUserPasswordModel').find('#updateUserPwd');
-    if(!checkForm2(form)){
+    if(!checkForm(form)){
         return;
     }
     var datas=form.serializeArray();
@@ -61,7 +61,7 @@ function changeUserMobile(modal){
 
 var columns=[
     {
-        width:150,
+        width:200,
         name:'username',
         renderer:function(v,rec){
             return '<a href="#edit" onclick="edit('+rec.id+');">'+v+'</a>';
@@ -73,6 +73,10 @@ var columns=[
     },
     {
         width:200,
+        name:'email'
+    },
+    {
+        width:100,
         name:'roles',
         renderer:function(v){
             if(!v){
@@ -117,9 +121,6 @@ var columns=[
                 '</a>'+
                 '<a class="green" href="#changeUserPasswordModel" data-rel="tooltip" userId="'+rec.id+'" title="修改密码" data-toggle="modal" data-target="#changeUserPasswordModel">'+
                 '<i class="fa fa-edit bigger-130"></i>'+
-                '</a>'+
-                '<a class="blue" href="#changeUserMobileModel" userId="'+rec.id+'" mobile="'+rec.mobile+'" data-rel="tooltip" title="修改手机号码" data-toggle="modal" data-target="#changeUserMobileModel">'+
-                '<i class="fa fa-user-md bigger-130"></i>'+
                 '</a>'+
                 '</div>';
         }

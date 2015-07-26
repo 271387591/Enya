@@ -60,7 +60,10 @@ jQuery.extend({
         //add data
         if(data) {
             for (var i in data) {
-                $('<input type="hidden" name="' + i + '" value="' + data[i] + '" />').appendTo(form);
+                //$('<input type="hidden" name="' + i + '" value="' + data[i] + '" />').appendTo(form);
+                var input=$('<input type="hidden" name="' + i + '" />');
+                input.val(data[i]);
+                input.appendTo(form);
             }
         }
         //set attributes

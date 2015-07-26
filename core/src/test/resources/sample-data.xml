@@ -1,5 +1,167 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
+    <table name="t_dictionary">
+        <column>id</column>
+        <column>type</column>
+        <column>keyValue</column>
+        <column>createDate</column>
+        <row>
+            <value>1</value>
+            <value>4</value>
+            <value>计算机</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>4</value>
+            <value>互联网</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>4</value>
+            <value>通信</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>4</value>
+            <value>4</value>
+            <value>电子</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>5</value>
+            <value>4</value>
+            <value>金融</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>6</value>
+            <value>4</value>
+            <value>银行</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>7</value>
+            <value>4</value>
+            <value>保险</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>8</value>
+            <value>4</value>
+            <value>贸易</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>9</value>
+            <value>4</value>
+            <value>制造</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>10</value>
+            <value>4</value>
+            <value>营运</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>11</value>
+            <value>4</value>
+            <value>制药</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>12</value>
+            <value>4</value>
+            <value>医疗</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>13</value>
+            <value>4</value>
+            <value>广告</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>14</value>
+            <value>4</value>
+            <value>媒体</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>15</value>
+            <value>4</value>
+            <value>房地产</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>16</value>
+            <value>4</value>
+            <value>建筑</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>17</value>
+            <value>4</value>
+            <value>专业服务</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>18</value>
+            <value>4</value>
+            <value>教育</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>19</value>
+            <value>4</value>
+            <value>培训</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>20</value>
+            <value>4</value>
+            <value>服务业</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>21</value>
+            <value>4</value>
+            <value>物流</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>22</value>
+            <value>4</value>
+            <value>运输</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>23</value>
+            <value>4</value>
+            <value>能源</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>24</value>
+            <value>4</value>
+            <value>政府</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>25</value>
+            <value>4</value>
+            <value>非赢利机构</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+        <row>
+            <value>26</value>
+            <value>4</value>
+            <value>其他</value>
+            <value><![CDATA[2014-07-25 14:22:04.0]]></value>
+        </row>
+    </table>
     <table name="t_feature">
         <column>id</column>
         <column>description</column>
@@ -8,6 +170,7 @@
         <column>name</column>
         <column>parentId</column>
     </table>
+
     <table name="t_applicationconfig">
         <column>id</column>
         <column>systemKey</column>

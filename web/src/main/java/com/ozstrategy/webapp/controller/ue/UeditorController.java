@@ -54,6 +54,9 @@ public class UeditorController extends BaseController {
                 DiskFileItem fileItem    = (DiskFileItem) cmf.getFileItem();
                 String fileName=null,str=null,ext=null;
                 fileName    = fileItem.getName();
+                if(isEmpty(fileName)){
+                    continue;
+                }
                 str         = randomName(fileName);
                 ext=getExtension(fileName);
                 if(Arrays.binarySearch(picFileType, ext)==-1){

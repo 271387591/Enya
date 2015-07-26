@@ -14,6 +14,7 @@ public interface BaseManager<T> {
     List<T> listAll(Map<String,Object> map);
     T get(Serializable id);
     T getByParam(Map<String,Object> map);
+    Map<String,Object> queryMap(Map<String,Object> params);
     T save(T obj);
     T saveOrUpdate(T obj);
     int update(T obj);
@@ -38,4 +39,8 @@ public interface BaseManager<T> {
 
     List<Map<String,Object>> findByNamedQuery(String queryName,Map<String,Object> map);
     List<Map<String,Object>> findByNamedQuery(String queryName,Map<String,Object> map,Integer start,Integer limit);
+
+
+    List<Map<String,Object>> listMap(Map<String,Object> params);
+    List<Map<String,Object>> listPageMap(Map<String,Object> params,Integer start,Integer limit);
 }

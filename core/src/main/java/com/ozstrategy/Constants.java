@@ -14,7 +14,7 @@ public final class Constants {
   public static final String picFileDir="pictures";
   public static final String exportFileDir="export";
   public static final String appFileDir="export";
-  public static final Integer LIMIT=25;
+  public static final Integer LIMIT=10;
 
     public static final String itemAdvert="advert";
     public static final String messageContent="messageContent";
@@ -26,6 +26,8 @@ public final class Constants {
     public static final String updloadPortrait="updload/portrait";
     public static final String updloadUe="updload/ue";
     public static final String updloadHall="updload/hall";
+    public static final String updloadExh="updload/exh";
+    public static final String updloadAdvert="updload/advert";
 
 
 

@@ -8,6 +8,10 @@ import com.ozstrategy.service.exh.ExhibitionHallManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
 * Created by lihao1 on 6/8/15.
 */
@@ -19,5 +23,15 @@ public class ExhibitionHallManagerImpl extends BaseManagerImpl<ExhibitionHall> i
     @Override
     public BaseDao<ExhibitionHall> baseDao() {
         return exhibitionHallDao;
+    }
+
+    @Override
+    public Map<String,Object> hallDetail(Long id) {
+
+
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("id",id);
+        Map<String,Object> model=exhibitionHallDao.findByNamedQueryMap("getHall", map);
+        return model;
     }
 }

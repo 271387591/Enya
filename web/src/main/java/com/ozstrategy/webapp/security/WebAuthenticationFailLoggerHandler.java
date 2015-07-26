@@ -21,7 +21,7 @@ public class WebAuthenticationFailLoggerHandler extends WebAuthenticationLoggerH
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String platform=request.getParameter("platform");
         if(StringUtils.equals(PLATFORM, platform)){
-            response.sendRedirect("html/security/login?error=true");
+            response.sendRedirect("login.jsp?error=true");
             return;
         }
         request.setCharacterEncoding("UTF-8");

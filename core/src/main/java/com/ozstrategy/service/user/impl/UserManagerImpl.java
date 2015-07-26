@@ -36,6 +36,11 @@ public class UserManagerImpl extends BaseManagerImpl<User> implements UserManage
         map.put("Q_username_EQ",username);
         User user=getByParam(map);
         if(user==null){
+            map=new HashMap<String, Object>();
+            map.put("Q_email_EQ",username);
+            user=getByParam(map);
+        }
+        if(user==null){
             throw new UsernameNotFoundException("user not found");
         }
         map=new HashMap<String, Object>();

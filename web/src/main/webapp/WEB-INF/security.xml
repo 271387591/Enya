@@ -13,13 +13,13 @@
         <expression-handler ref="expressionHandler"/>
         <csrf disabled="true"/>
         <intercept-url pattern="/html/**/security/**" access="hasRole('ROLE_ADMIN')"/>
-        <!--<intercept-url pattern="/html/**/web/**" access="isAuthenticated()"/>-->
+        <intercept-url pattern="/html/**/web/**" access="isAuthenticated()"/>
         <!--<intercept-url pattern="/html/**/tenant/**" access="hasRole('ROLE_TENANT')"/>-->
         <!--<intercept-url pattern="/service/user/mobileSave" access="n"/>-->
         <!--<intercept-url pattern="/app/signup*" access="ROLE_ANONYMOUS,ROLE_ADMIN,ROLE_USER"/>-->
         <!--<intercept-url pattern="/html/**" access="hasAnyRole('ROLE_ADMIN,ROLE_USER')"/>-->
-        <form-login login-page="/html/security/login"
-                    authentication-failure-url="/html/security/login?error=true"
+        <form-login login-page="/login.jsp"
+                    authentication-failure-url="/login.jsp?error=true"
                     login-processing-url="/j_security_check"
                     always-use-default-target="false"
                     username-parameter="username"

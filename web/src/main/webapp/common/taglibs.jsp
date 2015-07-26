@@ -5,7 +5,7 @@
 <%@ taglib uri="/common/custom-functions.tld" prefix="oz" %>
 <link href="<c:url value="/resources/css/bootstrap.min.css"/> " rel="stylesheet" />
 <link rel="stylesheet" href="<c:url value="/resources/css/font-awesome.min.css"/>" />
-<link rel="stylesheet" href="<c:url value="/resources/lib/umeditor/themes/default/css/umeditor.css"/>" />
+<link rel="stylesheet" href="<c:url value="/resources/css/map.css"/>" />
 
 
 
@@ -20,8 +20,9 @@
 
 
 <link rel="stylesheet" href="<c:url value="/resources/css/style.css"/>" />
-<link rel="stylesheet" href="<c:url value="/resources/css/dropkick.css"/>" />
+<%--<link rel="stylesheet" href="<c:url value="/resources/css/dropkick.css"/>" />--%>
 <link rel="stylesheet" href="<c:url value="/resources/css/labelauty.css"/>" />
+<link rel="stylesheet" href="<c:url value="/resources/css/chosen.css"/>" />
 
 
 <script type="text/javascript">
@@ -57,20 +58,14 @@
 <%--<script src="<c:url value="/resources/lib/jplugin/jquery.simplePagination.js"/>"></script>--%>
 <%--<script src="<c:url value="/resources/lib/jplugin/jquery.knob.min.js"/>"></script>--%>
 <script src="<c:url value="/resources/lib/jplugin/ajaxfileupload.js"/>"></script>
-<script src="<c:url value="/resources/lib/jplugin/jquery.dropkick-min.js"/>"></script>
+<%--<script src="<c:url value="/resources/lib/jplugin/jquery.dropkick.js"/>"></script>--%>
 <script src="<c:url value="/resources/lib/jplugin/labelauty.js"/>"></script>
-<%--<script src="<c:url value="/resources/lib/umeditor/umeditor.min.js"/>"></script>--%>
-<%--<script src="<c:url value="/resources/lib/umeditor/umeditor.config.js"/>"></script>--%>
+<script src="<c:url value="/resources/lib/jplugin/chosen.jquery.min.js"/>"></script>
 
 
-
-<%--<script src="<c:url value="/resources/lib/ace/ace-extra.min.js"/>"></script>--%>
-<%--<script src="<c:url value="/resources/lib/popModal.min.js"/>"></script>--%>
-<%--<script src="<c:url value="/resources/lib/ace/ace-elements.min.js"/>"></script>--%>
-<%--<script src="<c:url value="/resources/lib/ace/ace.min.js"/>"></script>--%>
 
 <%--<script src="<c:url value="/resources/lib/bootstrap/bootstrap-datepicker.min.js"/>"></script>--%>
-<%--<script src="<c:url value="/resources/lib/WDatePicker/WdatePicker.js"/>"></script>--%>
+<script src="<c:url value="/resources/lib/WDatePicker/WdatePicker.js"/>"></script>
 
 <script src="<c:url value="/resources/lib/jplugin/common.js"/>"></script>
 <script type="text/javascript">
@@ -83,7 +78,6 @@
         }
         var heightA = document.getElementById(leftbox).clientHeight;
         var heightB = document.getElementById(rightbox).clientHeight;
-        console.log(heightA,heightB)
         if (heightA > heightB) {
             document.getElementById(rightbox).style.height = heightA + "px";
             document.getElementById(leftbox).style.height = heightA + "px";

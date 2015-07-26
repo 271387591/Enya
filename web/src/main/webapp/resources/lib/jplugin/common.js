@@ -1,3 +1,49 @@
+String.prototype.format=function()
+{
+    if(arguments.length==0) return this;
+    for(var s=this, i=0; i<arguments.length; i++)
+        s=s.replace(new RegExp("\\{"+i+"\\}","g"), arguments[i]);
+    return s;
+};
+Date.prototype.format = function(format){
+    var d=this;
+    var o = {
+        "M+" : d.getMonth()+1, //month
+        "d+" : d.getDate(), //day
+        "h+" : d.getHours(), //hour
+        "m+" : d.getMinutes(), //minute
+        "s+" : d.getSeconds(), //second
+        "q+" : Math.floor((d.getMonth()+3)/3), //quarter
+        "S" : d.getMilliseconds() //millisecond
+    }
+
+    if(/(y+)/.test(format)) {
+        format = format.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    }
+
+    for(var k in o) {
+        if(new RegExp("("+ k +")").test(format)) {
+            format = format.replace(RegExp.$1, RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
+        }
+    }
+    return format;
+};
+//Array.prototype.hasElement = function (element) {
+//    for (var i = 0; i < this.length; i++) {
+//        if (this[i] == element) {
+//            return true;
+//        }
+//    }
+//    return false;
+//};
+//Array.prototype.hasElement=function(ele){
+//    for(var i=0;i<this.length;i++){
+//        if(this[i]==ele){
+//            return true;
+//        }
+//    }
+//    return false;
+//};
 function alertSuccess(msg,callback){
     jSuccess(msg,{
         // autoHide : true,       // 是否自动隐藏提示条
@@ -55,7 +101,9 @@ function createModal(parmas,title,content,callback){
         $('#createModal').remove();
     });
     modal.find('button[data-type=ok]').click(function(){
-        callback(parmas,modal);
+        if(callback){
+            callback(parmas,modal);
+        }
         modal.modal('hide');
     });
 }
@@ -74,7 +122,7 @@ function requestJSONData(url, o) {
             result = data;
         },
         fail: function(a,b,c){
-            alertError(homeRes.message.requestError);
+            alertError('请求出错');
         }
     });
     return result;
@@ -121,6 +169,14 @@ function initComboData(combo,url, param, valueFiled, displayFiled,defaultValue) 
             var display=comboData[displayFiled];
             var selected='selected="selected"';
             var hasValue=(value==defaultValue)?selected:'';
+            if(typeof defaultValue =='object'){
+                for(var item in defaultValue){
+                    if(defaultValue[item]==value){
+                        hasValue=selected;
+                        break;
+                    }
+                }
+            }
             combo.append('<option value="' + value + '" '+hasValue+'>' + display + '</option>')
         }
     }
@@ -157,7 +213,7 @@ function clearSearchForm(form,callback) {
 
 
 function reloadPage(url){
-    window.location.replace(appPath+url);
+    window.location=(appPath+url);
 }
 function ajaxReloadPage(div,url){
     $('#'+div).load(appPath+url);
@@ -168,19 +224,13 @@ function ajaxReloadPage(div,url){
 function checkForm(form) {
     var valid = true;
     form.find("input[type='text'],input[type='password'],select,textarea").each(function (i, o) {
-        if (!validateData($(o),1)) {
+        if (!validateData($(o))) {
             valid = false;
         }
     });
-    return valid;
-}
-function checkForm2(form) {
-    var valid = true;
-    form.find("input[type='text'],input[type='password'],select,textarea").each(function (i, o) {
-        if (!validateData($(o),2)) {
-            valid = false;
-        }
-    });
+    if(!valid){
+        $("html, body").animate({ scrollTop: 0 }, 600);
+    }
     return valid;
 }
 
@@ -190,195 +240,117 @@ function clearForm(obj,notClears) {
         $(o).val('');
     });
 }
-function clearForm2(obj,notClears) {
-    obj.find("input[type='text'],input[type='hidden'],input[type='password'],select,textarea").not(notClears).each(function (i, o) {
-        validSuccess2($(o));
-        $(o).val('');
-    });
-}
+
 
 function blurInput(inputs){
     inputs.blur(function(){
-        validateData($(this),1);
+        validateData($(this));
     });
 }
 
-function validateData(obj,type) {
+function validateData(obj) {
     var validate=obj.data('validate');
     if(validate=='required'){
-        return validateRequired(obj,type);
+        return validateRequired(obj);
     }else if(validate=='mobile'){
-        return validateMobile(obj,type);
+        return validateMobile(obj);
     }else if(validate=='password'){
-        return validatePassword(obj,type);
+        return validatePassword(obj);
     }else if(validate=='passwordHit'){
         var pwd=$('#'+obj.data('hit'));
-        return validatePasswordHit(pwd,obj,type);
+        return validatePasswordHit(pwd,obj);
     }else if(validate=='integer'){
-        return validateInteger(obj,type);
+        return validateInteger(obj);
     }else if(validate=='email'){
-        return validateEmail(obj,type);
+        return validateEmail(obj);
     }else if(validate=='username'){
-        return validateUsername(obj,type);
+        return validateUsername(obj);
     }else if(validate=='length'){
         var length=obj.data('len');
         length=new Number(length);
 
-        return validateLength(obj,length,type);
+        return validateLength(obj,length);
     }else if(validate=='picture'){
-        return validatePicture(obj,type);
+        return validatePicture(obj);
     }
     return true;
 }
-function validateRequired(obj,type){
+function validateRequired(obj){
     var v = obj.val();
     if(!v){
-        if(type=1){
-            validFailure(obj, '不能为空');
-        }else if(type==2){
-            validFailure2(obj, '不能为空');
-        }
+        validFailure(obj, '不能为空');
         return false;
     }
-    if(type==1){
-        validSuccess(obj);
-    }else if(type==2){
-        validSuccess2(obj);
-    }
+    validSuccess(obj);
     return true;
 }
-function validatePassword(obj,type){
+function validatePassword(obj){
     if(!/^[0-9a-zA-Z]{6,16}$/.test(obj.val())){
-        if(type==1){
-            validFailure(obj,'请输入6-16位数字或字母组成的密码,不含下划线和特殊字符');
-        }else if(type==2){
-            validFailure2(obj,'请输入6-16位数字或字母组成的密码,不含下划线和特殊字符');
-        }
+        validFailure(obj,'请输入6-16位数字或字母组成的密码,不含下划线和特殊字符');
         return false;
     }
-    if(type==1){
-        validSuccess(obj);
-    }else if(type==2){
-        validSuccess2(obj);
-    }
+    validSuccess(obj);
     return true;
 }
-function validatePasswordHit(pas,hit,type){
+function validatePasswordHit(pas,hit){
     if(pas.val()!=hit.val()){
-        if(type==1){
-            validFailure(hit,'两次密码输入不一致');
-        }else if(type==2){
-            validFailure2(hit,'两次密码输入不一致');
-        }
+        validFailure(hit,'两次密码输入不一致');
         return false;
     }
-    if(type==1){
-        validSuccess(hit);
-    }else if(type==2){
-        validSuccess2(hit);
-    }
+    validSuccess(hit);
     return true;
 }
-function validateMobile(obj,type) {    //移动电话
+function validateMobile(obj) {    //移动电话
     if(!(/^1[3|4|5|8][0-9]\d{4,8}$/.test(obj.val()))){
-        if(type==1){
-            validFailure(obj,'请输入合法的手机号码');
-        }else if(type==2){
-            validFailure2(obj,'请输入合法的手机号码');
-        }
+        validFailure(obj,'请输入合法的手机号码');
         return false;
     }
-    if(type==1){
-        validSuccess(obj);
-    }else if(type==2){
-        validSuccess2(obj);
-    }
+    validSuccess(obj);
     return true;
 }
-function validateInteger(obj,type) {    //整数
+function validateInteger(obj) {    //整数
     if(!(/^[0-9]*[1-9][0-9]*$/.test(obj.val()))){
-        if(type==1){
-            validFailure(obj,'请输入整数');
-        }else if(type==2){
-            validFailure2(obj,'请输入整数');
-        }
-
+        validFailure(obj,'请输入整数');
         return false;
     }
-    if(type==1){
-        validSuccess(obj);
-    }else if(type==2){
-        validSuccess2(obj);
-    }
+    validSuccess(obj);
     return true;
 }
 
-function validateEmail(obj,type) {   //邮件
+function validateEmail(obj) {   //邮件
     var regEmail=/^((([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6}\;))*(([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})))$/;
     if(!(regEmail.test(obj.val()))){
-        if(type==1){
-            validFailure(obj,'请输入正确的电子邮件地址');
-        }else if(type==2){
-            validFailure2(obj,'请输入正确的电子邮件地址');
-        }
+        validFailure(obj,'请输入正确的电子邮件地址');
         return false;
     }
-    if(type==1){
-        validSuccess(obj);
-    }else if(type==2){
-        validSuccess2(obj);
-    }
+    validSuccess(obj);
     return true;
 
 }
-function validateUsername(obj,type) {   //邮件
+function validateUsername(obj) {   //邮件
     var regEmail=/^[a-zA-Z0-9_]{3,16}$/;
     if(!(regEmail.test(obj.val()))){
-        if(type==1){
-            validFailure(obj,'请输入由字母或数字组成的用户名');
-        }else if(type==2){
-            validFailure2(obj,'请输入由字母或数字组成的用户名');
-        }
+        validFailure(obj,'请输入由字母或数字组成的用户名');
         return false;
     }
-    if(type==1){
-        validSuccess(obj);
-    }else if(type==2){
-        validSuccess2(obj);
-    }
+    validSuccess(obj);
     return true;
 }
-function validateLength(obj,length,type) {   //长度
+function validateLength(obj,length) {   //长度
     var val=obj.val();
     if(val.length>length){
-        if(type==1){
-            validFailure(obj,'长度不能超过'+length+'位');
-        }else if(type==2){
-            validFailure2(obj,'长度不能超过'+length+'位');
-        }
+        validFailure(obj,'长度不能超过'+length+'位');
         return false;
     }
-    if(type==1){
-        validSuccess(obj);
-    }else if(type==2){
-        validSuccess2(obj);
-    }
+    validSuccess(obj);
     return true;
 }
-function validatePicture(obj,type) {   //长度
+function validatePicture(obj) {   //长度
     if(!(/\.(jpe?g|png|gif|bmp)$/i.test(obj.val()))){
-        if(type==1){
-            validFailure(obj,'请选择jpg/png/gif/bmp/jpeg格式的图片');
-        }else if(type==2){
-            validFailure2(obj,'请选择jpg/png/gif/bmp/jpeg格式的图片');
-        }
+        validFailure(obj,'请选择jpg/png/gif/bmp/jpeg格式的图片');
         return false;
     }
-    if(type==1){
-        validSuccess(obj);
-    }else if(type==2){
-        validSuccess2(obj);
-    }
+    validSuccess(obj);
     return true;
 }
 
@@ -390,25 +362,12 @@ function validFailure(obj, title) {
                 '<i class="fa fa-remove"></i>'+
                 title+
                 '</div>';
-    obj.closest('li').children('.validation').remove();
-    obj.closest('li').append(error);
+    obj.closest('.form-group').children('.validation').remove();
+    obj.closest('.form-group').append(error);
 }
 function validSuccess(obj) {
-    obj.closest('li').children('.validation').remove();
+    obj.closest('.form-group').children('.validation').remove();
 }
-
-function validFailure2(obj, title) {
-    var error='<div class="help-block col-sm-reset inline" style="color: #d16e6c">'+
-        '<i class="fa fa-remove"></i>'+
-        title+
-        '</div>';
-    obj.parents('.form-group').last().children('.help-block').remove();
-    obj.parents('.form-group').last().append(error);
-}
-function validSuccess2(obj) {
-    obj.parents('.form-group').last().children('.help-block').remove();
-}
-
 
 
 
@@ -491,36 +450,7 @@ backToTop = function(className){
 };
 
 
-String.prototype.format=function()
-{
-    if(arguments.length==0) return this;
-    for(var s=this, i=0; i<arguments.length; i++)
-        s=s.replace(new RegExp("\\{"+i+"\\}","g"), arguments[i]);
-    return s;
-};
-Date.prototype.format = function(format){
-    var d=this;
-    var o = {
-        "M+" : d.getMonth()+1, //month
-        "d+" : d.getDate(), //day
-        "h+" : d.getHours(), //hour
-        "m+" : d.getMinutes(), //minute
-        "s+" : d.getSeconds(), //second
-        "q+" : Math.floor((d.getMonth()+3)/3), //quarter
-        "S" : d.getMilliseconds() //millisecond
-    }
 
-    if(/(y+)/.test(format)) {
-        format = format.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-    }
-
-    for(var k in o) {
-        if(new RegExp("("+ k +")").test(format)) {
-            format = format.replace(RegExp.$1, RegExp.$1.length==1 ? o[k] : ("00"+ o[k]).substr((""+ o[k]).length));
-        }
-    }
-    return format;
-};
 (function($){
 
     var methods = {

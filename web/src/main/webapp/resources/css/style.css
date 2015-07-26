@@ -194,8 +194,8 @@ table td {
 }
 
 .inline-ul > li {
-    padding: 5px 0 5px 10px;
-    overflow: hidden;
+    padding: 15px 0 15px 10px;
+    /*overflow: hidden;*/
 }
 
 .inline-ul > li:last-child {
@@ -224,10 +224,10 @@ table td {
 }
 
 .inline-ul li input,
-/*.inline-ul li select,*/
+.inline-ul li select,
 .inline-ul li textarea {
     float: left;
-    padding: 4px 8px;
+    /*padding: 4px 8px;*/
     border: solid 1px #ddd;
     font-size: 12px;
     color: #333;
@@ -235,7 +235,7 @@ table td {
 }
 
 .inline-ul li input:focus,
-/*.inline-ul li select:focus,*/
+.inline-ul li select:focus,
 .inline-ul li textarea:focus {
     transition: all ease 0.3s;
     box-shadow: 0 0 5px #3f8dc9;
@@ -243,26 +243,21 @@ table td {
     outline: none;
 }
 
-.inline-ul li input[type="file"] {
-    float: left;
-    padding: 4px 0;
-    width: 200px;
-}
+/*.inline-ul li input[type="file"] {*/
+    /*float: left;*/
+    /*padding: 4px 0;*/
+    /*width: 200px;*/
+/*}*/
 
-.inline-ul input[type="text"], .inline-ul input[type="password"] {
-    width: 200px;
-}
+/*.inline-ul input[type="text"], .inline-ul input[type="password"] {*/
+    /*width: 200px;*/
+/*}*/
 
-.inline-ul textarea {
-    width: 500px;
-}
+/*.inline-ul textarea {*/
+    /*width: 500px;*/
+/*}*/
 
-.inline-ul i.notnull {
-    color: #D85056;
-    display: inline-block;
-    margin: 7px 0 0 2px;
-    float: left;
-}
+
 
 .inline-ul .btn-group button {
     width: 100px;
@@ -687,7 +682,7 @@ table td {
     min-height: 100%;
     position: absolute;
     left: 200px;
-    right: 0;
+    right: 5px;
 }
 
 .right-top {
@@ -1390,7 +1385,6 @@ table td {
     background: none repeat scroll 0 0 #fff;
     border: 1px solid #d5d5d5;
     box-shadow: 0 1px 0 #fff inset;
-    overflow: hidden;
 }
 
 .content-box > form > h5 {
@@ -1855,6 +1849,7 @@ table td {
     color: #ffe3e3;
     font-size: 12px;
     background: #c2513e;
+    display: inline-block;
 }
 
 .validation-right:before {
@@ -1869,10 +1864,10 @@ table td {
     font-size: 11px;
     padding: 4px 10px 4px 4px;
     position: relative;
-    margin-left: 20px;
-    margin-top: 0px;
+    margin-left: 10px;
+    /*margin-top: 0px;*/
     line-height: 17px;
-    float: left;
+    /*float: left;*/
 }
 
 .validation-top {
@@ -1933,117 +1928,6 @@ table td {
 .tr-unread > td {
     border: solid 1px #f9d9d6 !important;
 }
-
-/*.signin_menu {*/
-    /*max-width: 182px;*/
-    /*position: absolute;*/
-    /*z-index: 1;*/
-    /*background: #fff;*/
-    /*padding: 10px;*/
-    /*margin: 10px 0 0 -152px;*/
-    /*border-radius: 3px;*/
-    /*box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);*/
-    /*display: none;*/
-/*}*/
-
-/*.signin_menu > .triangle-top {*/
-    /*width: 14px;*/
-    /*height: 7px;*/
-    /*background: url("../images/icon-triangle-top.png") no-repeat;*/
-    /*position: absolute;*/
-    /*top: -7px;*/
-    /*right: 26px;*/
-/*}*/
-
-/*.signin_menu > label {*/
-    /*display: inline-block;*/
-    /*height: 16px;*/
-    /*line-height: 16px;*/
-    /*font-size: 11px;*/
-/*}*/
-
-/*.signin_menu > input {*/
-    /*display: block;*/
-    /*width: 180px;*/
-    /*padding: 0;*/
-    /*margin: 0 0 5px 0;*/
-    /*font-size: 12px;*/
-    /*text-indent: 0.3em;*/
-/*}*/
-
-/*.signin_menu > button {*/
-    /*margin: 5px 0 0 0;*/
-/*}*/
-
-/* Login style      End */
-
-/* Select-Ui      Begin */
-/*.select_ui {*/
-    /*-moz-user-select: none;*/
-    /*background: linear-gradient(to bottom, #fcfcfc, #f2f2f2) repeat scroll 0 0 rgba(0, 0, 0, 0);*/
-    /*border: 1px solid #ccc;*/
-    /*display: inline-block;*/
-    /*float: none;*/
-    /*height: auto;*/
-    /*margin: 0;*/
-    /*position: relative;*/
-    /*text-align: left;*/
-    /*white-space: nowrap;*/
-    /*width: auto;*/
-    /*border: 1px solid #ccc;*/
-    /*border-radius: 2px;*/
-    /*font-size: 12px;*/
-    /*outline: 0 none;*/
-/*}*/
-
-/*.select_ui select {*/
-    /*background: none repeat scroll 0 0 #fff;*/
-    /*border: 0 none;*/
-    /*bottom: 0;*/
-    /*box-sizing: content-box;*/
-    /*color: inherit;*/
-    /*font: inherit;*/
-    /*height: 100%;*/
-    /*left: 0;*/
-    /*margin: -1px;*/
-    /*min-width: 100%;*/
-    /*opacity: 0;*/
-    /*padding: 1px;*/
-    /*position: absolute;*/
-    /*top: 0;*/
-/*}*/
-
-/*.select_arrow {*/
-    /*border-bottom: 0 solid #b7b7b7;*/
-    /*border-left: 5px solid transparent;*/
-    /*border-right: 5px solid transparent;*/
-    /*border-style: solid;*/
-    /*border-top-color: inherit;*/
-    /*border-width: 5px 5px 0;*/
-    /*height: 0;*/
-    /*margin-top: -2px;*/
-    /*overflow: hidden;*/
-    /*position: absolute;*/
-    /*right: 5px;*/
-    /*top: 50%;*/
-    /*width: 0;*/
-/*}*/
-
-/*.select_ui .select_text_ui {*/
-    /*background: none repeat scroll 0 0 #fff;*/
-    /*border-right: 1px solid #e5e5e5;*/
-    /*display: block;*/
-    /*margin-right: 21px;*/
-    /*overflow: visible;*/
-    /*padding: 5px 3px 5px 6px;*/
-    /*vertical-align: baseline;*/
-/*}*/
-
-/*.select_focus_ui {*/
-    /*background: linear-gradient(to bottom, #f2f2f2, #fcfcfc) repeat scroll 0 0 rgba(0, 0, 0, 0);*/
-    /*border-color: #999;*/
-/*}*/
-
 .action-buttons a {
     margin: 0 3px;
     display: inline-block;
@@ -2959,83 +2843,94 @@ a.backToTop {
     z-index: 200;
 }
 a.backToTop:hover {background-color: #333;}
+.control-label{
+    padding: 0px;
+}
+.form-group i.notnull {
+    color: #D85056;
+    display: inline-block;
+    padding-top: 7px;
+}
+.form-horizontal.padding-10{
+    padding: 10px 0 10px 0;
+}
+.no-padding {
+    padding: 0 !important
+}
 
+.no-padding-bottom {
+    padding-bottom: 0 !important
+}
 
+.no-padding-top {
+    padding-top: 0 !important
+}
 
+.no-padding-left {
+    padding-left: 0 !important
+}
 
+.no-padding-right {
+    padding-right: 0 !important
+}
 
+.no-margin {
+    margin: 0 !important
+}
 
-/*input[type=file]{*/
-    /*filter:alpha(opacity:0);*/
-    /*opacity: 0;*/
-/*}*/
+.no-margin-bottom {
+    margin-bottom: 0 !important
+}
 
+.no-margin-top {
+    margin-top: 0 !important
+}
 
+.no-margin-left {
+    margin-left: 0 !important
+}
 
+.no-margin-right {
+    margin-right: 0 !important
+}
 
-/*.contact *:focus{outline :none;}*/
-/*.contact{*/
-    /*width: 700px;*/
-    /*height: auto;*/
-    /*background: #f6f6f6;*/
-    /*margin: 40px auto;*/
-    /*padding: 10px;*/
-/*}*/
-/*.contact ul {*/
-    /*width: 650px;*/
-    /*margin: 0 auto;*/
-/*}*/
-/*.contact ul li{*/
-    /*border-bottom: 1px solid #dfdfdf;*/
-    /*list-style: none;*/
-    /*padding: 12px;*/
-/*}*/
-/*.contact ul li label {*/
-    /*width: 120px;*/
-    /*display: inline-block;*/
-    /*float: left;*/
-/*}*/
-/*.contact ul li input[type=text],.contact ul li input[type=password]{*/
-    /*width: 220px;*/
-    /*height: 25px;*/
-    /*border :1px solid #aaa;*/
-    /*padding: 3px 8px;*/
-    /*border-radius: 5px;*/
-/*}*/
-/*.contact ul li input:focus{*/
-    /*border-color: #c00;*/
+.no-border {
+    border: 0
+}
 
-/*}*/
-/*.contact ul li input[type=text]{*/
-    /*transition: padding .25s;*/
-    /*-o-transition: padding  .25s;*/
-    /*-moz-transition: padding  .25s;*/
-    /*-webkit-transition: padding  .25s;*/
-/*}*/
-/*.contact ul li input[type=password]{*/
-    /*transition: padding  .25s;*/
-    /*-o-transition: padding  .25s;*/
-    /*-moz-transition: padding  .25s;*/
-    /*-webkit-transition: padding  .25s;*/
-/*}*/
-/*.contact ul li input:focus{*/
-    /*padding-right: 70px;*/
-/*}*/
-/*.contact .btnalign{*/
-    /*position: relative;*/
-    /*left: 300px;*/
-/*}*/
-/*.tips{*/
-    /*color: rgba(0, 0, 0, 0.5);*/
-    /*padding-left: 10px;*/
-/*}*/
-/*.tips_true,.tips_false{*/
-    /*padding-left: 10px;*/
-/*}*/
-/*.tips_true{*/
-    /*color: green;*/
-/*}*/
-/*.tips_false{*/
-    /*color: red;*/
-/*}*/
+.no-border-bottom {
+    border-bottom: 0
+}
+
+.no-border-top {
+    border-top: 0
+}
+
+.no-border-left {
+    border-left: none
+}
+
+.no-border-right {
+    border-right: 0
+}
+.form-actions {
+    display: block;
+    background-color: #f5f5f5;
+    border-top: 1px solid #e5e5e5;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    padding: 19px 20px 20px
+}
+.form-actions .btn-group button {
+    width: 100px;
+}
+.nav-tabs > .disabled a,
+.nav-tabs > .disabled a:hover,
+.nav-tabs > .disabled a:active
+{
+    background: #eee;
+    color: #aaa;
+    cursor: default;
+    pointer-events:none;
+}
 

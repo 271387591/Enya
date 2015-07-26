@@ -38,6 +38,11 @@ public abstract class BaseManagerImpl<T> implements BaseManager<T> {
         return baseDao().getByParam(map);
     }
 
+    @Override
+    public Map<String, Object> queryMap(Map<String, Object> params) {
+        return baseDao().queryMap(params);
+    }
+
     public T save(T obj) {
         return baseDao().save(obj);
     }
@@ -109,6 +114,16 @@ public abstract class BaseManagerImpl<T> implements BaseManager<T> {
 
     public List<Map<String, Object>> findByNamedQuery(String queryName, Map<String, Object> map, Integer start, Integer limit) {
         return baseDao().findByNamedQuery(queryName, map, start, limit);
+    }
+
+    @Override
+    public List<Map<String, Object>> listMap(Map<String, Object> params) {
+        return baseDao().listMap(params);
+    }
+
+    @Override
+    public List<Map<String, Object>> listPageMap(Map<String, Object> params, Integer start, Integer limit) {
+        return listPageMap(params,start,limit);
     }
 
 

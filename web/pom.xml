@@ -239,6 +239,7 @@
                             <excludes>
                                 <exclude>**/*.xml</exclude>
                                 <exclude>resources/lib/umeditor/**</exclude>
+                                <exclude>resources/lib/ueditor/**</exclude>
                             </excludes>
                             <resources>
                                 <resource>${basedir}/src/main/webapp/**/*</resource>
@@ -260,8 +261,9 @@
                                         <include>resources/lib/jplugin/jNotify.jquery.js</include>
                                         <include>resources/lib/jplugin/jquery.pager.js</include>
                                         <include>resources/lib/jplugin/ajaxfileupload.js</include>
-                                        <include>resources/lib/jplugin/jquery.dropkick-min.js</include>
+                                        <include>resources/lib/jplugin/jquery.dropkick.js</include>
                                         <include>resources/lib/jplugin/labelauty.js</include>
+                                        <include>resources/lib/jplugin/chosen.jquery.min.js</include>
                                         <include>resources/lib/jplugin/common.js</include>
                                     </includes>
                                 </aggregation>
@@ -278,8 +280,9 @@
                                         <include>resources/css/font-awesome.min.css</include>
                                         <include>resources/css/jNotify.jquery.css</include>
                                         <include>resources/css/labelauty.css</include>
-                                        <include>resources/css/dropkick.css</include>
+                                        <include>resources/css/chosen.css</include>
                                         <include>resources/css/style.css</include>
+                                        <include>resources/css/map.css</include>
 
                                     </includes>
                                 </aggregation>
@@ -304,19 +307,26 @@
                                     <tasks>
                                         <copy todir="${project.build.directory}/${project.build.finalName}/common/" file="${basedir}/src/main/webapp/deploy/pages/taglibs.jsp" overwrite="true">
                                         </copy>
-                                        <copy todir="${project.build.directory}/${project.build.finalName}/WEB-INF/pages/admin/" file="${basedir}/src/main/webapp/deploy/pages/login.jsp" overwrite="true">
+                                        <copy todir="${project.build.directory}/${project.build.finalName}/" file="${basedir}/src/main/webapp/deploy/pages/login.jsp" overwrite="true">
                                         </copy>
 
                                         <echo>Copy deploy file ...</echo>
 
                                         <echo>Copy deploy file ...</echo>
 
-                                        <!--<copy todir="${project.build.directory}/${project.build.finalName}/runtime/css/image" overwrite="true">-->
-                                            <!--<fileset dir="${basedir}/src/main/webapp/resources/css/image"/>-->
-                                        <!--</copy>-->
+                                        <copy todir="${project.build.directory}/${project.build.finalName}/runtime/css/image" overwrite="true">
+                                            <fileset dir="${basedir}/src/main/webapp/resources/css/image"/>
+                                        </copy>
                                         <copy todir="${project.build.directory}/${project.build.finalName}/runtime/css/fonts" overwrite="true">
                                             <fileset dir="${basedir}/src/main/webapp/resources/css/fonts"/>
                                         </copy>
+                                        <copy todir="${project.build.directory}/${project.build.finalName}/runtime/css/" file="${basedir}/src/main/webapp/resources/css/chosen-sprite.png" overwrite="true">
+                                        </copy>
+                                        <copy todir="${project.build.directory}/${project.build.finalName}/runtime/css/" file="${basedir}/src/main/webapp/resources/css/chosen-sprite@2x.png" overwrite="true">
+                                        </copy>
+
+
+
 
                                         <echo>Copy deploy file ...</echo>
 

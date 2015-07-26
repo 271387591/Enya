@@ -8,8 +8,10 @@ import com.google.zxing.common.BitMatrix;
 import com.ozstrategy.Constants;
 import com.ozstrategy.model.appstore.AppStore;
 import com.ozstrategy.model.appstore.AppStorePlat;
+import com.ozstrategy.model.exh.Exhibition;
 import com.ozstrategy.model.exh.ExhibitionHall;
 import com.ozstrategy.service.exh.ExhibitionHallManager;
+import com.ozstrategy.service.exh.ExhibitionManager;
 import com.ozstrategy.webapp.command.JsonReaderResponse;
 import com.ozstrategy.webapp.command.JsonReaderSingleResponse;
 import com.ozstrategy.webapp.command.dictionary.DictionaryCommand;
@@ -37,6 +39,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -47,14 +50,17 @@ import java.util.*;
 public class ExhibitionHallController extends BaseController {
     @Autowired
     private ExhibitionHallManager exhibitionHallManager;
+    @Autowired
+    private ExhibitionManager exhibitionManager;
+
     @RequestMapping("security/index")
     public ModelAndView tables(HttpServletRequest request, HttpServletResponse response) {
-        return new ModelAndView("admin/exh/hall");
+        return new ModelAndView("exh/hall");
     }
     @RequestMapping("security/add")
     public ModelAndView games(HttpServletRequest request, HttpServletResponse response) {
         ExhibitionHallCommand command=new ExhibitionHallCommand();
-        return new ModelAndView("admin/exh/addHall","command",command);
+        return new ModelAndView("exh/addHall","command",command);
     }
     @RequestMapping("security/edit/{id}")
     public ModelAndView edit(@PathVariable Long id) {
@@ -64,38 +70,44 @@ public class ExhibitionHallController extends BaseController {
         }catch (Exception e){
             logger.error("addAdvert fail",e);
         }
-        return new ModelAndView("admin/exh/addHall","command",command);
+        return new ModelAndView("exh/addHall","command",command);
     }
+
     @RequestMapping("list")
     public JsonReaderResponse<ExhibitionHallCommand> list(HttpServletRequest request){
-        List<ExhibitionHallCommand> commands=new ArrayList<ExhibitionHallCommand>();
-            Map<String,Object> map=requestMap(request);
-            try{
-            List<ExhibitionHall> models= exhibitionHallManager.list(map,obtainStart(request),obtainLimit(request));
-                if(models!=null && models.size()>0){
-                    for(ExhibitionHall model:models){
-                        ExhibitionHallCommand command=new ExhibitionHallCommand(model);
-                        commands.add(command);
-                    }
-                }
-                Integer count=exhibitionHallManager.count(map);
-                return new JsonReaderResponse(commands,true,count,"");
-            }catch (Exception e){
-                logger.error("list fail",e);
-            }
-            return new JsonReaderResponse(commands,false,"请求错误");
+        Map<String,Object> map=requestMap(request);
+        try{
+            map.put("Q_t.createDate","DESC");
+            List<Map<String,Object>> models= exhibitionHallManager.findByNamedQuery("getHalls", map, obtainStart(request), obtainLimit(request));
+            Integer count=exhibitionHallManager.findByNamedQueryClass("getHallsCount", Integer.class, map);
+            return new JsonReaderResponse(models,true,count,"");
+        }catch (Exception e){
+            logger.error("list fail",e);
+        }
+        return new JsonReaderResponse(null,false,"请求错误");
     }
+    @RequestMapping("getHall/{id}")
+    public JsonReaderSingleResponse getHall(@PathVariable Long id){
+        Map<String,Object> map=new HashMap<String, Object>();
+        try{
+            map.put("id",id);
+            Map<String,Object> model= exhibitionHallManager.findByNamedQueryMap("getHall", map);
+            return new JsonReaderSingleResponse(model,true,"");
+        }catch (Exception e){
+            logger.error("list fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"请求错误");
+    }
+
     @RequestMapping(value = "security/upload")
     public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) {
         String username    = request.getRemoteUser();
         String name        = request.getParameter("name");
         String address = request.getParameter("address");
         String id = request.getParameter("id");
-        String description = null;
-        try {
-            description = URLDecoder.decode(StringUtils.defaultString(request.getParameter("description"), ""), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        String description = request.getParameter("description");
+        if(isNotEmpty(description)){
+            description=description.replaceAll("\r|\n","");
         }
         String lat = request.getParameter("lat");
         String lng = request.getParameter("lng");
@@ -153,6 +165,9 @@ public class ExhibitionHallController extends BaseController {
 
                 if(StringUtils.equals(controlName,"logo1")){
                     logo1Name    = fileItem.getName();
+                    if(isEmpty(logo1Name)){
+                        continue;
+                    }
                     String str         = randomName(logo1Name);
                     fileOnServer      = new File(attachDir,str);
                     logo1Path=fileOnServer.getAbsolutePath();
@@ -160,6 +175,9 @@ public class ExhibitionHallController extends BaseController {
 
                 }else if(StringUtils.equals(controlName,"logo2")){
                     logo2Name    = fileItem.getName();
+                    if(isEmpty(logo2Name)){
+                        continue;
+                    }
                     String str         = randomName(logo2Name);
                     fileOnServer      = new File(attachDir,str);
                     logo2Path=fileOnServer.getAbsolutePath();
@@ -206,14 +224,55 @@ public class ExhibitionHallController extends BaseController {
         return null;
     }
 
-    @RequestMapping("delete")
-    public JsonReaderSingleResponse<ExhibitionHallCommand> delete(HttpServletRequest request){
+    @RequestMapping("security/delete/{id}")
+    public JsonReaderSingleResponse<ExhibitionHallCommand> delete(@PathVariable Long id){
         try{
-
+            ExhibitionHall exhibitionHall=exhibitionHallManager.get(id);
+            if(exhibitionHall!=null){
+                exhibitionHallManager.delete(exhibitionHall);
+            }
             return new JsonReaderSingleResponse(true);
         }catch (Exception e){
             logger.error("delete fail",e);
         }
         return new JsonReaderSingleResponse(null,false,"删除失败");
     }
+    @RequestMapping("security/checkExh/{id}")
+    public JsonReaderSingleResponse<ExhibitionHallCommand> checkExh(@PathVariable Long id){
+        try{
+            Map<String,Object> map=new HashMap<String, Object>();
+            map.put("Q_hallId_EQ",id);
+            Exhibition exhibition=exhibitionManager.getByParam(map);
+            if(exhibition!=null){
+                return new JsonReaderSingleResponse(true,true,"");
+            }else{
+                return new JsonReaderSingleResponse(false,true,"");
+            }
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"删除失败");
+    }
+
+    @RequestMapping("security/hot/{id}")
+    public JsonReaderSingleResponse<ExhibitionHallCommand> setHot(@PathVariable Long id){
+        try{
+            ExhibitionHall exhibitionHall=exhibitionHallManager.get(id);
+            if(exhibitionHall!=null){
+                if(exhibitionHall.getHot()){
+                    exhibitionHall.setHot(Boolean.FALSE);
+                }else{
+                    exhibitionHall.setHot(Boolean.TRUE);
+                }
+                exhibitionHall.setUpdateDate(new Date());
+                exhibitionHallManager.update(exhibitionHall);
+            }
+            return new JsonReaderSingleResponse(exhibitionHall.getHot(),true,"");
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"设置失败");
+    }
+
+
 }

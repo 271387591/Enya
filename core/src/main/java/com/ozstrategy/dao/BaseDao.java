@@ -21,6 +21,9 @@ public interface BaseDao<T> {
     Map<String,Object> findByNamedQueryMap(String queryName,Map<String,Object> map);
     List<Map<String,Object>> findByNamedQuery(String queryName,Map<String,Object> map);
     List<Map<String,Object>> findByNamedQuery(String queryName,Map<String,Object> map,Integer start,Integer limit);
+    List<Map<String,Object>> listMap(Map<String,Object> params);
+    List<Map<String,Object>> listPageMap(Map<String,Object> params,Integer start,Integer limit);
+
 
     Integer listPageCount(Map<String,Object> params);
     T save(T entity);
@@ -29,6 +32,7 @@ public interface BaseDao<T> {
     int delete(T entity);
     T get(Serializable id);
     T getByParam(Map<String,Object> map);
+    Map<String,Object> queryMap(Map<String,Object> params);
     int deleteById(Serializable id);
     int deleteByParam(Map<String,Object> map);
 }

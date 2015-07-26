@@ -25,6 +25,7 @@ public class AppStore extends BaseEntity {
     private Date createDate;
     private Integer plat;
     private Boolean enabled;
+    private Integer type;
 
     public AppStore() {
     }
@@ -115,6 +116,14 @@ public class AppStore extends BaseEntity {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     @Override

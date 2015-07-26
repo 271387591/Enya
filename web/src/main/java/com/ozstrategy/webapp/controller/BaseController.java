@@ -29,6 +29,7 @@ public class BaseController {
     @Autowired
     private ApplicationContext context;
     protected static final List emptyData= Collections.EMPTY_LIST;
+    private static String uploadPath=System.getProperty("upPath");
     
     public String getMessage(String key,HttpServletRequest request) {
         return context.getMessage(key, null, Locale.SIMPLIFIED_CHINESE);
@@ -85,12 +86,13 @@ public class BaseController {
         }
         return  Constants.LIMIT;
     }
-    public Boolean checkIsEmpty(String filed){
-        if(StringUtils.isEmpty(filed)){
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+    public Boolean isEmpty(String filed){
+        return StringUtils.isEmpty(filed);
     }
+    public Boolean isNotEmpty(String filed){
+        return StringUtils.isNotEmpty(filed);
+    }
+
     public Boolean checkIsNotNumber(String filed){
         if(NumberUtils.isNumber(filed)){
             return Boolean.FALSE;
@@ -137,6 +139,7 @@ public class BaseController {
         }
         return null;
     }
+
     
     public void ajax(String str,boolean result,HttpServletResponse response){
         try{
@@ -166,16 +169,16 @@ public class BaseController {
     public String toHttpUrl(HttpServletRequest request,boolean hasPort){
         String host=request.getServerName();
         String contextPath=request.getContextPath();
-        int port = request.getServerPort();
-        if(hasPort){
-            return  "http://"+host+":"+port+contextPath+"/";
-        }else{
-            return  "http://"+host+contextPath+"/";
-        }
+//        int port = request.getServerPort();
+//        if(hasPort){
+//            return  "http://"+host+":"+port+contextPath+"/";
+//        }
+        return  "http://"+host+contextPath+"/";
 
     }
     public String randomAbsolutePath(HttpServletRequest request,String dir){
-        String attachDir = request.getSession().getServletContext().getRealPath("/") + File.separator + dir + File.separator;
+//        String attachDir = request.getSession().getServletContext().getRealPath("/") + File.separator + dir + File.separator;
+        String attachDir = uploadPath + File.separator + dir + File.separator;
         attachDir = FilenameUtils.normalize(attachDir);
         File fileDir = new File(attachDir);
         if (fileDir.exists() == false) {

@@ -45,11 +45,11 @@ public class AppStoreController extends BaseController {
     private AppStoreManager appStoreManager;
     @RequestMapping("security/index")
     public ModelAndView tables(HttpServletRequest request, HttpServletResponse response) {
-        return new ModelAndView("admin/appstore/appstore");
+        return new ModelAndView("appstore/appstore");
     }
     @RequestMapping("security/appList")
     public ModelAndView appList(HttpServletRequest request, HttpServletResponse response) {
-        return new ModelAndView("admin/appstore/appList");
+        return new ModelAndView("appstore/appList");
     }
     @RequestMapping("security/detail/{id}")
     public ModelAndView appList(@PathVariable Long id) {
@@ -58,7 +58,7 @@ public class AppStoreController extends BaseController {
         if(appStore!=null){
             command=new AppStoreCommand(appStore);
         }
-        return new ModelAndView("admin/appstore/appDetail","command",command);
+        return new ModelAndView("appstore/appDetail","command",command);
     }
 
 
@@ -95,7 +95,7 @@ public class AppStoreController extends BaseController {
         }catch (Exception e){
             logger.error("addUser fail",e);
         }
-        return new ModelAndView("admin/appstore/addApp","command",command);
+        return new ModelAndView("appstore/addApp","command",command);
     }
     @RequestMapping(value = "security/upload")
     public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) {
@@ -104,6 +104,7 @@ public class AppStoreController extends BaseController {
         String enabled = request.getParameter("enabled");
         String id = request.getParameter("id");
         String plat = request.getParameter("plat");
+        String type = request.getParameter("type");
         response.setContentType("text/html;charset=utf-8");
         response.setHeader("X-Frame-Options", "SAMEORIGIN");
         PrintWriter writer = null;
@@ -115,9 +116,32 @@ public class AppStoreController extends BaseController {
             return null;
         }
 
+
+
+        AppStore advert=null;
+        if(StringUtils.isEmpty(id)){
+            Map<String,Object> map=new HashMap<String, Object>();
+            map.put("Q_version_EQ",version);
+            map.put("Q_type_EQ",parseInteger(type));
+            advert=appStoreManager.getByParam(map);
+            if(advert!=null){
+                String msg = "该版本已存在";
+                writer.print("{\"success\":false,\"msg\":\"" + msg + "!\"}");
+                return null;
+            }
+            advert=new AppStore();
+            advert.setCreateDate(new Date());
+        }else{
+            advert=appStoreManager.get(parseLong(id));
+
+        }
+        advert.setType(parseInteger(type));
+        advert.setVersion(version);
+        advert.setPlat(AppStorePlat.valueOf(plat).ordinal());
+        advert.setEnabled(BooleanUtils.toBoolean(enabled));
         String attachDir = randomAbsolutePath(request,Constants.updloadApp);
         File fileOnServer = null;
-
+        String logo1Name=null,logo1Url=null,logo1Path=null;
         try {
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
             Iterator list             = multipartRequest.getFileNames();
@@ -126,39 +150,25 @@ public class AppStoreController extends BaseController {
                 MultipartFile file        = multipartRequest.getFile(controlName);
                 CommonsMultipartFile cmf         = (CommonsMultipartFile) file;
                 DiskFileItem fileItem    = (DiskFileItem) cmf.getFileItem();
-                String fileName=null,str=null,ext=null;
-                fileName    = fileItem.getName();
-                str         = randomName(fileName);
-                fileItem.write(fileOnServer);
-                AppStore advert=null;
-                if(StringUtils.isEmpty(id)){
-                    Map<String,Object> map=new HashMap<String, Object>();
-                    map.put("Q_version_EQ",version);
-                    advert=appStoreManager.getByParam(map);
-                    if(advert!=null){
-                        String msg = "该版本已存在";
-                        writer.print("{\"success\":false,\"msg\":\"" + msg + "!\"}");
-                        return null;
-                    }
-                    advert=new AppStore();
-                    advert.setCreateDate(new Date());
-                }else{
-                    advert=appStoreManager.get(parseLong(id));
+                logo1Name    = fileItem.getName();
+                if(isEmpty(logo1Name)){
+                    continue;
+                }
+                String str = randomName(logo1Name);
 
+                fileOnServer = new File(attachDir,str);
+                logo1Path=fileOnServer.getAbsolutePath();
+                logo1Url=toHttpUrl(request,true)+Constants.updloadApp+"/"+str;
+                fileItem.write(fileOnServer);
+            }
+            if(StringUtils.isNotEmpty(logo1Name)){
+                try{
+                    FileUtils.forceDelete(new File(advert.getPacPath()));
+                }catch (Exception e){
                 }
-                advert.setVersion(version);
-                advert.setPlat(AppStorePlat.valueOf(plat).ordinal());
-                advert.setEnabled(BooleanUtils.toBoolean(enabled));
-                if(StringUtils.isNotEmpty(fileName)){
-                    try{
-                        FileUtils.forceDelete(new File(advert.getPacPath()));
-                    }catch (Exception e){
-                    }
-                    advert.setPacName(fileName);
-                    advert.setPacPath(fileOnServer.getAbsolutePath());
-                    String httpPath=toHttpUrl(request,true)+Constants.updloadApp+"/"+str;
-                    advert.setPacUrl(httpPath);
-                }
+                advert.setPacName(logo1Name);
+                advert.setPacPath(logo1Path);
+                advert.setPacUrl(logo1Url);
                 String qrName=UUID.randomUUID().toString()+".png";
                 String qrUrl=toHttpUrl(request,true)+Constants.updloadApp+"/"+qrName;
                 String qrPath=FilenameUtils.normalize(attachDir+"/"+qrName);
@@ -174,9 +184,9 @@ public class AppStoreController extends BaseController {
                 advert.setQrName(qrName);
                 advert.setQrPath(qrPath);
                 advert.setQrUrl(qrUrl);
-                appStoreManager.saveApp(advert);
-                writer.print("{\"success\":true,\"msg\":\"" + "" + "!\"}");
             }
+            appStoreManager.saveApp(advert);
+            writer.print("{\"success\":true,\"msg\":\"" + "" + "!\"}");
 
         } catch (Exception e) {
             logger.error("upload sensor fail", e);

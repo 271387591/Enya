@@ -46,6 +46,7 @@ public class User extends BaseEntity implements UserDetails {
     private String country;
     private String postalCode;
     private String province;
+    private String email;
 
     @Transient
     private Set<Role> roles              = new HashSet<Role>();
@@ -268,6 +269,14 @@ public class User extends BaseEntity implements UserDetails {
 
     public void setProvince(String province) {
         this.province = province;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

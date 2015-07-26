@@ -2,8 +2,11 @@ package com.ozstrategy.dao.test;
 
 import com.ozstrategy.model.appstore.AppStore;
 import com.ozstrategy.model.dictionary.Dictionary;
-import com.ozstrategy.model.exh.Exhibition;
-import com.ozstrategy.model.exh.ExhibitionHall;
+import com.ozstrategy.model.exh.*;
+import com.ozstrategy.model.system.Advert;
+import com.ozstrategy.model.system.EmailConfig;
+import com.ozstrategy.model.system.FriendLink;
+import com.ozstrategy.model.system.HomePage;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -24,11 +27,13 @@ public class TemplateTest {
     public static String webRootPath=System.getProperty("user.dir")+"/web/src/main/java/";
     public static List<Class> list=new ArrayList<Class>();
     static {
-        list.add(Exhibition.class);
-        list.add(ExhibitionHall.class);
-//        list.add(ActivityUser.class);
-//        list.add(Comment.class);
+//        list.add(EmailConfig.class);
 //        list.add(Advert.class);
+//        list.add(ExhGuide.class);
+//        list.add(ExhGuideTo.class);
+//        list.add(ExhNews.class);
+//        list.add(ExhSponsor.class);
+//        list.add(ExhTravel.class);
     }
     public static void main(String[] args){
         daoTemp();

@@ -27,7 +27,6 @@ public class ExhibitionHallCommand {
         this.logo2Url=model.getLogo2Url();
         this.logo1Name=model.getLogo1Name();
         this.logo2Name=model.getLogo2Name();
-        this.logo2Path=model.getLogo2Path();
         this.lng=model.getLng();
         this.id=model.getId();
         this.address=model.getAddress();
@@ -36,7 +35,6 @@ public class ExhibitionHallCommand {
         this.logo1Url=model.getLogo1Url();
         this.createDate=model.getCreateDate();
         this.lat=model.getLat();
-        this.logo1Path=model.getLogo1Path();
         this.hot=model.getHot();
     }
     public String getLogo2Url() {

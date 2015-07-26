@@ -41,6 +41,7 @@
         -->
 
     <defaultCache
+        name="defaultCache"
         maxElementsInMemory="10000"
         eternal="false"
         overflowToDisk="true"
@@ -48,6 +49,33 @@
         timeToLiveSeconds="120"
         diskPersistent="false"
         diskExpiryThreadIntervalSeconds="120"/>
+
+    <cache name="commonsCache"
+           eternal="false"
+           maxElementsInMemory="10000"
+           overflowToDisk="false"
+           diskPersistent="false"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="180"
+           memoryStoreEvictionPolicy="LRU"/>
+    <cache name="exhCache"
+           eternal="false"
+           maxElementsInMemory="10000"
+           overflowToDisk="false"
+           diskPersistent="false"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="180"
+           memoryStoreEvictionPolicy="LRU"/>
+
+    <cache name="exhInfosCache"
+           eternal="false"
+           maxElementsInMemory="10000"
+           overflowToDisk="false"
+           diskPersistent="false"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="180"
+           memoryStoreEvictionPolicy="LRU"/>
+
         
     <!-- See http://ehcache.sourceforge.net/documentation/#mozTocId258426 for how to configure caching for your objects -->
 </ehcache>

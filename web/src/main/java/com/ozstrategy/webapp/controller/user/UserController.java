@@ -1,11 +1,13 @@
 package com.ozstrategy.webapp.controller.user;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ozstrategy.Constants;
 import com.ozstrategy.model.user.Role;
 import com.ozstrategy.model.user.User;
 import com.ozstrategy.service.user.RoleManager;
 import com.ozstrategy.service.user.UserManager;
+import com.ozstrategy.util.Base64Utils;
 import com.ozstrategy.webapp.command.JsonReaderResponse;
 import com.ozstrategy.webapp.command.JsonReaderSingleResponse;
 import com.ozstrategy.webapp.command.user.RoleCommand;
@@ -14,6 +16,7 @@ import com.ozstrategy.webapp.controller.BaseController;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -45,7 +50,7 @@ public class UserController extends BaseController {
 
     @RequestMapping("security/index")
     public ModelAndView tables(HttpServletRequest request, HttpServletResponse response) {
-        return new ModelAndView("admin/user/user");
+        return new ModelAndView("user/user");
     }
     @RequestMapping("security/list")
     public JsonReaderResponse<UserCommand> list(HttpServletRequest request){
@@ -93,12 +98,12 @@ public class UserController extends BaseController {
         }catch (Exception e){
             logger.error("addAdvert fail",e);
         }
-        return new ModelAndView("admin/user/addUser","command",command);
+        return new ModelAndView("user/addUser","command",command);
     }
     @RequestMapping("security/userList")
     public ModelAndView userList(HttpServletRequest request, HttpServletResponse response) {
 
-        return new ModelAndView("admin/user/userList");
+        return new ModelAndView("user/userList");
     }
 
 
@@ -109,7 +114,7 @@ public class UserController extends BaseController {
 
             if(userCommand.getId()==null){
                 Map<String,Object> map=new HashMap<String, Object>();
-                map.put("Q_mobile_EQ",userCommand.getMobile());
+                map.put("Q_email_EQ",userCommand.getEmail());
                 user=userManager.getByParam(map);
                 if(user!=null){
                     return new JsonReaderSingleResponse(null,false,"该用户已存在");
@@ -123,8 +128,9 @@ public class UserController extends BaseController {
             user.setLastUpdateDate(new Date());
             user.setMobile(userCommand.getMobile());
             user.setNickName(userCommand.getNickName());
-            user.setUsername(userCommand.getMobile());
+            user.setUsername(userCommand.getEmail());
             user.setRoleId(userCommand.getRoleId());
+            user.setEmail(userCommand.getEmail());
             List<RoleCommand> roleCommands=userCommand.getRoles();
             Set<Role> roles=new HashSet<Role>();
             if(roleCommands!=null && roleCommands.size()>0){
@@ -208,42 +214,6 @@ public class UserController extends BaseController {
         return new JsonReaderSingleResponse(null,false,"修改失败");
     }
 
-
-
-
-
-    @RequestMapping("register")
-    public JsonReaderSingleResponse<UserCommand> register(HttpServletRequest request){
-        try{
-            String mobile=obtain(request,"mobile");
-            String password=obtain(request,"password");
-            String nickName=obtain(request,"nickName");
-            String validateCode=obtain(request,"validateCode");
-            Map<String,Object> map=new HashMap<String, Object>();
-            map.put("Q_mobile_EQ",mobile);
-            User user=userManager.getByParam(map);
-            if(user!=null){
-                return new JsonReaderSingleResponse(null,false,"该用户已存在");
-            }
-
-            map=new HashMap<String, Object>();
-            map.put("Q_name_EQ","ROLE_USER");
-            Role role=roleManager.getByParam(map);
-            user=new User();
-            user.setMobile(mobile);
-            user.setNickName(nickName);
-            user.setUsername(mobile);
-            user.setPassword(password);
-            user.setRoleId(role.getId());
-            user.getRoles().clear();
-            user.getRoles().add(role);
-            userManager.saveUser(user);
-            return new JsonReaderSingleResponse(true);
-        }catch (Exception e){
-            logger.error("register fail",e);
-        }
-        return new JsonReaderSingleResponse(null,false,"删除失败");
-    }
     @RequestMapping("getBackPwd")
     public JsonReaderSingleResponse<UserCommand> getBackPwd(HttpServletRequest request){
         try{
@@ -262,92 +232,6 @@ public class UserController extends BaseController {
         }
         return new JsonReaderSingleResponse(null,false,"参数错误");
     }
-    @RequestMapping("web/update")
-    public JsonReaderSingleResponse<UserCommand> update(HttpServletRequest request){
-        try{
-            String username=request.getRemoteUser();
-            User user=userManager.getUserByUsername(username);
-            String nickName=request.getParameter("nickName");
-            String gender=request.getParameter("gender");
-            String birth=request.getParameter("birth");
-            String address=request.getParameter("address");
-            String city=request.getParameter("city");
-            String country=request.getParameter("country");
-            String postalCode=request.getParameter("postalCode");
-            String province=request.getParameter("province");
-            user.setNickName(nickName);
-            user.setGender(gender);
-            if(StringUtils.isNotEmpty(birth)){
-                user.setBirth(DateUtils.parseDate(birth, "yyyy-MM-dd"));
-            }
-            user.setAddress(address);
-            user.setCity(city);
-            user.setCountry(country);
-            user.setPostalCode(postalCode);
-            user.setProvince(province);
-            userManager.update(user);
-            return new JsonReaderSingleResponse(true);
-        }catch (Exception e){
-            logger.error("update fail",e);
-        }
-        return new JsonReaderSingleResponse(null,false,"参数错误");
-    }
 
-    @RequestMapping(value = "web/portrait")
-    public ModelAndView portrait(HttpServletRequest request, HttpServletResponse response) {
-        String username    = request.getRemoteUser();
-        User user=userManager.getUserByUsername(username);
-        String attachFilesDirStr = randomAbsolutePath(request,Constants.updloadPortrait);
-        PrintWriter writer = null;
-        try {
-            writer = response.getWriter();
-        } catch (IOException e) { }
-
-        if (writer == null) {
-            return null;
-        }
-        File fileOnServer = null;
-
-        try {
-            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-            Iterator list             = multipartRequest.getFileNames();
-            while (list.hasNext()) {
-                String               controlName = list.next().toString();
-                MultipartFile file        = multipartRequest.getFile(controlName);
-                CommonsMultipartFile cmf         = (CommonsMultipartFile) file;
-                DiskFileItem fileItem    = (DiskFileItem) cmf.getFileItem();
-                String fileName=null,str=null,ext=null;
-
-                fileName    = fileItem.getName();
-                str         = randomName(fileName);
-                fileOnServer      = new File(attachFilesDirStr,str);
-                fileItem.write(fileOnServer);
-                if(StringUtils.isNotEmpty(fileName)){
-                    try{
-                        FileUtils.forceDelete(new File(user.getPortraitPath()));
-                    }catch (Exception e){
-                    }
-                    user.setPortraitName(fileName);
-                    user.setPortraitPath(fileOnServer.getAbsolutePath());
-                    String httpPath=toHttpUrl(request,true)+Constants.updloadPortrait+"/"+str;
-                    user.setPortraitUrl(httpPath);
-                }
-                userManager.saveOrUpdate(user);
-                writer.print(new ObjectMapper().writeValueAsString(new JsonReaderSingleResponse(null,true,"")));
-            }
-
-        } catch (Exception e) {
-            logger.error("upload portrait fail", e);
-            e.printStackTrace();
-            try {
-                writer.print(new ObjectMapper().writeValueAsString(new JsonReaderSingleResponse(null, false, "上传失败")));
-                FileUtils.forceDelete(fileOnServer);
-            } catch (IOException e1) { }
-        }
-
-        writer.close();
-
-        return null;
-    }
 
 }

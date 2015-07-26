@@ -20,23 +20,6 @@ public class SimpleMVController implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
     }
 
-    @RequestMapping("/security/login")
-    public ModelAndView login(HttpServletRequest request, HttpServletResponse response) {
-        return new ModelAndView("admin/login");
-    }
-    @RequestMapping("/security/logout")
-    public ModelAndView logout(HttpServletRequest request, HttpServletResponse response) {
-        return new ModelAndView("admin/logout");
-    }
-    @RequestMapping("/web/home")
-    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) {
-        return new ModelAndView("web/index");
-    }
-    @RequestMapping("/web/baidu")
-    public ModelAndView baidu(HttpServletRequest request, HttpServletResponse response) {
-        return new ModelAndView("web/baidu");
-    }
-
 
 
 

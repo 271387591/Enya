@@ -28,7 +28,7 @@ public class DictionaryController extends BaseController {
     private DictionaryManager dictionaryManager;
     @RequestMapping("security/index")
     public ModelAndView tables(HttpServletRequest request, HttpServletResponse response) {
-        return new ModelAndView("admin/dictionary/dic");
+        return new ModelAndView("dictionary/dic");
     }
     @RequestMapping("security/addDic")
     public ModelAndView games(HttpServletRequest request, HttpServletResponse response) {
@@ -44,12 +44,12 @@ public class DictionaryController extends BaseController {
         }catch (Exception e){
             logger.error("addAdvert fail",e);
         }
-        return new ModelAndView("admin/dictionary/addDic","command",command);
+        return new ModelAndView("dictionary/addDic","command",command);
     }
     @RequestMapping("security/dicList")
     public ModelAndView userList(HttpServletRequest request, HttpServletResponse response) {
 
-        return new ModelAndView("admin/dictionary/dicList");
+        return new ModelAndView("dictionary/dicList");
     }
     @RequestMapping("security/list")
     public JsonReaderResponse<DictionaryCommand> list(HttpServletRequest request){

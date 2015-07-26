@@ -2,8 +2,10 @@ package com.ozstrategy.dao.test;
 
 import com.ozstrategy.dao.user.RoleDao;
 import com.ozstrategy.dao.user.UserDao;
+import com.ozstrategy.model.exh.ExhibitionHall;
 import com.ozstrategy.model.user.Role;
 import com.ozstrategy.model.user.User;
+import com.ozstrategy.service.exh.ExhibitionHallManager;
 import com.ozstrategy.service.user.RoleManager;
 import com.ozstrategy.service.user.UserManager;
 import org.junit.Test;
@@ -12,6 +14,7 @@ import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.annotation.Rollback;
 
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,9 @@ public class UserDaoTest extends BaseManagerTestCase {
     private RoleManager roleManager;
     @Autowired
     private UserManager userManager;
+    @Autowired
+    private ExhibitionHallManager exhibitionHallManager;
+
 
 
 
@@ -41,6 +47,8 @@ public class UserDaoTest extends BaseManagerTestCase {
         System.out.println("ddd");
         System.out.println("ddd");
     }
+
+
 
 //    @Test
 //    @Rollback(value = false)
