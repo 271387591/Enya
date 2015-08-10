@@ -169,16 +169,20 @@ public class BaseController {
     public String toHttpUrl(HttpServletRequest request,boolean hasPort){
         String host=request.getServerName();
         String contextPath=request.getContextPath();
-//        int port = request.getServerPort();
-//        if(hasPort){
-//            return  "http://"+host+":"+port+contextPath+"/";
-//        }
+        if(isEmpty(uploadPath)){
+            int port = request.getServerPort();
+            return  "http://"+host+":"+port+contextPath+"/";
+        }
         return  "http://"+host+contextPath+"/";
 
     }
     public String randomAbsolutePath(HttpServletRequest request,String dir){
-//        String attachDir = request.getSession().getServletContext().getRealPath("/") + File.separator + dir + File.separator;
-        String attachDir = uploadPath + File.separator + dir + File.separator;
+        String attachDir=null;
+        if(isEmpty(uploadPath)){
+            attachDir = request.getSession().getServletContext().getRealPath("/") + File.separator + dir + File.separator;
+        }else{
+            attachDir = uploadPath + File.separator + dir + File.separator;
+        }
         attachDir = FilenameUtils.normalize(attachDir);
         File fileDir = new File(attachDir);
         if (fileDir.exists() == false) {

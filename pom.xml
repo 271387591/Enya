@@ -221,11 +221,11 @@
             <artifactId>commons-validator</artifactId>
             <version>${commons.validator.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons.io.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.commons</groupId>-->
+            <!--<artifactId>commons-io</artifactId>-->
+            <!--<version>${commons.io.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
@@ -271,27 +271,9 @@
         
         <!--log-->
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>mail</artifactId>
-                    <groupId>javax.mail</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jms</artifactId>
-                    <groupId>javax.jms</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jmxtools</artifactId>
-                    <groupId>com.sun.jdmk</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jmxri</artifactId>
-                    <groupId>com.sun.jmx</groupId>
-                </exclusion>
-            </exclusions>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -301,11 +283,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
         <!--datasource-->
@@ -537,8 +514,8 @@
         <db.name>enya</db.name>
 
         <appfuse.version>2.1.1-SNAPSHOT</appfuse.version>
-        <commons.fileupload.version>1.2.1</commons.fileupload.version>
-        <commons.io.version>1.3.2</commons.io.version>
+        <commons.fileupload.version>1.3.1</commons.fileupload.version>
+        <commons.io.version>2.4</commons.io.version>
         <displaytag.version>1.2</displaytag.version>
         <spring.version>4.0.6.RELEASE</spring.version>
 
@@ -591,9 +568,8 @@
         <javamail.version>1.4.1</javamail.version>
         <jpa.version>1.0.0.Final</jpa.version>
         <jstl.version>1.1.2</jstl.version>
-        <log4j.version>1.2.16</log4j.version>
         <sitemesh.version>2.4.2</sitemesh.version>
-        <slf4j.version>1.6.1</slf4j.version>
+        <slf4j.version>1.7.5</slf4j.version>
         <logback.version>1.0.13</logback.version>
         <!--<spring.security.version>3.1.4.RELEASE</spring.security.version>-->
         <spring.security.version>4.0.1.RELEASE</spring.security.version>

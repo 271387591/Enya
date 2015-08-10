@@ -35,7 +35,7 @@
     <h1>抱歉，该资源不允许访问，或者你没有访问的权限~</h1>
     <font color="#666666">我们建议你返回首页官网进行浏览，谢谢！</font><br /><br />
     <div class="button">
-        <a href="<c:url value="/html/web/home"/>" title="进入官网">进入官网</a>
+        <a href="<c:url value="/login.jsp"/>" title="返回登录">返回登录</a>
     </div>
 </div>
 </body>

@@ -3,6 +3,8 @@ package com.ozstrategy.webapp.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ozstrategy.Constants;
+import com.ozstrategy.model.appstore.AppStore;
+import com.ozstrategy.model.appstore.AppType;
 import com.ozstrategy.model.commend.CommendType;
 import com.ozstrategy.model.commend.Comment;
 import com.ozstrategy.model.exh.ExhDescription;
@@ -14,6 +16,7 @@ import com.ozstrategy.model.exh.ExhTravel;
 import com.ozstrategy.model.exh.Exhibition;
 import com.ozstrategy.model.user.Role;
 import com.ozstrategy.model.user.User;
+import com.ozstrategy.service.appstore.AppStoreManager;
 import com.ozstrategy.service.commend.CommentManager;
 import com.ozstrategy.service.exh.ExhDescriptionManager;
 import com.ozstrategy.service.exh.ExhGuideManager;
@@ -84,6 +87,8 @@ public class MobileController extends BaseController{
     private ExhSponsorManager exhSponsorManager;
     @Autowired
     private ExhNewsManager exhNewsManager;
+    @Autowired
+    private AppStoreManager appStoreManager;
 
 
 
@@ -91,6 +96,15 @@ public class MobileController extends BaseController{
 
 
 
+
+    @RequestMapping("getLastVersion/{type}")
+    public JsonReaderSingleResponse getLastVersion(@PathVariable String type,HttpServletRequest request){
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("Q_type_EQ", AppType.valueOf(type).ordinal());
+        map.put("Q_enabled_EQ",true);
+        AppStore appStore=appStoreManager.getByParam(map);
+        return new JsonReaderSingleResponse(appStore,true,"");
+    }
 
 
 
@@ -227,7 +241,22 @@ public class MobileController extends BaseController{
         try{
             map.put("Q_t.createDate","DESC");
             List<Map<String,Object>> models= exhibitionHallManager.findByNamedQuery("getHalls", map, obtainStart(request), obtainLimit(request));
-            Integer count=exhibitionHallManager.findByNamedQueryClass("getHallsCount", Integer.class, map);
+            if(models!=null && models.size()>0){
+                Calendar calendar=Calendar.getInstance();
+                calendar.setTime(new Date());
+                calendar.add(Calendar.DATE,3);
+                for(Map<String,Object> objectMap:models){
+                    map=new HashMap<String, Object>();
+                    map.put("Q_startDate_LE",calendar.getTime());
+                    Integer exhibition=exhibitionManager.count(map);
+                    if(exhibition!=null && exhibition>0){
+                        objectMap.put("hasExh",true);
+                    }else {
+                        objectMap.put("hasExh",false);
+                    }
+                }
+            }
+            Integer count=exhibitionHallManager.count(map);
             return new JsonReaderResponse(models,true,count,"");
         }catch (Exception e){
             logger.error("list fail",e);
@@ -240,6 +269,19 @@ public class MobileController extends BaseController{
         try{
             map.put("id",id);
             Map<String,Object> model= exhibitionHallManager.findByNamedQueryMap("getHall", map);
+            if(model!=null){
+                Calendar calendar=Calendar.getInstance();
+                calendar.setTime(new Date());
+                calendar.add(Calendar.DATE,3);
+                map=new HashMap<String, Object>();
+                map.put("Q_startDate_LE",calendar.getTime());
+                Integer exhibition=exhibitionManager.count(map);
+                if(exhibition!=null && exhibition>0){
+                    model.put("hasExh",true);
+                }else {
+                    model.put("hasExh",false);
+                }
+            }
             return new JsonReaderSingleResponse(model,true,"");
         }catch (Exception e){
             logger.error("list fail",e);
@@ -256,6 +298,9 @@ public class MobileController extends BaseController{
             if(createDate==null && hname==null && tradeNames==null){
                 map.put("Q_exh.createDate","DESC");
             }
+            String host=request.getServerName();
+            String contextPath=request.getContextPath();
+            String share="http://"+host+contextPath+"/";
             List<Map<String,Object>> models= exhibitionManager.findByNamedQuery("getExhs", map, obtainStart(request), obtainLimit(request));
             if(models!=null && models.size()>0){
                 Calendar calendar=Calendar.getInstance();
@@ -268,6 +313,7 @@ public class MobileController extends BaseController{
                     }else{
                         objectMap.put("willStart",false);
                     }
+                    objectMap.put("shareContent",share+"Tenant/html/web/exhDetail/"+objectMap.get("id"));
                 }
             }
             Integer count=exhibitionManager.findByNamedQueryClass("getExhsCount",Integer.class,map);

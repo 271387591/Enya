@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  * Created by lihao on 12/30/14.
  */
 public class EnyaTest {
-    private String baseUrl="http://127.0.0.1:8085/Tenant/html/app/";
+    private String baseUrl="http://120.24.228.68/Tenant/html/app/";
 //    private String baseUrl="http://120.24.228.68:8080/Enya/app/";
     /***
      * 密码正则 :6-16位字母或数字
@@ -338,12 +338,12 @@ public class EnyaTest {
         HttpPost httpost = new HttpPost(url);
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 
-//        nvps.add(new BasicNameValuePair("Q_h.name", "DESC"));
+        nvps.add(new BasicNameValuePair("Q_h.name", "DESC"));
 //        nvps.add(new BasicNameValuePair("Q_exh.createDate", "ASC"));
 //        nvps.add(new BasicNameValuePair("Q_exh.tradeNames", "DESC"));
-        nvps.add(new BasicNameValuePair("Q_exh.name_LK", "水水"));
+//        nvps.add(new BasicNameValuePair("Q_exh.name_LK", "水水"));
         nvps.add(new BasicNameValuePair("start", "0"));
-        nvps.add(new BasicNameValuePair("limit", "2"));
+        nvps.add(new BasicNameValuePair("limit", "5"));
         httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
         DefaultHttpClient httpclient = new DefaultHttpClient();
         HttpResponse response = null;
@@ -650,5 +650,33 @@ public class EnyaTest {
         body = EntityUtils.toString(entity);
         System.out.println(body);
         httpclient.getConnectionManager().shutdown();
+    } /**
+     * 版本升级
+     * type:APP类型，取值为：大众版：Common，管理人员版本：Admin
+     * 返回的version。你自己设定对比规则，version 的格式由客户端自定义,pacUrl为下载地址
+     *
+     * 请求方式：POST
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetLastVersion() throws Exception{
+        String url=baseUrl+"getLastVersion/Common";
+        HttpPost httpost = new HttpPost(url);
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+//        nvps.add(new BasicNameValuePair("type", "Common"));
+        httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpResponse response = null;
+        response = httpclient.execute(httpost);
+        HttpEntity entity = response.getEntity();
+
+        String charset = EntityUtils.getContentCharSet(entity);
+
+        String body = null;
+        body = EntityUtils.toString(entity);
+        System.out.println(body);
+        httpclient.getConnectionManager().shutdown();
     }
+
 }

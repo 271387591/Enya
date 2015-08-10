@@ -3,7 +3,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <link href="<c:url value="/runtime/css/runtime.css"/> " rel="stylesheet" />
-<link rel="stylesheet" href="<c:url value="/resources/lib/umeditor/themes/default/css/umeditor.css"/>" />
 
 <!--[if lt IE 9]>
 <script src="<c:url value="/resources/lib/ie/html5shiv.js"/>"></script>

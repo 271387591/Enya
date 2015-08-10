@@ -46,7 +46,7 @@ public class WebAuthenticationSuccessLoggerHandler extends WebAuthenticationLogg
           if(StringUtils.equals("ROLE_ADMIN",userCommand.getRoleName())){
               response.sendRedirect("html/dictionary/security/index");
           }else if(StringUtils.equals("ROLE_TENANT",userCommand.getRoleName())){
-              response.sendRedirect("html/tenant/merchantinfo");
+              response.sendRedirect("html/report/web/index");
           }
           return;
       }

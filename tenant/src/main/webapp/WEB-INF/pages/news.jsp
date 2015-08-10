@@ -40,8 +40,7 @@
             <div class="label-div b-30 border-all pt-5 t-20" style="position:relative; padding-left:26px;">
                 <div class="second">
                     <h5 class="mmh5 b-20">资讯列表</h5>
-                    <div id="newsListDiv">
-                    </div>
+                    <div id="newsListDiv"> </div>
                 </div>
             </div>
             <div class="mmclear"></div>
@@ -60,7 +59,7 @@
             {{ for (var i = 0, l = it.data.length; i < l; i++) { }}
             <li style="list-style: disc;">
                 <%--<span class="pull-left">{{=(i+1)}}、</span>--%>
-                <a class="l-10" target="_blank" href="<c:url value="/html/web/newsDetail/{{=it.data[i].id}}"/>">{{=it.data[i].title}}</a>
+                <a class="l-5" target="_blank" href="<c:url value="/html/web/newsDetail/{{=it.data[i].id}}"/>">{{=it.data[i].title}}</a>
                 <span class="pull-right l-10">{{=new Date(it.data[i].createDate).format('yyyy-MM-dd')}}</span>
                 <div class="pull-right">
                     <a class="follow-btn pr-10 ie6png" href="javascript:void(0);" title="{{=it.data[i].shareCount}}人分享 {{=it.data[i].commentCount}}人评论" data-id="104417" data-type="news">{{=it.data[i].commentCount+it.data[i].shareCount}}人</a>

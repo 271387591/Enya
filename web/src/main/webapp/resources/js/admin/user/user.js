@@ -114,7 +114,7 @@ var columns=[
         renderer:function(v,rec){
             return '<div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">'+
                 '<a class="green" href="javascript:void(0);" data-rel="tooltip" title="编辑" onclick="edit('+rec.id+')">'+
-                '<i class="fa fa-pencil bigger-130"></i>'+
+                '<i class="fa fa-lg fa-pencil bigger-130"></i>'+
                 '</a>'+
                 '<a class="red" href="javascript:void(0);" data-rel="tooltip" title="删除" onclick="createDeleteModal('+rec.id+',null,removeUser)">'+
                 '<i class="fa fa-lg fa-trash bigger-130"></i>'+

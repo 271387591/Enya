@@ -55,7 +55,7 @@ function saveNews(exhId){
     for(var i=0;i<datas.length;i++){
         obj[datas[i].name]=datas[i].value;
     }
-    obj.news=UM.getEditor('addNewsEditor').getContent();
+    obj.news=UE.getEditor('addNewsEditor').getContent();
     obj.exhId=exhId;
     obj.keywordIds=$('#newsKeywordSelector').val().join(",");
     delete obj.editorValue;

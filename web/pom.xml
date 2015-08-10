@@ -192,16 +192,24 @@
           <version>3.2.0</version>
       </dependency>
 
-      <!--<dependency>-->
-          <!--<groupId>commons-fileupload</groupId>-->
-          <!--<artifactId>commons-fileupload</artifactId>-->
-          <!--<version>1.2.2</version>-->
-      <!--</dependency>-->
+      <!--ueditor-->
+
+      <dependency>
+          <groupId>commons-fileupload</groupId>
+          <artifactId>commons-fileupload</artifactId>
+          <version>1.2.2</version>
+      </dependency>
       <!--<dependency>-->
           <!--<groupId>ue</groupId>-->
-          <!--<artifactId>ueditor-mini</artifactId>-->
-          <!--<version>1.2.2</version>-->
+          <!--<artifactId>ueditor</artifactId>-->
+          <!--<version>1.1.1</version>-->
       <!--</dependency>-->
+      <dependency>
+          <groupId>ue</groupId>
+          <artifactId>json</artifactId>
+          <version>1.1.1</version>
+      </dependency>
+
 
 
 
@@ -264,6 +272,7 @@
                                         <include>resources/lib/jplugin/jquery.dropkick.js</include>
                                         <include>resources/lib/jplugin/labelauty.js</include>
                                         <include>resources/lib/jplugin/chosen.jquery.min.js</include>
+                                        <include>resources/lib/jplugin/jquery.form.min.js</include>
                                         <include>resources/lib/jplugin/common.js</include>
                                     </includes>
                                 </aggregation>

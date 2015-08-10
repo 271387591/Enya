@@ -1,6 +1,7 @@
 package com.ozstrategy.service.exh.impl;
 
 import com.ozstrategy.dao.BaseDao;
+import com.ozstrategy.dao.commend.CommentDao;
 import com.ozstrategy.dao.exh.ExhDescriptionDao;
 import com.ozstrategy.dao.exh.ExhGuideDao;
 import com.ozstrategy.dao.exh.ExhGuideToDao;
@@ -8,6 +9,7 @@ import com.ozstrategy.dao.exh.ExhNewsDao;
 import com.ozstrategy.dao.exh.ExhSponsorDao;
 import com.ozstrategy.dao.exh.ExhTravelDao;
 import com.ozstrategy.dao.exh.ExhibitionDao;
+import com.ozstrategy.model.commend.CommendType;
 import com.ozstrategy.model.dictionary.Dictionary;
 import com.ozstrategy.model.exh.ExhDescription;
 import com.ozstrategy.model.exh.ExhGuide;
@@ -52,6 +54,9 @@ public class ExhibitionManagerImpl extends BaseManagerImpl<Exhibition> implement
     private ExhTravelDao exhTravelDao;
     @Autowired
     private ExhSponsorDao exhSponsorDao;
+    @Autowired
+    private CommentDao commentDao;
+
     @Override
     public BaseDao<Exhibition> baseDao() {
         return exhibitionDao;
@@ -68,6 +73,10 @@ public class ExhibitionManagerImpl extends BaseManagerImpl<Exhibition> implement
         exhTravelDao.deleteByParam(map);
         exhSponsorDao.deleteByParam(map);
         exhibitionDao.delete(exhibition);
+        map=new HashMap<String, Object>();
+        map.put("Q_typeId_EQ", CommendType.Exhibition.ordinal());
+        map.put("Q_itemId_EQ", exhibition.getId());
+        commentDao.deleteByParam(map);
     }
 
     @Override

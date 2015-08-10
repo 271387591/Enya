@@ -1,4 +1,3 @@
-<%@ page import="com.ozstrategy.webapp.command.exh.ExhibitionHallCommand" %>
 <%--
   Created by IntelliJ IDEA.
   User: lihao1
@@ -16,15 +15,15 @@
     <%@ include file="/common/taglibs.jsp" %>
     <title>${command.id==null?'添加展馆':'编辑展馆'}</title>
     <%--<link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />--%>
-    <link rel="stylesheet" href="<c:url value="/resources/lib/umeditor/themes/default/css/umeditor.min.css"/>" />
+    <%--<link rel="stylesheet" href="<c:url value="/resources/lib/umeditor/themes/default/css/umeditor.min.css"/>" />--%>
     <%--<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=vGDcVVUlGcuankr8TgcYWsum"></script>--%>
     <%--<script type="text/javascript" src="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>--%>
     <script src="<c:url value="/resources/lib/map/maplink.js"/>"></script>
     <script src="<c:url value="/resources/lib/map/maplib.js"/>"></script>
-    <script src="<c:url value="/resources/lib/umeditor/umeditor.config.js"/>"></script>
-    <script src="<c:url value="/resources/lib/umeditor/umeditor.min.js"/>"></script>
-    <%--<script src="<c:url value="/resources/lib/ueditor/ueditor.config.js"/>"></script>--%>
-    <%--<script src="<c:url value="/resources/lib/ueditor/ueditor.all.min.js"/>"></script>--%>
+    <%--<script src="<c:url value="/resources/lib/umeditor/umeditor.config.js"/>"></script>--%>
+    <%--<script src="<c:url value="/resources/lib/umeditor/umeditor.min.js"/>"></script>--%>
+    <script src="<c:url value="/resources/lib/ueditor/ueditor.config.js"/>"></script>
+    <script src="<c:url value="/resources/lib/ueditor/ueditor.all.min.js"/>"></script>
 
 </head>
 <body>
@@ -46,7 +45,7 @@
                 </button>
             </div>
             <div class="content-box">
-                <form class="form-horizontal padding-10" id="userForm">
+                <form class="form-horizontal padding-10" id="userForm" enctype="multipart/form-data" method="post">
                     <input name="id" value="${command.id}" type="hidden"/>
                     <div class="form-group">
                         <label class="col-sm-1 control-label no-padding-right">展馆名称</label>
@@ -107,7 +106,7 @@
                     </div>
                     <div class="clearfix form-actions clear">
                         <div class="col-md-offset-3 col-md-9 btn-group">
-                            <button type="button" class="btn btn-primary" onclick="saveAdvert(${command.id!=null?"'edit'":"'save'"});">
+                            <button id="subBtn" type="button" class="btn btn-primary" onclick="saveAdvert(${command.id!=null?"'edit'":"'save'"});">
                                 <span><i class="fa fa-save"></i>保存</span>
                             </button>
                             <button type="button" class="btn btn-default" onclick="reloadPage('html/exhibitionHall/security/index');">
@@ -125,7 +124,8 @@
 <script type="text/javascript">
     $(function(){
         initAdd(${command.id==null},'${command.lng}','${command.lat}');
-        var desEditor = UM.getEditor('desEditor');
+//        var desEditor = UM.getEditor('desEditor');
+        var desEditor = UE.getEditor('desEditor');
         if(${command.id!=null}){
             desEditor.ready(function() {
                 desEditor.setContent('${command.description}');

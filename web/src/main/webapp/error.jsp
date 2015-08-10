@@ -34,7 +34,7 @@
 <div id="page" style="border-style:dashed;border-color:#e4e4e4;line-height:30px;background:url(sorry.png) no-repeat right;">
     <h1>抱歉，服务器出错啦~</h1>
     <div class="button">
-        <a href="<c:url value="/html/web/home"/>" title="进入官网">进入官网</a>
+        <a href="<c:url value="/login.jsp"/>" title="返回登录">返回登录</a>
     </div>
 </div>
 </body>

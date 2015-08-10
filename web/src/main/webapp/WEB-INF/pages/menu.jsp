@@ -30,12 +30,24 @@
                 <li id="menu-exh">
                     <a href="<c:url value="/html/exhibition/security/index" />"><i class="fa fa-users submenu-icon grey"></i>展会管理</a>
                 </li>
+                <li id="menu-exhservice">
+                    <a href="<c:url value="/html/exhService/security/index" />"><i class="fa fa-umbrella submenu-icon grey"></i>展会服务</a>
+                </li>
+                <li id="menu-exhplan">
+                    <a href="<c:url value="/html/exhPlan/security/index" />"><i class="fa fa-recycle submenu-icon grey"></i>年度展会计划</a>
+                </li>
 
             </ul>
         </li>
 
         <li id="menu-app">
             <a href="<c:url value="/html/appstore/security/index" />"><i class="fa fa-square submenu-icon grey"></i>APP管理</a>
+        </li>
+        <li id="menu-usercomments">
+            <a href="<c:url value="/html/userComments/security/index" />"><i class="fa fa-comments submenu-icon grey"></i>反馈意见</a>
+        </li>
+        <li id="menu-survey">
+            <a href="<c:url value="/html/survey/security/index" />"><i class="fa fa-binoculars submenu-icon grey"></i>在线调查</a>
         </li>
     </ul>
 </div>

@@ -1,14 +1,33 @@
 /**
  * Created by lihao1 on 7/24/15.
  */
+function advertHallRun(){
+
+}
 $(function(){
-    $.get(appPath+'html/web/advertHall',{},function(result){
-        if(result.success){
-            var tmpl = document.getElementById('hallAdvertTpl').innerHTML;
-            var doTtmpl = doT.template(tmpl);
-            $('#HallAdvert').html(doTtmpl(result));
-            $(".slides-banner .slides-css:first").show();
-            $(".slides-banner-title:first").show();
+    //$.get(appPath+'html/web/advertHall',{},function(result){
+    //    if(result.success){
+    //        var tmpl = document.getElementById('hallAdvertTpl').innerHTML;
+    //        var doTtmpl = doT.template(tmpl);
+    //        $('#HallAdvert').html(doTtmpl(result));
+    //        $(".slides-banner .slides-css:first").show();
+    //        $(".slides-banner-title:first").show();
+    //    }
+    //});
+    $.ajax({
+        async: false,
+        url: appPath + 'html/web/advertHall',
+        data: {},
+        cache: false,
+        type: "GET",
+        success: function (result) {
+            if(result.success){
+                var tmpl = document.getElementById('hallAdvertTpl').innerHTML;
+                var doTtmpl = doT.template(tmpl);
+                $('#HallAdvert').html(doTtmpl(result));
+                $(".slides-banner .slides-css:first").show();
+                $(".slides-banner-title:first").show();
+            }
         }
     });
 
@@ -38,17 +57,15 @@ $(function(){
         }
     });
 
-
-
     var Interval_control = '';
     var current_index = 0;
-    $(".slides-banner .slides-css").hide();
-    $(".slides-banner .slides-css:first").show();
-    $(".slides-banner-title").hide();
-    $(".slides-banner-title:first").show();
+    $("#HallAdvert .slides-banner .slides-css").hide();
+    $("#HallAdvert .slides-banner .slides-css:first").show();
+    $("#HallAdvert .slides-banner-title").hide();
+    $("#HallAdvert .slides-banner-title:first").show();
 
     show_pic = function(index){
-        $(".slides-css").each(function(i){
+        $("#HallAdvert .slides-css").each(function(i){
             $(this).hide();
             if(i == index)
             {
@@ -58,7 +75,7 @@ $(function(){
     };
 
     show_content = function(index){
-        $(".slides-banner-title").each(function(i){
+        $("#HallAdvert .slides-banner-title").each(function(i){
             $(this).hide();
             if(i == index)
             {
@@ -68,7 +85,7 @@ $(function(){
     };
 
     show_point = function(index){
-        $(".slides-banner-point a").each(function(i){
+        $("#HallAdvert .slides-banner-point a").each(function(i){
             if($(this).hasClass("icon-css-on"))
             {
                 $(this).removeClass("icon-css-on");
@@ -88,7 +105,7 @@ $(function(){
     };
 
     slides = function(){
-        $(".slides-icon a").each(function(index){
+        $("#HallAdvert .slides-icon a").each(function(index){
             $(this).click(function(){
                 current_index = index;
                 show_point(index);
@@ -103,7 +120,7 @@ $(function(){
         show_content(current_index);
         show_pic(current_index);
 
-        if (current_index == ($(".slides-banner .slides-css a").length - 1))
+        if (current_index == ($("#HallAdvert .slides-banner .slides-css a").length - 1))
         {
             current_index = -1;
         }
@@ -114,7 +131,7 @@ $(function(){
     Interval_control = setInterval(initRun,8000);//设置自动切换函数
 
     //当触发mouseenter事件时，取消正在执行的自动切换方法，触发mouseouter事件时重新设置自动切换
-    $(".slides-banner .slides-css,.slides-banner-title").mouseenter(function() {
+    $("#HallAdvert .slides-banner .slides-css,.slides-banner-title").mouseenter(function() {
         clearInterval(Interval_control);//停止自动切换
     }).mouseleave(function() {
         Interval_control = setInterval(
@@ -123,7 +140,7 @@ $(function(){
                 show_content(current_index);
                 show_pic(current_index);
 
-                if (current_index == ($(".slides-banner .slides-css a").length - 1))
+                if (current_index == ($("#HallAdvert .slides-banner .slides-css a").length - 1))
                 {
                     current_index = -1;
                 }
@@ -135,4 +152,8 @@ $(function(){
         );//设置自动切换函数
 
     });
+
+
+
+
 });

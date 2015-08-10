@@ -1,4 +1,3 @@
-<%@ include file="/common/taglibs.jsp"%>
 var globalRes = {
     username: '${command.username}',
     roleId: '${command.roleId}',

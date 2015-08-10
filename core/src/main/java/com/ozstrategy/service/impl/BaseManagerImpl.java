@@ -123,7 +123,7 @@ public abstract class BaseManagerImpl<T> implements BaseManager<T> {
 
     @Override
     public List<Map<String, Object>> listPageMap(Map<String, Object> params, Integer start, Integer limit) {
-        return listPageMap(params,start,limit);
+        return baseDao().listPageMap(params,start,limit);
     }
 
 

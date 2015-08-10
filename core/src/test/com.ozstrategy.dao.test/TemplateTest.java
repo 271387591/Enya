@@ -4,9 +4,14 @@ import com.ozstrategy.model.appstore.AppStore;
 import com.ozstrategy.model.dictionary.Dictionary;
 import com.ozstrategy.model.exh.*;
 import com.ozstrategy.model.system.Advert;
+import com.ozstrategy.model.system.Answer;
 import com.ozstrategy.model.system.EmailConfig;
 import com.ozstrategy.model.system.FriendLink;
 import com.ozstrategy.model.system.HomePage;
+import com.ozstrategy.model.system.Question;
+import com.ozstrategy.model.system.Survey;
+import com.ozstrategy.model.system.UserComments;
+import com.ozstrategy.model.system.UserSurvey;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -27,7 +32,9 @@ public class TemplateTest {
     public static String webRootPath=System.getProperty("user.dir")+"/web/src/main/java/";
     public static List<Class> list=new ArrayList<Class>();
     static {
-//        list.add(EmailConfig.class);
+        list.add(ExhPlan.class);
+//        list.add(Question.class);
+//        list.add(Answer.class);
 //        list.add(Advert.class);
 //        list.add(ExhGuide.class);
 //        list.add(ExhGuideTo.class);

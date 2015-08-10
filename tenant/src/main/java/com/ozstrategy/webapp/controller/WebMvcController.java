@@ -4,18 +4,32 @@ import com.ozstrategy.Constants;
 import com.ozstrategy.model.commend.CommendType;
 import com.ozstrategy.model.commend.Comment;
 import com.ozstrategy.model.exh.ExhNews;
+import com.ozstrategy.model.exh.ExhPlan;
+import com.ozstrategy.model.exh.ExhService;
 import com.ozstrategy.model.exh.Exhibition;
 import com.ozstrategy.model.exh.ExhibitionHall;
+import com.ozstrategy.model.system.Answer;
 import com.ozstrategy.model.system.EmailConfig;
+import com.ozstrategy.model.system.Question;
+import com.ozstrategy.model.system.Survey;
+import com.ozstrategy.model.system.UserComments;
+import com.ozstrategy.model.system.UserSurvey;
 import com.ozstrategy.model.user.Role;
 import com.ozstrategy.model.user.User;
 import com.ozstrategy.service.EmailEngine;
 import com.ozstrategy.service.commend.CommentManager;
 import com.ozstrategy.service.exh.ExhNewsManager;
+import com.ozstrategy.service.exh.ExhPlanManager;
+import com.ozstrategy.service.exh.ExhServiceManager;
 import com.ozstrategy.service.exh.ExhibitionHallManager;
 import com.ozstrategy.service.exh.ExhibitionManager;
+import com.ozstrategy.service.system.AnswerManager;
 import com.ozstrategy.service.system.EmailConfigManager;
 import com.ozstrategy.service.system.HomePageManager;
+import com.ozstrategy.service.system.QuestionManager;
+import com.ozstrategy.service.system.SurveyManager;
+import com.ozstrategy.service.system.UserCommentsManager;
+import com.ozstrategy.service.system.UserSurveyManager;
 import com.ozstrategy.service.user.RoleManager;
 import com.ozstrategy.service.user.UserManager;
 import com.ozstrategy.util.Base64Utils;
@@ -23,11 +37,13 @@ import com.ozstrategy.util.ThreeDESUtils;
 import com.ozstrategy.webapp.command.JsonReaderResponse;
 import com.ozstrategy.webapp.command.JsonReaderSingleResponse;
 import com.ozstrategy.webapp.command.exh.ExhNewsCommand;
+import com.ozstrategy.webapp.command.exh.UserSurveyCommand;
 import com.ozstrategy.webapp.command.user.UserCommand;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -40,6 +56,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -92,6 +109,27 @@ public class WebMvcController extends BaseController implements InitializingBean
     protected EmailEngine emailEngine;
     @Autowired
     protected Properties emailProp;
+    @Autowired
+    protected UserCommentsManager userCommentsManager;
+    @Autowired
+    protected ExhServiceManager exhServiceManager;
+    @Autowired
+    protected SurveyManager surveyManager;
+    @Autowired
+    protected QuestionManager questionManager;
+    @Autowired
+    protected AnswerManager answerManager;
+    @Autowired
+    protected UserSurveyManager userSurveyManager;
+    @Autowired
+    protected ExhPlanManager exhPlanManager;
+
+
+
+
+
+
+
 
 
 
@@ -428,7 +466,7 @@ public class WebMvcController extends BaseController implements InitializingBean
             map.put("Q_t.name_LK",name);
             map.put("name",name);
         }
-        Integer count=exhibitionHallManager.findByNamedQueryClass("getHallsCount",Integer.class,map);
+        Integer count=exhibitionHallManager.count(map);
         map.put("count",count);
         return new ModelAndView("hall","command",map);
     }
@@ -438,11 +476,40 @@ public class WebMvcController extends BaseController implements InitializingBean
         Map<String,Object> map=requestMap(request);
         map.put("Q_t.createDate","DESC");
         List<Map<String,Object>> models= exhibitionHallManager.findByNamedQuery("getHalls", map, start, obtainLimit(request));
+        if(models!=null && models.size()>0){
+            Calendar calendar=Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.DATE,3);
+            for(Map<String,Object> objectMap:models){
+                map=new HashMap<String, Object>();
+                map.put("Q_startDate_LE",calendar.getTime());
+                Integer exhibition=exhibitionManager.count(map);
+                if(exhibition!=null && exhibition>0){
+                    objectMap.put("hasExh",true);
+                }else {
+                    objectMap.put("hasExh",false);
+                }
+            }
+        }
         return new ModelAndView("hallList","halls",models);
     }
      @RequestMapping("hallDetail/{id}")
     public ModelAndView hallDetail(@PathVariable Long id,HttpServletRequest request) {
          Map<String,Object> model=exhibitionHallManager.hallDetail(id);
+         if(model!=null){
+             Calendar calendar=Calendar.getInstance();
+             calendar.setTime(new Date());
+             calendar.add(Calendar.DATE,3);
+             Map<String,Object> map=new HashMap<String, Object>();
+             map.put("Q_startDate_LE",calendar.getTime());
+             Integer exhibition=exhibitionManager.count(map);
+             if(exhibition!=null && exhibition>0){
+                 model.put("hasExh",true);
+             }else {
+                 model.put("hasExh",false);
+             }
+
+         }
         return new ModelAndView("hallDetail","hall",model);
     }
      @RequestMapping("hallComment/{type}/{id}/{pageIndex}")
@@ -648,6 +715,143 @@ public class WebMvcController extends BaseController implements InitializingBean
         }
         return new JsonReaderSingleResponse(null,true,"");
     }
+
+
+    @RequestMapping("usercomment")
+    public ModelAndView usercomment(HttpServletRequest request, HttpServletResponse response) {
+        return new ModelAndView("usercomment");
+    }
+    @RequestMapping("postComment")
+    public JsonReaderSingleResponse postComment(HttpServletRequest request, HttpServletResponse response) {
+        String contract=request.getParameter("contract");
+        String content=request.getParameter("content");
+        Object o=request.getSession().getAttribute("userinfo");
+        try{
+            UserComments userComments=new UserComments();
+            userComments.setContract(contract);
+            userComments.setContent(content);
+            userComments.setLastUpdateDate(new Date());
+            userComments.setCreateDate(new Date());
+
+            if(o!=null){
+                UserCommand userCommand=(UserCommand)o;
+                userComments.setUserId(userCommand.getId());
+            }
+            userCommentsManager.save(userComments);
+            return new JsonReaderSingleResponse("",true,"");
+        }catch (Exception e){
+            log.error("postComment",e);
+        }
+        return new JsonReaderSingleResponse("",false,"");
+    }
+    @RequestMapping("exhservice")
+    public ModelAndView exhservice(HttpServletRequest request, HttpServletResponse response) {
+        return new ModelAndView("exhservice");
+    }
+    @RequestMapping("esdetail/{id}")
+    public ModelAndView esdetail(@PathVariable Long id,HttpServletRequest request, HttpServletResponse response) {
+        ExhService exhService=exhServiceManager.get(id);
+        return new ModelAndView("esdetail","command",exhService);
+    }
+
+    @RequestMapping("exhserviceList/{pageIndex}")
+    public JsonReaderResponse exhserviceList(@PathVariable Integer pageIndex,HttpServletRequest request) {
+        List<Map<String,Object>> commands=new ArrayList<Map<String,Object>>();
+        Integer start=(pageIndex - 1)*obtainLimit(request);
+        Map<String,Object> map=requestMap(request);
+//        map.put("Q_createDate","DESC");
+        try{
+            commands= exhServiceManager.listPageMap(map, start, obtainLimit(request));
+            Integer count=exhServiceManager.count(map);
+            return new JsonReaderResponse(commands,true,count,"",pageIndex);
+        }catch (Exception e){
+            logger.error("list fail",e);
+        }
+        return new JsonReaderResponse(commands,false,"请求错误");
+    }
+    @RequestMapping("survey")
+    public ModelAndView survey(HttpServletRequest request) {
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("Q_enabled_EQ",true);
+        Map<String,Object> survey=surveyManager.queryMap(map);
+        if(survey!=null && survey.size()>0){
+            map=new HashMap<String, Object>();
+            map.put("Q_surveyId_EQ",survey.get("id"));
+            map.put("Q_type","ASC");
+            List<Map<String,Object>> questions=questionManager.listMap(map);
+            if(questions!=null && questions.size()>0){
+                for(Map<String,Object> question:questions){
+                    map=new HashMap<String, Object>();
+                    map.put("Q_questionId_EQ",question.get("id"));
+                    List<Map<String,Object>> answers=answerManager.listMap(map);
+                    question.put("answers",answers);
+                }
+            }
+            survey.put("questions",questions);
+        }
+        return new ModelAndView("survey","survey",survey);
+    }
+     @RequestMapping("usersurvey")
+    public JsonReaderSingleResponse usersurvey(@RequestBody List<UserSurveyCommand> commands,HttpServletRequest request) {
+         try{
+             User user=userManager.getUserByUsername(request.getRemoteUser());
+
+
+             List<UserSurvey> userSurveys=new ArrayList<UserSurvey>();
+             if(commands!=null && commands.size()>0){
+                 Map<String,Object> map=new HashMap<String, Object>();
+                 map.put("Q_userId_EQ",user.getId());
+                 map.put("Q_surveyId_EQ",commands.get(0).getSurveyId());
+                 UserSurvey userSurvey=userSurveyManager.getByParam(map);
+                 if(userSurvey!=null){
+                     return new JsonReaderSingleResponse("",false,"你已经参与了该问卷的调查");
+                 }
+                 for(UserSurveyCommand command:commands){
+                     UserSurvey survey=new UserSurvey();
+                     survey.setQuestionId(command.getQuestionId());
+                     survey.setSurveyId(command.getSurveyId());
+                     survey.setAnswerId(command.getAnswerId());
+                     survey.setCreateDate(new Date());
+                     survey.setAnswerContent(command.getAnswerContent());
+                     survey.setUserId(user.getId());
+                     userSurveys.add(survey);
+                 }
+             }
+             userSurveyManager.batchSave(userSurveys);
+             return new JsonReaderSingleResponse("",true,"");
+         }catch (Exception e){
+         }
+        return new JsonReaderSingleResponse("",false,"");
+    }
+    @RequestMapping("exhplan")
+    public ModelAndView exhplan(HttpServletRequest request, HttpServletResponse response) {
+        return new ModelAndView("exhplan");
+    }
+    @RequestMapping("exhplanList/{pageIndex}")
+    public JsonReaderResponse exhplanList(@PathVariable Integer pageIndex,HttpServletRequest request) {
+        List<Map<String,Object>> commands=new ArrayList<Map<String,Object>>();
+        Integer start=(pageIndex - 1)*obtainLimit(request);
+        Map<String,Object> map=requestMap(request);
+//        map.put("Q_createDate","DESC");
+        try{
+            commands= exhPlanManager.listPageMap(map, start, obtainLimit(request));
+            Integer count=exhPlanManager.count(map);
+            return new JsonReaderResponse(commands,true,count,"",pageIndex);
+        }catch (Exception e){
+            logger.error("list fail",e);
+        }
+        return new JsonReaderResponse(commands,false,"请求错误");
+    }
+
+    @RequestMapping("exhplanDetail/{id}")
+    public ModelAndView exhplanDetail(@PathVariable Long id,HttpServletRequest request, HttpServletResponse response) {
+        ExhPlan map=exhPlanManager.get(id);
+        return new ModelAndView("exhplanDetail","news",map);
+    }
+
+
+
+
 
 
 

@@ -141,7 +141,7 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     public List<Map<String, Object>> listPageMap(Map<String, Object> params, Integer start, Integer limit) {
         String sql=EntityBuilder.select(this.clazz);
         QuerySearch queryField=new QuerySearch(sql,params);
-        queryField.addSort(EntityBuilder.getIdColumn(this.clazz),"DESC");
+//        queryField.addSort(EntityBuilder.getIdColumn(this.clazz),"DESC");
         Object[] args = queryField.getArgs();
         sql=queryField.pageSql(start, limit);
         if(log.isDebugEnabled()){

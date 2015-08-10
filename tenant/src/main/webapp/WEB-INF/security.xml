@@ -15,6 +15,7 @@
         <intercept-url pattern="/html/app/updateUser" access="isAuthenticated()"/>
         <intercept-url pattern="/html/app/portrait" access="isAuthenticated()"/>
         <intercept-url pattern="/html/app/comment" access="isAuthenticated()"/>
+        <intercept-url pattern="/html/app/usersurvey" access="isAuthenticated()"/>
         <form-login login-page="/html/web/login"
 
                     authentication-failure-url="/html/web/login?error=true"

@@ -2,26 +2,36 @@
  * Created by lihao1 on 6/20/15.
  */
 function saveAdvert(){
-    var datas=$('#exhibitionForm').serializeArray();
-    var obj={};
-    for(var i=0;i<datas.length;i++){
-        obj[datas[i].name]=datas[i].value;
-    }
-    if(!checkForm($('#exhibitionForm'))){
-        return
-    }
-    obj.trade=$('#hySelector').val().join(",");
-    obj.keyword=$('#keywordSelector').val().join(",");
-    $.ajaxFileUpload({
-        url: appPath + 'html/exhibition/security/upload',
-        secureuri:false,
-        fileElementId:['upexhInput','upexhlogoInput'],
-        dataType: 'text/html',
-        data: obj,
-        error: function() {
+
+
+
+
+    var options = {
+        url:appPath + 'html/exhibition/security/upload',
+        dataType:'json',
+        beforeSubmit:function(data){
+            //console.log(data);
+            //var obj1={},obj2={};
+            //obj1.trade=$('#hySelector').val().join(",");
+            //obj2.keyword=$('#keywordSelector').val().join(",");
+            //data.push(obj1);
+            //data.push(obj2);
+            //console.log(data);
+            for(var i=0;i<data.length;i++){
+                var obj=data[i];
+                if(obj.name=='trade'){
+                    obj.value=$('#hySelector').val().join(",");
+                }
+                if(obj.name=='keyword'){
+                    obj.value=$('#keywordSelector').val().join(",");
+                }
+            }
+            if(!checkForm($('#exhibitionForm'))){
+                return false;
+            }
+            return true;
         },
-        success: function(response) {
-            var result=JSON.parse(response);
+        success: function (result) {
             if(result.success){
                 alertSuccess("保存成功",function(){
                     reloadPage('html/exhibition/security/edit/'+result.data);
@@ -29,8 +39,43 @@ function saveAdvert(){
             }else{
                 alertError(result.msg);
             }
+
         }
-    });
+    };
+    $("#exhibitionForm").ajaxForm(options);
+    $('#exhibitionForm').ajaxSubmit(options);
+    return
+
+
+    //var datas=$('#exhibitionForm').serializeArray();
+    //var obj={};
+    //for(var i=0;i<datas.length;i++){
+    //    obj[datas[i].name]=datas[i].value;
+    //}
+    //if(!checkForm($('#exhibitionForm'))){
+    //    return
+    //}
+    //obj.trade=$('#hySelector').val().join(",");
+    //obj.keyword=$('#keywordSelector').val().join(",");
+    //$.ajaxFileUpload({
+    //    url: appPath + 'html/exhibition/security/upload',
+    //    secureuri:false,
+    //    fileElementId:['upexhInput','upexhlogoInput'],
+    //    dataType: 'text/html',
+    //    data: obj,
+    //    error: function() {
+    //    },
+    //    success: function(response) {
+    //        var result=JSON.parse(response);
+    //        if(result.success){
+    //            alertSuccess("保存成功",function(){
+    //                reloadPage('html/exhibition/security/edit/'+result.data);
+    //            });
+    //        }else{
+    //            alertError(result.msg);
+    //        }
+    //    }
+    //});
 }
 function saveDes(exhId){
     var datas=$('#exhDescriptionForm').serializeArray();

@@ -64,30 +64,43 @@ function initList(tabIndex){
     });
 }
 function saveAdvert(type,publish){
+
+
+
     var datas=$('#userForm').serializeArray();
     var obj={};
     for(var i=0;i<datas.length;i++){
         obj[datas[i].name]=datas[i].value;
     }
-    obj.description=UM.getEditor('desEditor').getContent();
-    if(!checkForm($('#userForm'))){
-        return
-    }
-    if(!obj.lng || !obj.lat){
-        alertError('请选择展馆地图位置');
-        return;
-    }
-    delete obj.editorValue;
-    $.ajaxFileUpload({
-        url: appPath + 'html/exhibitionHall/security/upload',
-        secureuri:false,
-        fileElementId:['uplogoInput','upxcInput'],
-        dataType: 'text/html',
-        data: obj,
-        error: function() {
+    //obj.description=UE.getEditor('desEditor').getContent();
+    //if(!checkForm($('#userForm'))){
+    //    return
+    //}
+    //if(!obj.lng || !obj.lat){
+    //    alertError('请选择展馆地图位置');
+    //    return;
+    //}
+    //delete obj.editorValue;
+
+    var options = {
+        url:appPath + 'html/exhibitionHall/security/upload',
+        dataType:'json',
+        beforeSubmit:function(data){
+            //console.log(data);
+            var des={}
+            des.name='description';
+            des.value=UE.getEditor('desEditor').getContent();
+            data.push(des);
+            if(!checkForm($('#userForm'))){
+                return false;
+            }
+            if(!obj.lng || !obj.lat){
+                alertError('请选择展馆地图位置');
+                return false;
+            }
+            return true;
         },
-        success: function(response) {
-            var result=JSON.parse(response);
+        success: function (result) {
             if(result.success){
                 alertSuccess("保存成功",function(){
                     reloadPage('html/exhibitionHall/security/index');
@@ -95,8 +108,40 @@ function saveAdvert(type,publish){
             }else{
                 alertError(result.msg);
             }
+
         }
-    });
+    };
+    $("#userForm").ajaxForm(options);
+    $('#userForm').ajaxSubmit(options);
+
+    //$("#userForm").submit(function(){
+    //
+    //    return false;
+    //});
+
+
+
+
+
+    //$.ajaxFileUpload({
+    //    url: appPath + 'html/exhibitionHall/security/upload',
+    //    secureuri:false,
+    //    fileElementId:['uplogoInput','upxcInput'],
+    //    dataType: 'text/html',
+    //    data: obj,
+    //    error: function() {
+    //    },
+    //    success: function(response) {
+    //        var result=JSON.parse(response);
+    //        if(result.success){
+    //            alertSuccess("保存成功",function(){
+    //                reloadPage('html/exhibitionHall/security/index');
+    //            });
+    //        }else{
+    //            alertError(result.msg);
+    //        }
+    //    }
+    //});
 }
 var gencolumns=[
     {

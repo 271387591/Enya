@@ -1207,9 +1207,9 @@
 
 .mytable{width:100%;}
 
-.mytable tr th{background:#F6F7FB; border-top:1px solid #E7E9E8; height:30px; line-height:30px; }
+.mytable tr th{text-align:left;background:#F6F7FB; border-top:1px solid #E7E9E8; height:30px; line-height:30px; }
 
-.mytable tr td{ text-align:center; height:30px; line-height:30px; border-bottom:1px solid #E7E9E8;}
+.mytable tr td{ text-align:left; height:30px; line-height:30px; border-bottom:1px solid #E7E9E8;}
 
 .mmcontent{width:99%; margin-left:10px;}
 

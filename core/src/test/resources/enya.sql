@@ -11,7 +11,7 @@
  Target Server Version : 50624
  File Encoding         : utf-8
 
- Date: 07/26/2015 02:27:43 AM
+ Date: 07/28/2015 17:01:00 PM
 */
 
 SET NAMES utf8;
@@ -35,7 +35,24 @@ CREATE TABLE `t_advert` (
   PRIMARY KEY (`id`),
   KEY `exhId` (`exhId`) USING BTREE,
   CONSTRAINT `t_advert_ibfk_1` FOREIGN KEY (`exhId`) REFERENCES `t_exhibition` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `t_answer`
+-- ----------------------------
+DROP TABLE IF EXISTS `t_answer`;
+CREATE TABLE `t_answer` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `answer` varchar(255) DEFAULT NULL,
+  `surveyId` bigint(20) DEFAULT NULL,
+  `questionId` bigint(20) DEFAULT NULL,
+  `createDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `surveyId` (`surveyId`) USING BTREE,
+  KEY `questionId` (`questionId`) USING BTREE,
+  CONSTRAINT `t_answer_ibfk_1` FOREIGN KEY (`surveyId`) REFERENCES `t_survey` (`id`),
+  CONSTRAINT `t_answer_ibfk_2` FOREIGN KEY (`questionId`) REFERENCES `t_question` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_applicationconfig`
@@ -67,7 +84,7 @@ CREATE TABLE `t_appstore` (
   `enabled` char(1) DEFAULT NULL,
   `type` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_commend`
@@ -103,7 +120,7 @@ CREATE TABLE `t_comment` (
   KEY `typeId` (`typeId`) USING BTREE,
   KEY `itemId` (`itemId`) USING BTREE,
   CONSTRAINT `t_comment_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `t_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_dictionary`
@@ -116,7 +133,7 @@ CREATE TABLE `t_dictionary` (
   `createDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `type` (`type`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_emailconfig`
@@ -129,7 +146,7 @@ CREATE TABLE `t_emailconfig` (
   `smtp` varchar(255) DEFAULT NULL,
   `port` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_exhdescription`
@@ -142,7 +159,7 @@ CREATE TABLE `t_exhdescription` (
   PRIMARY KEY (`id`),
   KEY `exhId` (`exhId`) USING BTREE,
   CONSTRAINT `t_exhdescription_ibfk_1` FOREIGN KEY (`exhId`) REFERENCES `t_exhibition` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_exhguide`
@@ -155,7 +172,7 @@ CREATE TABLE `t_exhguide` (
   PRIMARY KEY (`id`),
   KEY `exhId` (`exhId`) USING BTREE,
   CONSTRAINT `t_exhguide_ibfk_1` FOREIGN KEY (`exhId`) REFERENCES `t_exhibition` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_exhguideto`
@@ -168,7 +185,7 @@ CREATE TABLE `t_exhguideto` (
   PRIMARY KEY (`id`),
   KEY `exhId` (`exhId`) USING BTREE,
   CONSTRAINT `t_exhguideto_ibfk_1` FOREIGN KEY (`exhId`) REFERENCES `t_exhibition` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_exhibition`
@@ -197,7 +214,7 @@ CREATE TABLE `t_exhibition` (
   PRIMARY KEY (`id`),
   KEY `hallId` (`hallId`) USING BTREE,
   CONSTRAINT `t_exhibition_ibfk_1` FOREIGN KEY (`hallId`) REFERENCES `t_exhibitionhall` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_exhibitionhall`
@@ -223,7 +240,7 @@ CREATE TABLE `t_exhibitionhall` (
   `shareCount` int(10) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `hot` (`hot`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_exhnews`
@@ -242,7 +259,21 @@ CREATE TABLE `t_exhnews` (
   PRIMARY KEY (`id`),
   KEY `exhId` (`exhId`) USING BTREE,
   CONSTRAINT `t_exhnews_ibfk_1` FOREIGN KEY (`exhId`) REFERENCES `t_exhibition` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `t_exhservice`
+-- ----------------------------
+DROP TABLE IF EXISTS `t_exhservice`;
+CREATE TABLE `t_exhservice` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(500) DEFAULT NULL,
+  `content` mediumtext,
+  `createDate` datetime DEFAULT NULL,
+  `source` varchar(255) DEFAULT NULL,
+  `lastUpdateDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_exhsponsor`
@@ -255,7 +286,7 @@ CREATE TABLE `t_exhsponsor` (
   PRIMARY KEY (`id`),
   KEY `exhId` (`exhId`) USING BTREE,
   CONSTRAINT `t_exhsponsor_ibfk_1` FOREIGN KEY (`exhId`) REFERENCES `t_exhibition` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_exhtravel`
@@ -268,7 +299,7 @@ CREATE TABLE `t_exhtravel` (
   PRIMARY KEY (`id`),
   KEY `exhId` (`exhId`) USING BTREE,
   CONSTRAINT `t_exhtravel_ibfk_1` FOREIGN KEY (`exhId`) REFERENCES `t_exhibition` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_feature`
@@ -293,7 +324,7 @@ CREATE TABLE `t_friendlink` (
   `name` varchar(255) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_homepage`
@@ -312,7 +343,22 @@ CREATE TABLE `t_homepage` (
   `logoPath` varchar(255) DEFAULT NULL,
   `copyright` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `t_question`
+-- ----------------------------
+DROP TABLE IF EXISTS `t_question`;
+CREATE TABLE `t_question` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `question` varchar(255) DEFAULT NULL,
+  `surveyId` bigint(20) DEFAULT NULL,
+  `createDate` datetime DEFAULT NULL,
+  `type` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `surveyId` (`surveyId`) USING BTREE,
+  CONSTRAINT `t_question_ibfk_1` FOREIGN KEY (`surveyId`) REFERENCES `t_survey` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_role`
@@ -341,6 +387,18 @@ CREATE TABLE `t_rolefeature` (
   CONSTRAINT `t_rolefeature_ibfk_1` FOREIGN KEY (`roleId`) REFERENCES `t_role` (`id`),
   CONSTRAINT `t_rolefeature_ibfk_2` FOREIGN KEY (`featureId`) REFERENCES `t_feature` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `t_survey`
+-- ----------------------------
+DROP TABLE IF EXISTS `t_survey`;
+CREATE TABLE `t_survey` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `createDate` datetime DEFAULT NULL,
+  `enabled` char(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_user`
@@ -376,7 +434,24 @@ CREATE TABLE `t_user` (
   KEY `roleId` (`roleId`) USING BTREE,
   KEY `mobile` (`mobile`) USING BTREE,
   CONSTRAINT `t_user_ibfk_1` FOREIGN KEY (`roleId`) REFERENCES `t_role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `t_usercomments`
+-- ----------------------------
+DROP TABLE IF EXISTS `t_usercomments`;
+CREATE TABLE `t_usercomments` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `userId` bigint(20) DEFAULT NULL,
+  `content` mediumtext,
+  `contract` varchar(255) DEFAULT NULL,
+  `createDate` datetime DEFAULT NULL,
+  `reply` mediumtext,
+  `lastUpdateDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `userId` (`userId`) USING BTREE,
+  CONSTRAINT `t_usercomments_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `t_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `t_userrole`
@@ -390,5 +465,28 @@ CREATE TABLE `t_userrole` (
   CONSTRAINT `t_userrole_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `t_user` (`id`),
   CONSTRAINT `t_userrole_ibfk_2` FOREIGN KEY (`roleId`) REFERENCES `t_role` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+--  Table structure for `t_usersuvey`
+-- ----------------------------
+DROP TABLE IF EXISTS `t_usersuvey`;
+CREATE TABLE `t_usersuvey` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `surveyId` bigint(20) DEFAULT NULL,
+  `questionId` bigint(20) DEFAULT NULL,
+  `answerId` bigint(20) DEFAULT NULL,
+  `userId` bigint(20) DEFAULT NULL,
+  `createDate` datetime DEFAULT NULL,
+  `answerContent` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `surveyId` (`surveyId`) USING BTREE,
+  KEY `questionId` (`questionId`) USING BTREE,
+  KEY `answerId` (`answerId`) USING BTREE,
+  KEY `userId` (`userId`) USING BTREE,
+  CONSTRAINT `t_usersuvey_ibfk_1` FOREIGN KEY (`surveyId`) REFERENCES `t_survey` (`id`),
+  CONSTRAINT `t_usersuvey_ibfk_2` FOREIGN KEY (`questionId`) REFERENCES `t_question` (`id`),
+  CONSTRAINT `t_usersuvey_ibfk_3` FOREIGN KEY (`answerId`) REFERENCES `t_answer` (`id`),
+  CONSTRAINT `t_usersuvey_ibfk_4` FOREIGN KEY (`userId`) REFERENCES `t_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 SET FOREIGN_KEY_CHECKS = 1;

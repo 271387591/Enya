@@ -242,8 +242,8 @@
     getComment(1);
 </script>
 
-<script type="text/javascript" ckharset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&uuid=&pophcol=2&lang=zh"></script>
-<script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+<script type="text/javascript" ckharset="utf-8" src="<c:url value="/resources/lib/web/bshare.js"/>"></script>
+<script type="text/javascript" ckharset="utf-8" src="<c:url value="/resources/lib/web/bsharec0.js"/>"></script>
 <script type="text/javascript">
     iBShare.init();
 </script>

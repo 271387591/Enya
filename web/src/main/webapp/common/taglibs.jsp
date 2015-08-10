@@ -61,6 +61,7 @@
 <%--<script src="<c:url value="/resources/lib/jplugin/jquery.dropkick.js"/>"></script>--%>
 <script src="<c:url value="/resources/lib/jplugin/labelauty.js"/>"></script>
 <script src="<c:url value="/resources/lib/jplugin/chosen.jquery.min.js"/>"></script>
+<script src="<c:url value="/resources/lib/jplugin/jquery.form.min.js"/>"></script>
 
 
 

@@ -1111,19 +1111,19 @@ table td {
     outline: none;
 }
 
-/*.detail-table2 tr td .select_ui {*/
-    /*width: 100%;*/
-    /*background: none;*/
-    /*border: none;*/
-/*}*/
+.detail-table2 tr td .select_ui {
+    width: 100%;
+    background: none;
+    border: none;
+}
 
-/*.detail-table2 tr td .select_ui .select_text_ui {*/
-    /*border: none;*/
-/*}*/
+.detail-table2 tr td .select_ui .select_text_ui {
+    border: none;
+}
 
-/*.detail-table2 tr td .select_ui select {*/
-    /*box-sizing: border-box;*/
-/*}*/
+.detail-table2 tr td .select_ui select {
+    box-sizing: border-box;
+}
 
 .detail-table .tr-tit, .detail-table2 .tr-tit {
     background: #f5f5f5;

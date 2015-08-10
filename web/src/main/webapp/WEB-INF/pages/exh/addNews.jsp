@@ -50,7 +50,7 @@
     if(addNewsEditors){
         addNewsEditors.destroy();
     }
-    var addNewsEditors = UM.getEditor('addNewsEditor');
+    var addNewsEditors = UE.getEditor('addNewsEditor');
     addNewsEditors.ready(function() {
         addNewsEditors.setContent('${command.news}');
         $('#newsKeywordSelector').chosen({

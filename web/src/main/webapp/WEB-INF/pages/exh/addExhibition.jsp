@@ -16,9 +16,12 @@
     <title>${command.id==null?'添加展会':'编辑展会'}</title>
 
 
-    <link rel="stylesheet" href="<c:url value="/resources/lib/umeditor/themes/default/css/umeditor.min.css"/>" />
-    <script src="<c:url value="/resources/lib/umeditor/umeditor.config.js"/>"></script>
-    <script src="<c:url value="/resources/lib/umeditor/umeditor.min.js"/>"></script>
+    <%--<link rel="stylesheet" href="<c:url value="/resources/lib/umeditor/themes/default/css/umeditor.min.css"/>" />--%>
+    <%--<script src="<c:url value="/resources/lib/umeditor/umeditor.config.js"/>"></script>--%>
+    <%--<script src="<c:url value="/resources/lib/umeditor/umeditor.min.js"/>"></script>--%>
+
+    <script src="<c:url value="/resources/lib/ueditor/ueditor.config.js"/>"></script>
+    <script src="<c:url value="/resources/lib/ueditor/ueditor.all.min.js"/>"></script>
 </head>
 <body>
 <%@ include file="../menu.jsp" %>
@@ -53,7 +56,7 @@
                 <div class="clear"></div>
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="basicInfoExh">
-                        <form class="form-horizontal padding-10" id="exhibitionForm">
+                        <form class="form-horizontal padding-10" id="exhibitionForm" enctype="multipart/form-data" method="post">
                             <input type="hidden" value="${command.id}" name="id"/>
                             <div class="form-group">
                                 <label class="col-sm-1 control-label no-padding-right">展会名称</label>
@@ -311,23 +314,23 @@
             no_results_text:'未找到相关项'
         });
         if(${command.id!=null}){
-            var desEditor = UM.getEditor('desEditor');
+            var desEditor = UE.getEditor('desEditor');
             desEditor.ready(function() {
                 desEditor.setContent('${command.description}');
             });
-            var guideEditor = UM.getEditor('guideEditor');
+            var guideEditor = UE.getEditor('guideEditor');
             guideEditor.ready(function() {
                 guideEditor.setContent('${command.guide}');
             });
-            var sponsorEditor = UM.getEditor('sponsorEditor');
+            var sponsorEditor = UE.getEditor('sponsorEditor');
             sponsorEditor.ready(function() {
                 sponsorEditor.setContent('${command.sponsor}');
             });
-            var guidetoEditor = UM.getEditor('guidetoEditor');
+            var guidetoEditor = UE.getEditor('guidetoEditor');
             guidetoEditor.ready(function() {
                 guidetoEditor.setContent('${command.guideTo}');
             });
-            var travelEditor = UM.getEditor('travelEditor');
+            var travelEditor = UE.getEditor('travelEditor');
             travelEditor.ready(function() {
                 travelEditor.setContent('${command.travel}');
             });
