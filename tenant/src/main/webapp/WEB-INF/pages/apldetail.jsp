@@ -36,7 +36,7 @@
     <div class="row">
         <div class="span15">
             <div class="label-div b-5 border-all pt-5 t-20" style="position: relative; padding-left: 0;">
-                <div class="mmdh"><a href="<c:url value="/html/web/home"/>">首页</a> > <a href="<c:url value="/html/web/exhservice"/>">会展政策</a> > <span>正文</span></div>
+                <div class="mmdh"><a href="<c:url value="/html/web/home"/>">首页</a> > <a href="<c:url value="/html/web/appraisal"/>">评估报告</a> > <span>正文</span></div>
 
                 <div class="mmclear"></div>
 
@@ -48,11 +48,6 @@
                     <div class="pull-left">
                         <span class="r-15 pull-left"><span class="fc999 l-5">时间：<fmt:formatDate value="${command.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/></span></span>
                     </div>
-                    <div class="pull-left">
-                        <a class="follow-btn pr-10 ie6png" style="cursor: default" href="javascript:void(0);">来源：</a>
-                        <span>${command.source}</span>
-                    </div>
-
                 </div>
                 <!--警告：切勿删除-->
                 <!--[if IE 6]> <a class="follow-btn ie6png mmmzw"></a><![endif]-->

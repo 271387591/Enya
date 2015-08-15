@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  */
 public class EnyaTest {
     private String baseUrl="http://120.24.228.68/Tenant/html/app/";
-//    private String baseUrl="http://120.24.228.68:8080/Enya/app/";
+//    private String baseUrl="http://127.0.0.1:8085/Tenant/html/app/";
     /***
      * 密码正则 :6-16位字母或数字
      */
@@ -260,7 +260,7 @@ public class EnyaTest {
         HttpPost httpost = new HttpPost(url);
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 
-        nvps.add(new BasicNameValuePair("Q_t.hot_EQ", "0"));
+        nvps.add(new BasicNameValuePair("Q_t.hot_EQ", "1"));
         nvps.add(new BasicNameValuePair("start", "0"));
         nvps.add(new BasicNameValuePair("limit", "2"));
         httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
@@ -650,7 +650,8 @@ public class EnyaTest {
         body = EntityUtils.toString(entity);
         System.out.println(body);
         httpclient.getConnectionManager().shutdown();
-    } /**
+    }
+    /**
      * 版本升级
      * type:APP类型，取值为：大众版：Common，管理人员版本：Admin
      * 返回的version。你自己设定对比规则，version 的格式由客户端自定义,pacUrl为下载地址
@@ -678,5 +679,72 @@ public class EnyaTest {
         System.out.println(body);
         httpclient.getConnectionManager().shutdown();
     }
+    /**
+     * 获取年度展会计划
+     * * start:数据起始量，比如：从第0条数据开始，start=0,从第34条数据开始：start=34 （必须，并且为数字）
+     * limit:每次获取的数据量,默认每次25条，（可以不传，默认25条）
+     *
+     * 参数示例：比如每页显示30条数据，参数传递为：
+     * 第一页：start=0&limit=30
+     * 第二页：start=31&limit=30
+     * 第三页：start=61&limit=30
+     * .......
+     *
+     * 根据客户端需要获取几条，
+     * 返回的参数中，如果outUrl有值（不为null或空串）则需要链接到该值的外网站。如果outUrl没有值，则需要展示该条记录content字段内容
+     *
+     *
+     * 请求方式：POST
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetExhPlans() throws Exception{
+        String url=baseUrl+"getExhPlans";
+        HttpPost httpost = new HttpPost(url);
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new BasicNameValuePair("start", "0"));
+        nvps.add(new BasicNameValuePair("limit", "2"));
+        httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpResponse response = null;
+        response = httpclient.execute(httpost);
+        HttpEntity entity = response.getEntity();
+
+        String charset = EntityUtils.getContentCharSet(entity);
+
+        String body = null;
+        body = EntityUtils.toString(entity);
+        System.out.println(body);
+        httpclient.getConnectionManager().shutdown();
+    }
+
+    /**
+     * 获取单条年展会计划
+     * 返回的参数中，如果outUrl有值（不为null或空串）则需要链接到该值的外网站。如果outUrl没有值，则需要展示该条记录content字段内容
+
+     * @throws Exception
+     */
+
+     @Test
+    public void testGetExhPlan() throws Exception{
+        String url=baseUrl+"getExhPlan/"+13;
+        HttpPost httpost = new HttpPost(url);
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpResponse response = null;
+        response = httpclient.execute(httpost);
+        HttpEntity entity = response.getEntity();
+
+        String charset = EntityUtils.getContentCharSet(entity);
+
+        String body = null;
+        body = EntityUtils.toString(entity);
+        System.out.println(body);
+        httpclient.getConnectionManager().shutdown();
+    }
+
+
 
 }

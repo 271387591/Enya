@@ -31,12 +31,14 @@
                     <a href="<c:url value="/html/exhibition/security/index" />"><i class="fa fa-users submenu-icon grey"></i>展会管理</a>
                 </li>
                 <li id="menu-exhservice">
-                    <a href="<c:url value="/html/exhService/security/index" />"><i class="fa fa-umbrella submenu-icon grey"></i>展会服务</a>
+                    <a href="<c:url value="/html/exhService/security/index" />"><i class="fa fa-umbrella submenu-icon grey"></i>会展政策</a>
                 </li>
                 <li id="menu-exhplan">
                     <a href="<c:url value="/html/exhPlan/security/index" />"><i class="fa fa-recycle submenu-icon grey"></i>年度展会计划</a>
                 </li>
-
+                <li id="menu-appraisal">
+                    <a href="<c:url value="/html/appraisal/security/index" />"><i class="fa fa-recycle submenu-icon grey"></i>评估报告</a>
+                </li>
             </ul>
         </li>
 

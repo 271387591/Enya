@@ -215,17 +215,17 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 
     public T get(Serializable id) {
         if(id==null)return null;
-        String sql=EntityBuilder.select(this.clazz);
-
+//        String sql=EntityBuilder.select(this.clazz);
         Map<String,Object> map=new HashMap<String, Object>();
         map.put("Q_"+EntityBuilder.getIdColumn(this.clazz)+"_EQ",id);
-        QuerySearch querySearch=new QuerySearch(sql,map);
-        sql=querySearch.sql();
-        if(log.isDebugEnabled()){
-            log.debug("sql:====>"+sql.replaceAll("\\n"," "));
-        }
-        Object[] args=querySearch.getArgs();
-        return (T) jdbcTemplate.queryForObject(sql, args, BeanPropertyRowMapper.newInstance(this.clazz));
+        return getByParam(map);
+//        QuerySearch querySearch=new QuerySearch(sql,map);
+//        sql=querySearch.sql();
+//        if(log.isDebugEnabled()){
+//            log.debug("sql:====>"+sql.replaceAll("\\n"," "));
+//        }
+//        Object[] args=querySearch.getArgs();
+//        return (T) jdbcTemplate.queryForObject(sql, args, BeanPropertyRowMapper.newInstance(this.clazz));
     }
 
     public T getByParam(Map<String, Object> map) {

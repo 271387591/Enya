@@ -13,10 +13,10 @@ function saveAdvert(type,publish){
         return
     }
     delete obj.editorValue;
-    var result=requestJSONData('html/exhService/security/save',obj);
+    var result=requestJSONData('html/appraisal/security/save',obj);
     if(result.success){
         alertSuccess("保存成功",function(){
-            reloadPage('html/exhService/security/index');
+            reloadPage('html/appraisal/security/index');
         });
     }else{
         alertError(result.message);
@@ -30,10 +30,7 @@ var columns=[
             return '<a href="javascript:void(0);" onclick="edit('+rec.id+')">'+v+'</a>';
         }
     },
-    {
-        width:200,
-        name:'source'
-    },
+
     {
         name:'createDate',
         width:140,
@@ -44,7 +41,6 @@ var columns=[
     {
         width:90,
         renderer:function(v,rec){
-            var pTitle="'设为热门'",pContent="'您确定要将该展馆设为热门展馆?'";
             return '<div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">'+
                 '<a class="red" href="javascript:void(0);" data-rel="tooltip" title="删除" onclick="createDeleteModal('+rec.id+',null,removeNews)">'+
                 '<i class="fa fa-lg fa-trash bigger-130"></i>'+
@@ -59,7 +55,7 @@ var columns=[
 ];
 function listTable(params){
     $('#userTable').htable({
-        url:appPath+'html/exhService/list',
+        url:appPath+'html/appraisal/list',
         params: $.extend({},params),
         columns:columns,
         pager:$('#paging')
@@ -68,13 +64,13 @@ function listTable(params){
 
 function edit(id){
     if(id){
-        reloadPage("html/exhService/security/edit/"+id);
+        reloadPage("html/appraisal/security/edit/"+id);
     }else{
-        reloadPage("html/exhService/security/add")
+        reloadPage("html/appraisal/security/add")
     }
 }
 function removeNews(id,modal){
-    var result=requestStringData('html/exhService/security/delete/'+id);
+    var result=requestStringData('html/appraisal/security/delete/'+id);
     if(result.success){
         alertSuccess('操作成功');
         listTable();

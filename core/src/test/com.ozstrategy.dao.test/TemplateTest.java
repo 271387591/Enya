@@ -32,7 +32,7 @@ public class TemplateTest {
     public static String webRootPath=System.getProperty("user.dir")+"/web/src/main/java/";
     public static List<Class> list=new ArrayList<Class>();
     static {
-        list.add(ExhPlan.class);
+        list.add(Appraisal.class);
 //        list.add(Question.class);
 //        list.add(Answer.class);
 //        list.add(Advert.class);

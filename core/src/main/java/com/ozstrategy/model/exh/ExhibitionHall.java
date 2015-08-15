@@ -17,7 +17,7 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(name = "getHall",query = "select t.*,t1.commentCount from t_exhibitionhall t left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=1 GROUP BY c.itemId )t1 on t.id=t1.itemId where t.id=:id "),
         @NamedQuery(name = "getHalls",query = "select t.*,t1.commentCount from t_exhibitionhall t left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=1 GROUP BY c.itemId )t1 on t.id=t1.itemId where 1=1"),
-        @NamedQuery(name = "getHallsCount",query = "select count(*) from (select h.*,(CASE WHEN GROUP_CONCAT(e.id) is NULL THEN 'false' ELSE 'true' END) as hasExh from t_exhibitionhall h left join t_exhibition e on h.id=e.hallId group by h.id)t where 1=1 ")
+        @NamedQuery(name = "getHallsCount",query = "select count(*) from (select t.*,t1.commentCount from t_exhibitionhall t left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=1 GROUP BY c.itemId )t1 on t.id=t1.itemId where 1=1)t where 1=1 ")
 })
 public class ExhibitionHall extends BaseEntity{
     @Id

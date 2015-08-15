@@ -11,6 +11,7 @@ import com.ozstrategy.model.exh.ExhDescription;
 import com.ozstrategy.model.exh.ExhGuide;
 import com.ozstrategy.model.exh.ExhGuideTo;
 import com.ozstrategy.model.exh.ExhNews;
+import com.ozstrategy.model.exh.ExhPlan;
 import com.ozstrategy.model.exh.ExhSponsor;
 import com.ozstrategy.model.exh.ExhTravel;
 import com.ozstrategy.model.exh.Exhibition;
@@ -22,6 +23,7 @@ import com.ozstrategy.service.exh.ExhDescriptionManager;
 import com.ozstrategy.service.exh.ExhGuideManager;
 import com.ozstrategy.service.exh.ExhGuideToManager;
 import com.ozstrategy.service.exh.ExhNewsManager;
+import com.ozstrategy.service.exh.ExhPlanManager;
 import com.ozstrategy.service.exh.ExhSponsorManager;
 import com.ozstrategy.service.exh.ExhTravelManager;
 import com.ozstrategy.service.exh.ExhibitionHallManager;
@@ -89,6 +91,9 @@ public class MobileController extends BaseController{
     private ExhNewsManager exhNewsManager;
     @Autowired
     private AppStoreManager appStoreManager;
+    @Autowired
+    private ExhPlanManager exhPlanManager;
+
 
 
 
@@ -236,9 +241,11 @@ public class MobileController extends BaseController{
         return new JsonReaderSingleResponse(null,false,"参数错误");
     }
     @RequestMapping("getHalls")
-    public JsonReaderResponse getHalls(HttpServletRequest request){
+    public JsonReaderResponse getHalls(HttpServletRequest request,HttpServletResponse response){
         Map<String,Object> map=requestMap(request);
         try{
+            response.addHeader("Access-Control-Allow-Origin","*");
+            response.addHeader("Access-Control-Allow-Headers","X-Requested-With");
             map.put("Q_t.createDate","DESC");
             List<Map<String,Object>> models= exhibitionHallManager.findByNamedQuery("getHalls", map, obtainStart(request), obtainLimit(request));
             if(models!=null && models.size()>0){
@@ -246,9 +253,9 @@ public class MobileController extends BaseController{
                 calendar.setTime(new Date());
                 calendar.add(Calendar.DATE,3);
                 for(Map<String,Object> objectMap:models){
-                    map=new HashMap<String, Object>();
-                    map.put("Q_startDate_LE",calendar.getTime());
-                    Integer exhibition=exhibitionManager.count(map);
+                    Map<String,Object> emap=new HashMap<String, Object>();
+                    emap.put("Q_startDate_LE",calendar.getTime());
+                    Integer exhibition=exhibitionManager.count(emap);
                     if(exhibition!=null && exhibition>0){
                         objectMap.put("hasExh",true);
                     }else {
@@ -256,7 +263,7 @@ public class MobileController extends BaseController{
                     }
                 }
             }
-            Integer count=exhibitionHallManager.count(map);
+            Integer count=exhibitionHallManager.findByNamedQueryClass("getHallsCount",Integer.class,map);
             return new JsonReaderResponse(models,true,count,"");
         }catch (Exception e){
             logger.error("list fail",e);
@@ -486,7 +493,7 @@ public class MobileController extends BaseController{
     @RequestMapping("getExhTrade")
     public JsonReaderResponse getExhTrade(HttpServletRequest request){
         try{
-            Long id=parseLong(obtain(request,"exhId"));
+            Long id=parseLong(obtain(request, "exhId"));
             Exhibition exhibition=exhibitionManager.get(id);
             if(exhibition!=null){
                 String keywordNames = exhibition.getKeywordNames();
@@ -500,6 +507,27 @@ public class MobileController extends BaseController{
         }
         return new JsonReaderResponse(null,false,"请求错误");
     }
+    @RequestMapping("getExhPlans")
+    public JsonReaderResponse exhplan(HttpServletRequest request){
+        List<Map<String,Object>> commands=new ArrayList<Map<String,Object>>();
+        Map<String,Object> map=requestMap(request);
+        map.put("Q_createDate","DESC");
+        try{
+            commands= exhPlanManager.listPageMap(map, obtainStart(request), obtainLimit(request));
+            Integer count=exhPlanManager.count(map);
+            return new JsonReaderResponse(commands,true,count,"");
+        }catch (Exception e){
+            logger.error("list fail",e);
+        }
+        return new JsonReaderResponse(commands,false,"请求错误");
+    }
+    @RequestMapping("getExhPlan/{id}")
+    public JsonReaderSingleResponse getExhPlan(@PathVariable Long id){
+        ExhPlan map=exhPlanManager.get(id);
+        return new JsonReaderSingleResponse(map,true,"");
+    }
+
+
 
 
 }

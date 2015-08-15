@@ -3,6 +3,7 @@ package com.ozstrategy.webapp.controller;
 import com.ozstrategy.Constants;
 import com.ozstrategy.model.commend.CommendType;
 import com.ozstrategy.model.commend.Comment;
+import com.ozstrategy.model.exh.Appraisal;
 import com.ozstrategy.model.exh.ExhNews;
 import com.ozstrategy.model.exh.ExhPlan;
 import com.ozstrategy.model.exh.ExhService;
@@ -18,6 +19,7 @@ import com.ozstrategy.model.user.Role;
 import com.ozstrategy.model.user.User;
 import com.ozstrategy.service.EmailEngine;
 import com.ozstrategy.service.commend.CommentManager;
+import com.ozstrategy.service.exh.AppraisalManager;
 import com.ozstrategy.service.exh.ExhNewsManager;
 import com.ozstrategy.service.exh.ExhPlanManager;
 import com.ozstrategy.service.exh.ExhServiceManager;
@@ -123,6 +125,9 @@ public class WebMvcController extends BaseController implements InitializingBean
     protected UserSurveyManager userSurveyManager;
     @Autowired
     protected ExhPlanManager exhPlanManager;
+    @Autowired
+    protected AppraisalManager appraisalManager;
+
 
 
 
@@ -832,7 +837,7 @@ public class WebMvcController extends BaseController implements InitializingBean
         List<Map<String,Object>> commands=new ArrayList<Map<String,Object>>();
         Integer start=(pageIndex - 1)*obtainLimit(request);
         Map<String,Object> map=requestMap(request);
-//        map.put("Q_createDate","DESC");
+        map.put("Q_createDate","DESC");
         try{
             commands= exhPlanManager.listPageMap(map, start, obtainLimit(request));
             Integer count=exhPlanManager.count(map);
@@ -848,6 +853,32 @@ public class WebMvcController extends BaseController implements InitializingBean
         ExhPlan map=exhPlanManager.get(id);
         return new ModelAndView("exhplanDetail","news",map);
     }
+    @RequestMapping("appraisal")
+    public ModelAndView appraisal() {
+        return new ModelAndView("appraisal");
+    }
+    @RequestMapping("appraisalList/{pageIndex}")
+    public JsonReaderResponse appraisalList(@PathVariable Integer pageIndex,HttpServletRequest request) {
+        List<Map<String,Object>> commands=new ArrayList<Map<String,Object>>();
+        Integer start=(pageIndex - 1)*obtainLimit(request);
+        Map<String,Object> map=requestMap(request);
+        map.put("Q_createDate","DESC");
+        try{
+            commands= appraisalManager.listPageMap(map, start, obtainLimit(request));
+            Integer count=appraisalManager.count(map);
+            return new JsonReaderResponse(commands,true,count,"",pageIndex);
+        }catch (Exception e){
+            logger.error("list fail",e);
+        }
+        return new JsonReaderResponse(commands,false,"请求错误");
+    }
+
+    @RequestMapping("apldetail/{id}")
+    public ModelAndView appraisalDetail(@PathVariable Long id) {
+        Appraisal map=appraisalManager.get(id);
+        return new ModelAndView("apldetail","command",map);
+    }
+
 
 
 

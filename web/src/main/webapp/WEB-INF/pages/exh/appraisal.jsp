@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <%@ include file="/common/taglibs.jsp" %>
-    <title>会展政策</title>
+    <title>评估报告</title>
 </head>
 <body>
 <%@ include file="../menu.jsp" %>
@@ -14,7 +14,7 @@
     <%@ include file="../header.jsp" %>
     <div id="mainContent">
         <ul class="breadcrumb">
-            <li class="active">会展政策列表</li>
+            <li class="active">评估报告</li>
         </ul>
         <div class="right-content" >
             <div class="query-box">
@@ -26,14 +26,14 @@
                         </li>
                     </ul>
                     <div class="btn-query">
-                        <button class="btn btn-success" id="searchBtn" onclick="searchForm($('#userSearch'),'user',listTable);">查询</button>
-                        <button class="btn btn-default" id="clearBtn" onclick="clearSearchForm($('#userSearch'),listTable);">清空</button>
+                        <button class="btn btn-success" onclick="searchForm($('#userSearch'),'user',listTable);">查询</button>
+                        <button class="btn btn-default" onclick="clearSearchForm($('#userSearch'),listTable);">清空</button>
                     </div>
                 </div>
             </div>
             <div class="table-box">
                 <div class="table-title">
-                    <h5>会展政策列表</h5>
+                    <h5>报告列表</h5>
                     <button class="btn btn-primary btn-add" onclick="edit();">添加</button>
                 </div>
 
@@ -42,7 +42,6 @@
                         <thead>
                         <tr>
                             <th>标题</th>
-                            <th>来源</th>
                             <th>添加时间</th>
                             <th></th>
                         </tr>
@@ -59,10 +58,10 @@
     </div>
 </div>
 
-<script type="text/javascript" src="<c:url value="/resources/js/admin/exh/exhservice.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/resources/js/admin/exh/appraisal.js"/>"></script>
 <script type="text/javascript">
     jQuery(function($) {
-        changeMenu($('#menu-exhservice'));
+        changeMenu($('#menu-appraisal'));
         jQuery(function(){
             listTable();
         });
