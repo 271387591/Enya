@@ -219,7 +219,6 @@ public class UserController extends BaseController {
         try{
             String mobile=obtain(request,"mobile");
             String password=obtain(request,"password");
-            String validateCode=obtain(request,"validateCode");
             Map<String,Object> map=new HashMap<String, Object>();
             map.put("Q_mobile_EQ",mobile);
             map.put("Q_loseDate_GE",new Date());

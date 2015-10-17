@@ -22,7 +22,7 @@ public class ExhNewsDaoImpl extends BaseDaoImpl<ExhNews> implements ExhNewsDao{
 
     @Override
     public List<Map<String, Object>> getExhTrade(String trades, Integer start, Integer limit) {
-        String sql="select * from t_exhnews where 1=1 ";
+        String sql="select id,title,createDate from t_exhnews where publish=1 ";
         if(StringUtils.isNotEmpty(trades)){
             String[] tr=trades.split(",");
             for(String t:tr){
@@ -30,7 +30,7 @@ public class ExhNewsDaoImpl extends BaseDaoImpl<ExhNews> implements ExhNewsDao{
             }
             sql=sql.replaceFirst("or", "and");
         }
-        sql+=" order by createDate desc limit ?,?";
+        sql+=" order by idx desc limit ?,?";
         if(log.isDebugEnabled()){
             log.debug(sql.replaceAll("\\n", ""));
         }
@@ -39,7 +39,7 @@ public class ExhNewsDaoImpl extends BaseDaoImpl<ExhNews> implements ExhNewsDao{
 
     @Override
     public Integer getExhTradeCount(String trades) {
-        String sql="select count(*) from t_exhnews where 1=1 ";
+        String sql="select count(*) from t_exhnews where publish=1 ";
         if(StringUtils.isNotEmpty(trades)){
             String[] tr=trades.split(",");
             for(String t:tr){
@@ -51,5 +51,25 @@ public class ExhNewsDaoImpl extends BaseDaoImpl<ExhNews> implements ExhNewsDao{
             log.debug(sql.replaceAll("\\n",""));
         }
         return jdbcTemplate.queryForObject(sql,Integer.class);
+    }
+
+    @Override
+    public List<Map<String, Object>> getExhNews(Long id, Integer start, Integer limit) {
+        String sql="select id,title,createDate from t_exhnews where find_in_set(?,exhIds) and publish=1";
+        sql+=" order by idx desc limit ?,?";
+        if(log.isDebugEnabled()){
+            log.debug(sql.replaceAll("\\n", ""));
+        }
+        return jdbcTemplate.queryForList(sql,id,start,limit);
+
+    }
+
+    @Override
+    public Integer getExhNewsCount(Long id) {
+        String sql="select count(*) from t_exhnews where find_in_set(?,exhIds) and publish=1";
+        if(log.isDebugEnabled()){
+            log.debug(sql.replaceAll("\\n",""));
+        }
+        return jdbcTemplate.queryForObject(sql,Integer.class,id);
     }
 }

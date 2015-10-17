@@ -33,4 +33,14 @@ public class ExhNewsManagerImpl extends BaseManagerImpl<ExhNews> implements ExhN
     public Integer getExhTradeCount(String trades) {
         return exhNewsDao.getExhTradeCount(trades);
     }
+
+    @Override
+    public List<Map<String, Object>> getExhNews(Long ids, Integer start, Integer limit) {
+        return exhNewsDao.getExhNews(ids, start, limit);
+    }
+
+    @Override
+    public Integer getExhNewsCount(Long ids) {
+        return exhNewsDao.getExhNewsCount(ids);
+    }
 }

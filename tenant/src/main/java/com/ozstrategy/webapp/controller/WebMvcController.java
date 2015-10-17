@@ -1,6 +1,7 @@
 package com.ozstrategy.webapp.controller;
 
 import com.ozstrategy.Constants;
+import com.ozstrategy.model.appstore.AppStore;
 import com.ozstrategy.model.commend.CommendType;
 import com.ozstrategy.model.commend.Comment;
 import com.ozstrategy.model.exh.Appraisal;
@@ -18,6 +19,7 @@ import com.ozstrategy.model.system.UserSurvey;
 import com.ozstrategy.model.user.Role;
 import com.ozstrategy.model.user.User;
 import com.ozstrategy.service.EmailEngine;
+import com.ozstrategy.service.appstore.AppStoreManager;
 import com.ozstrategy.service.commend.CommentManager;
 import com.ozstrategy.service.exh.AppraisalManager;
 import com.ozstrategy.service.exh.ExhNewsManager;
@@ -41,6 +43,7 @@ import com.ozstrategy.webapp.command.JsonReaderSingleResponse;
 import com.ozstrategy.webapp.command.exh.ExhNewsCommand;
 import com.ozstrategy.webapp.command.exh.UserSurveyCommand;
 import com.ozstrategy.webapp.command.user.UserCommand;
+import com.ozstrategy.webapp.utils.HttpUtils;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -71,6 +74,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -127,6 +132,12 @@ public class WebMvcController extends BaseController implements InitializingBean
     protected ExhPlanManager exhPlanManager;
     @Autowired
     protected AppraisalManager appraisalManager;
+    @Autowired
+    protected AppStoreManager appStoreManager;
+
+
+    private final static int dayExh=7;
+    private final static String imgUrl=System.getProperty("img.url");
 
 
 
@@ -155,13 +166,15 @@ public class WebMvcController extends BaseController implements InitializingBean
         String username=request.getRemoteUser();
         User user=userManager.getUserByUsername(username);
         UserCommand userCommand=new UserCommand(user);
+        String po=userCommand.getPortraitUrl();
+        po=imgUrl+po;
+        userCommand.setPortraitUrl(po);
         userCommand.setEnEmail(Base64Utils.encode(ThreeDESUtils.encrypt(user.getEmail().getBytes())));
         return new ModelAndView("updateUser","user",userCommand);
     }
 
     @RequestMapping("registerUser")
     public ModelAndView registerUser(HttpServletRequest request, HttpServletResponse response) {
-        Map<String,Object> map=new HashMap<String, Object>();
         String email        = request.getParameter("email");
         String password = request.getParameter("password");
         String nickName = request.getParameter("nickName");
@@ -247,7 +260,7 @@ public class WebMvcController extends BaseController implements InitializingBean
                 String str         = randomName(logo1Name);
                 fileOnServer      = new File(attachDir,str);
                 logo1Path=fileOnServer.getAbsolutePath();
-                logo1Url=toHttpUrl(request,true)+Constants.updloadPortrait+"/"+str;
+                logo1Url=Constants.updloadPortrait+"/"+str;
                 if(fileItem.getSize()>200*1024){
                     String msg = "文件不能超过200K";
                     writer.print("{\"success\":false,\"msg\":\"" + msg + "!\"}");
@@ -373,6 +386,13 @@ public class WebMvcController extends BaseController implements InitializingBean
     @RequestMapping("home")
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) {
         Map<String,Object> command=homePageManager.homePage();
+        if(command!=null){
+            command.put("imgUrl",imgUrl);
+            String logoUrl=ObjectUtils.toString(command.get("logoUrl"));
+            String zxUrl=ObjectUtils.toString(command.get("zxUrl"));
+            command.put("logoUrl",imgUrl+logoUrl);
+            command.put("zxUrl",imgUrl+zxUrl);
+        }
         request.getSession().setAttribute("homeCommand",command);
         return new ModelAndView("index");
     }
@@ -382,9 +402,15 @@ public class WebMvcController extends BaseController implements InitializingBean
     public JsonReaderResponse header(HttpServletRequest request, HttpServletResponse response) {
         Map<String,Object> map=requestMap(request);
         try{
-            map.put("Q_t.updateDate","DESC");
-            map.put("Q_t.hot_EQ","1");
+            map.put("Q_t.idx","DESC");
+            map.put("Q_t.publish_EQ","1");
             List<Map<String,Object>> models= exhibitionHallManager.findByNamedQuery("getHalls", map, 0, 3);
+            for (Map<String,Object> objectMap:models){
+                String logo1Url=ObjectUtils.toString(objectMap.get("logo1Url"));
+                String logo2Url=ObjectUtils.toString(objectMap.get("logo2Url"));
+                objectMap.put("logo1Url",imgUrl+logo1Url);
+                objectMap.put("logo2Url",imgUrl+logo2Url);
+            }
             return new JsonReaderResponse(models,true,3,"");
         }catch (Exception e){
             logger.error("list fail",e);
@@ -395,9 +421,15 @@ public class WebMvcController extends BaseController implements InitializingBean
     public JsonReaderResponse hotHallList(HttpServletRequest request, HttpServletResponse response) {
         Map<String,Object> map=requestMap(request);
         try{
-            map.put("Q_t.updateDate","DESC");
-            map.put("Q_t.hot_EQ","1");
+            map.put("Q_t.idx","DESC");
+            map.put("Q_t.publish_EQ","1");
             List<Map<String,Object>> models= exhibitionHallManager.findByNamedQuery("getHalls", map, 0, 5);
+            for (Map<String,Object> objectMap:models){
+                String logo1Url=ObjectUtils.toString(objectMap.get("logo1Url"));
+                String logo2Url=ObjectUtils.toString(objectMap.get("logo2Url"));
+                objectMap.put("logo1Url",imgUrl+logo1Url);
+                objectMap.put("logo2Url",imgUrl+logo2Url);
+            }
             return new JsonReaderResponse(models,true,5,"");
         }catch (Exception e){
             logger.error("list fail",e);
@@ -408,19 +440,24 @@ public class WebMvcController extends BaseController implements InitializingBean
     public JsonReaderResponse indexExh(HttpServletRequest request, HttpServletResponse response) {
         Map<String,Object> map=requestMap(request);
         try{
-            map.put("Q_exh.createDate","DESC");
+            map.put("Q_exh.idx","DESC");
+            map.put("Q_exh.publish_EQ","1");
             List<Map<String,Object>> models= exhibitionManager.findByNamedQuery("getExhs", map, 0, obtainLimit(request));
             if(models!=null && models.size()>0){
                 Calendar calendar=Calendar.getInstance();
                 for(Map<String,Object> objectMap:models){
                     Date startDate=parseDate(ObjectUtils.toString(objectMap.get("startDate")));
                     calendar.setTime(startDate);
-                    calendar.add(Calendar.DATE,-3);
+                    calendar.add(Calendar.DAY_OF_YEAR,(0-dayExh));
                     if(calendar.getTime().before(new Date())){
                         objectMap.put("willStart",true);
                     }else{
                         objectMap.put("willStart",false);
                     }
+                    String picUrl=ObjectUtils.toString(objectMap.get("picUrl"));
+                    String logoUrl=ObjectUtils.toString(objectMap.get("logoUrl"));
+                    objectMap.put("picUrl",imgUrl+picUrl);
+                    objectMap.put("logoUrl",imgUrl+logoUrl);
                 }
             }
             return new JsonReaderResponse(models,true,5,"");
@@ -434,9 +471,10 @@ public class WebMvcController extends BaseController implements InitializingBean
     @RequestMapping("indexNews")
     public JsonReaderResponse indexNews(HttpServletRequest request, HttpServletResponse response) {
         Map<String,Object> map=new HashMap<String, Object>();
-        map.put("Q_createDate","DESC");
+        map.put("Q_idx","DESC");
+        map.put("Q_publish_EQ",1);
         try{
-            List<ExhNews> models= exhNewsManager.list(map, 0, 10);
+            List<Map<String,Object>> models= exhNewsManager.listPageMap(map, 0, 10, "title", "id");
             return new JsonReaderResponse(models,true,5,"");
         }catch (Exception e){
             logger.error("list fail",e);
@@ -455,7 +493,7 @@ public class WebMvcController extends BaseController implements InitializingBean
         }catch (Exception e){
             logger.error("list fail",e);
         }
-        return new JsonReaderResponse(new ArrayList(),true,0,"");
+        return new JsonReaderResponse(getComments,true,0,"");
     }
 
 
@@ -463,6 +501,13 @@ public class WebMvcController extends BaseController implements InitializingBean
     public ModelAndView hall(HttpServletRequest request, HttpServletResponse response) {
         if(request.getSession().getAttribute("homeCommand")==null){
             Map<String,Object> command=homePageManager.homePage();
+            if(command!=null){
+                command.put("imgUrl",imgUrl);
+                String logoUrl=ObjectUtils.toString(command.get("logoUrl"));
+                String zxUrl=ObjectUtils.toString(command.get("zxUrl"));
+                command.put("logoUrl",imgUrl+logoUrl);
+                command.put("zxUrl",imgUrl+zxUrl);
+            }
             request.getSession().setAttribute("homeCommand",command);
         }
         Map<String,Object> map=new HashMap<String, Object>();
@@ -479,22 +524,29 @@ public class WebMvcController extends BaseController implements InitializingBean
     public ModelAndView hallList(@PathVariable Integer pageIndex,HttpServletRequest request) {
         Integer start=(pageIndex - 1)*obtainLimit(request);
         Map<String,Object> map=requestMap(request);
-        map.put("Q_t.createDate","DESC");
+        map.put("Q_t.idx","DESC");
+        map.put("Q_t.publish_EQ",1);
         List<Map<String,Object>> models= exhibitionHallManager.findByNamedQuery("getHalls", map, start, obtainLimit(request));
         if(models!=null && models.size()>0){
             Calendar calendar=Calendar.getInstance();
             calendar.setTime(new Date());
-            calendar.add(Calendar.DATE,3);
+            calendar.add(Calendar.DAY_OF_YEAR,dayExh);
             for(Map<String,Object> objectMap:models){
                 map=new HashMap<String, Object>();
                 map.put("Q_startDate_LE",calendar.getTime());
+                map.put("Q_startDate_GE",new Date());
                 Integer exhibition=exhibitionManager.count(map);
                 if(exhibition!=null && exhibition>0){
                     objectMap.put("hasExh",true);
                 }else {
                     objectMap.put("hasExh",false);
                 }
+                String logo1Url=ObjectUtils.toString(objectMap.get("logo1Url"));
+                String logo2Url=ObjectUtils.toString(objectMap.get("logo2Url"));
+                objectMap.put("logo1Url",imgUrl+logo1Url);
+                objectMap.put("logo2Url",imgUrl+logo2Url);
             }
+
         }
         return new ModelAndView("hallList","halls",models);
     }
@@ -504,15 +556,20 @@ public class WebMvcController extends BaseController implements InitializingBean
          if(model!=null){
              Calendar calendar=Calendar.getInstance();
              calendar.setTime(new Date());
-             calendar.add(Calendar.DATE,3);
+             calendar.add(Calendar.DAY_OF_YEAR,dayExh);
              Map<String,Object> map=new HashMap<String, Object>();
              map.put("Q_startDate_LE",calendar.getTime());
+             map.put("Q_startDate_GE",new Date());
              Integer exhibition=exhibitionManager.count(map);
              if(exhibition!=null && exhibition>0){
                  model.put("hasExh",true);
              }else {
                  model.put("hasExh",false);
              }
+             String logo1Url=ObjectUtils.toString(model.get("logo1Url"));
+             String logo2Url=ObjectUtils.toString(model.get("logo2Url"));
+             model.put("logo1Url",imgUrl+logo1Url);
+             model.put("logo2Url",imgUrl+logo2Url);
 
          }
         return new ModelAndView("hallDetail","hall",model);
@@ -547,6 +604,13 @@ public class WebMvcController extends BaseController implements InitializingBean
     public ModelAndView tables(HttpServletRequest request, HttpServletResponse response) {
         if(request.getSession().getAttribute("homeCommand")==null){
             Map<String,Object> command=homePageManager.homePage();
+            if(command!=null){
+                command.put("imgUrl",imgUrl);
+                String logoUrl=ObjectUtils.toString(command.get("logoUrl"));
+                String zxUrl=ObjectUtils.toString(command.get("zxUrl"));
+                command.put("logoUrl",imgUrl+logoUrl);
+                command.put("zxUrl",imgUrl+zxUrl);
+            }
             request.getSession().setAttribute("homeCommand",command);
         }
         Map<String,Object> map=requestMap(request);
@@ -556,7 +620,8 @@ public class WebMvcController extends BaseController implements InitializingBean
     @RequestMapping("exhList/{pageIndex}")
     public ModelAndView exhList(@PathVariable Integer pageIndex,HttpServletRequest request) {
         Map<String,Object> map=requestMap(request);
-        map.put("Q_exh.createDate","DESC");
+        map.put("Q_exh.idx","DESC");
+        map.put("Q_exh.publish_EQ",1);
         Integer start=(pageIndex - 1)*obtainLimit(request);
         List<Map<String,Object>> models= exhibitionManager.findByNamedQuery("getExhs", map, start, obtainLimit(request));
         if(models!=null && models.size()>0){
@@ -564,13 +629,17 @@ public class WebMvcController extends BaseController implements InitializingBean
             for(Map<String,Object> objectMap:models){
                 Date startDate=parseDate(ObjectUtils.toString(objectMap.get("startDate")));
                 calendar.setTime(startDate);
-                calendar.add(Calendar.DATE,-3);
+                calendar.add(Calendar.DAY_OF_YEAR,0-dayExh);
 
-                if(calendar.getTime().before(new Date())){
+                if(calendar.getTime().before(new Date()) && startDate.after(new Date())){
                     objectMap.put("willStart",true);
                 }else{
                     objectMap.put("willStart",false);
                 }
+                String picUrl=ObjectUtils.toString(objectMap.get("picUrl"));
+                String logoUrl=ObjectUtils.toString(objectMap.get("logoUrl"));
+                objectMap.put("picUrl",imgUrl+picUrl);
+                objectMap.put("logoUrl",imgUrl+logoUrl);
             }
         }
         return new ModelAndView("exhList","exhs",models);
@@ -580,6 +649,10 @@ public class WebMvcController extends BaseController implements InitializingBean
         Map<String,Object> map=new HashMap<String, Object>();
         map.put("id",id);
         Map<String,Object> objectMap=exhibitionManager.findByNamedQueryMap("getExh",map);
+        String picUrl=ObjectUtils.toString(objectMap.get("picUrl"));
+        String logoUrl=ObjectUtils.toString(objectMap.get("logoUrl"));
+        objectMap.put("picUrl",imgUrl+picUrl);
+        objectMap.put("logoUrl",imgUrl+logoUrl);
         return new ModelAndView("exhDetail","exh",objectMap);
     }
     @RequestMapping("exhPs/{type}/{id}")
@@ -615,19 +688,32 @@ public class WebMvcController extends BaseController implements InitializingBean
     @RequestMapping("exhNews/{id}/{pageIndex}")
     public JsonReaderResponse exhNews(@PathVariable Long id,@PathVariable Integer pageIndex,HttpServletRequest request) {
         List<ExhNewsCommand> commands=new ArrayList<ExhNewsCommand>();
-        Map<String,Object> map=new HashMap<String, Object>();
-        map.put("Q_exhId_EQ",id);
+//        Map<String,Object> map=new HashMap<String, Object>();
+//        map.put("Q_exhId_EQ",id);
         Integer start=(pageIndex - 1)*obtainLimit(request);
         try{
-            List<ExhNews> models= exhNewsManager.list(map,start,obtainLimit(request));
-            if(models!=null && models.size()>0){
-                for(ExhNews model:models){
-                    ExhNewsCommand command=new ExhNewsCommand(model);
-                    commands.add(command);
-                }
-            }
-            Integer count=exhNewsManager.count(map);
-            return new JsonReaderResponse(commands,true,count,"",pageIndex);
+//            List<ExhNews> models= exhNewsManager.list(map,start,obtainLimit(request));
+//            if(models!=null && models.size()>0){
+//                for(ExhNews model:models){
+//                    ExhNewsCommand command=new ExhNewsCommand(model);
+//                    commands.add(command);
+//                }
+//            }
+//            Integer count=exhNewsManager.count(map);
+
+
+            List<Map<String,Object>> models= exhNewsManager.getExhNews(id, start, obtainLimit(request));
+//            if(models!=null && models.size()>0){
+//                for(ExhNews model:models){
+//                    ExhNewsCommand command=new ExhNewsCommand(model);
+//                    commands.add(command);
+//                }
+//            }
+            Integer count=exhNewsManager.getExhNewsCount(id);
+
+
+
+            return new JsonReaderResponse(models,true,count,"",pageIndex);
         }catch (Exception e){
             logger.error("list fail",e);
         }
@@ -643,6 +729,8 @@ public class WebMvcController extends BaseController implements InitializingBean
                 List<Map<String,Object>> list=exhNewsManager.getExhTrade(keywordNames, start, obtainLimit(request));
                 Integer count=exhNewsManager.getExhTradeCount(keywordNames);
                 return new JsonReaderResponse(list,true,count,"");
+
+
             }
             return new JsonReaderResponse(new ArrayList(),true,"");
         }catch (Exception e){
@@ -696,9 +784,12 @@ public class WebMvcController extends BaseController implements InitializingBean
         List<Map<String,Object>> commands=new ArrayList<Map<String,Object>>();
         Integer start=(pageIndex - 1)*obtainLimit(request);
         Map<String,Object> map=requestMap(request);
-        map.put("Q_en.createDate","DESC");
+        map.put("Q_en.idx","DESC");
+        map.put("Q_en.publish_EQ",1);
         try{
             commands= exhNewsManager.findByNamedQuery("getNews",map, start, obtainLimit(request));
+            map.remove("Q_en.publish_EQ");
+            map.put("Q_publish_EQ",1);
             Integer count=exhNewsManager.count(map);
             return new JsonReaderResponse(commands,true,count,"",pageIndex);
         }catch (Exception e){
@@ -764,9 +855,10 @@ public class WebMvcController extends BaseController implements InitializingBean
         List<Map<String,Object>> commands=new ArrayList<Map<String,Object>>();
         Integer start=(pageIndex - 1)*obtainLimit(request);
         Map<String,Object> map=requestMap(request);
-//        map.put("Q_createDate","DESC");
+        map.put("Q_idx","DESC");
+        map.put("Q_publish_EQ",1);
         try{
-            commands= exhServiceManager.listPageMap(map, start, obtainLimit(request));
+            commands= exhServiceManager.listPageMap(map, start, obtainLimit(request),"id","title","createDate","lastUpdateDate");
             Integer count=exhServiceManager.count(map);
             return new JsonReaderResponse(commands,true,count,"",pageIndex);
         }catch (Exception e){
@@ -837,9 +929,10 @@ public class WebMvcController extends BaseController implements InitializingBean
         List<Map<String,Object>> commands=new ArrayList<Map<String,Object>>();
         Integer start=(pageIndex - 1)*obtainLimit(request);
         Map<String,Object> map=requestMap(request);
-        map.put("Q_createDate","DESC");
+        map.put("Q_idx","DESC");
+        map.put("Q_publish_EQ",1);
         try{
-            commands= exhPlanManager.listPageMap(map, start, obtainLimit(request));
+            commands= exhPlanManager.listPageMap(map, start, obtainLimit(request),"id","year","title","holdDate","outUrl","address","createDate");
             Integer count=exhPlanManager.count(map);
             return new JsonReaderResponse(commands,true,count,"",pageIndex);
         }catch (Exception e){
@@ -847,6 +940,12 @@ public class WebMvcController extends BaseController implements InitializingBean
         }
         return new JsonReaderResponse(commands,false,"请求错误");
     }
+    @RequestMapping("exhplanyear")
+    public JsonReaderResponse exhplanyear(HttpServletRequest request) {
+        List<Map<String,Object>> commands=exhPlanManager.listYears();
+        return new JsonReaderResponse(commands,true,commands.size(),"");
+    }
+
 
     @RequestMapping("exhplanDetail/{id}")
     public ModelAndView exhplanDetail(@PathVariable Long id,HttpServletRequest request, HttpServletResponse response) {
@@ -854,17 +953,27 @@ public class WebMvcController extends BaseController implements InitializingBean
         return new ModelAndView("exhplanDetail","news",map);
     }
     @RequestMapping("appraisal")
-    public ModelAndView appraisal() {
-        return new ModelAndView("appraisal");
+    public ModelAndView appraisal(HttpServletRequest request) {
+        Map<String,Object> command=homePageManager.homePage();
+        if(command!=null){
+            command.put("imgUrl",imgUrl);
+            String logoUrl=ObjectUtils.toString(command.get("logoUrl"));
+            String zxUrl=ObjectUtils.toString(command.get("zxUrl"));
+            command.put("logoUrl",imgUrl+logoUrl);
+            command.put("zxUrl",imgUrl+zxUrl);
+        }
+        request.getSession().setAttribute("homeCommand",command);
+        return new ModelAndView("repeatitem");
     }
     @RequestMapping("appraisalList/{pageIndex}")
     public JsonReaderResponse appraisalList(@PathVariable Integer pageIndex,HttpServletRequest request) {
         List<Map<String,Object>> commands=new ArrayList<Map<String,Object>>();
         Integer start=(pageIndex - 1)*obtainLimit(request);
         Map<String,Object> map=requestMap(request);
-        map.put("Q_createDate","DESC");
+        map.put("Q_idx","DESC");
+        map.put("Q_publish_EQ",1);
         try{
-            commands= appraisalManager.listPageMap(map, start, obtainLimit(request));
+            commands= appraisalManager.listPageMap(map, start, obtainLimit(request), "id", "title", "createDate");
             Integer count=appraisalManager.count(map);
             return new JsonReaderResponse(commands,true,count,"",pageIndex);
         }catch (Exception e){
@@ -878,6 +987,508 @@ public class WebMvcController extends BaseController implements InitializingBean
         Appraisal map=appraisalManager.get(id);
         return new ModelAndView("apldetail","command",map);
     }
+    @RequestMapping("apldetail/{id}/{d}")
+    public ModelAndView appraisalDetail(@PathVariable Long id,Integer d) {
+        Appraisal map=appraisalManager.get(id);
+        return new ModelAndView("apldetail","command",map);
+    }
+    @RequestMapping("repeatyear")
+    public ModelAndView repeatyear() {
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("url",emailProp.get("repeatUrl"));
+        return new ModelAndView("repeat/repeatyear","command",map);
+    }
+    @RequestMapping("repeatcity")
+    public ModelAndView repeatcity() {
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("url",emailProp.get("repeatUrl"));
+        return new ModelAndView("repeat/repeatcitytable","command",map);
+    }
+    @RequestMapping("repeatexh")
+    public ModelAndView repeatexh() {
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("url",emailProp.get("repeatUrl"));
+        return new ModelAndView("repeat/repeatexhtable","command",map);
+    }
+    @RequestMapping("repeatcmp")
+    public ModelAndView repeatcmp() {
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("url",emailProp.get("repeatUrl"));
+        return new ModelAndView("repeat/repeatcmptable","command",map);
+    }
+
+
+
+
+
+
+
+//    报表部分
+//    private static final String baseUrl="http://112.126.83.10:8000/api/";
+    @RequestMapping("cdyear")
+    public String cdyear(HttpServletRequest request,HttpServletResponse response) {
+        allowXRequested(response);
+        String start=request.getParameter("start");
+        String end=request.getParameter("end");
+        String base = emailProp.getProperty("repeatUrl")+"year/";
+        String url="default";
+        if(StringUtils.isNotEmpty(start) && StringUtils.isNotEmpty(end)){
+            url=start+"-"+end;
+        }
+        url=base+url;
+        try{
+             return HttpUtils.get(url);
+        }catch (Exception e){
+            logger.error("get url["+url+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("cdyearlist")
+    public String cdyearlist(HttpServletRequest request,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"year/list";
+        try{
+             return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("ninecitylist")
+    public String ninecitylist(HttpServletRequest request,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"ninecity";
+        try{
+             return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("ninecity/{id}")
+    public ModelAndView ninecitylist(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        Map<String,String> map=new HashMap<String, String>();
+        map.put("id",id);
+        map.put("url",emailProp.getProperty("repeatUrl"));
+        return new ModelAndView("repeat/ninecity","command",map);
+    }
+    @RequestMapping("ex_area/{id}")
+    public String ex_area(@PathVariable String id,HttpServletResponse response){
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"nine/";
+        String url=base+"ex_area/"+id;
+        try {
+            String result=HttpUtils.get(url);
+            return result;
+        } catch (Exception e) {
+            log.error("get url["+url+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("venue_area/{id}")
+    public String venue_area(@PathVariable String id,HttpServletResponse response){
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"nine/";
+        String url=base+"venue_area/"+id;
+        try {
+            String result=HttpUtils.get(url);
+            return result;
+        } catch (Exception e) {
+            log.error("get url["+url+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("ex_num/{id}")
+    public String ex_num(@PathVariable String id,HttpServletResponse response){
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"nine/";
+        String url=base+"ex_num/"+id;
+        try {
+            String result=HttpUtils.get(url);
+            return result;
+        } catch (Exception e) {
+            log.error("get url["+url+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("confe_num/{id}")
+    public String confe_num(@PathVariable String id,HttpServletResponse response){
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"nine/";
+        String url=base+"confe_num/"+id;
+        try {
+            String result=HttpUtils.get(url);
+            return result;
+        } catch (Exception e) {
+            log.error("get url["+url+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("w_num3/{id}")
+    public String w_num3(@PathVariable String id,HttpServletResponse response){
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"nine/";
+        String url=base+"3w_num/"+id;
+        try {
+            String result=HttpUtils.get(url);
+            return result;
+        } catch (Exception e) {
+            log.error("get url["+url+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("w_area3/{id}")
+    public String w_area3(@PathVariable String id,HttpServletResponse response){
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"nine/";
+        String url=base+"3w_area/"+id;
+        try {
+            String result=HttpUtils.get(url);
+            return result;
+        } catch (Exception e) {
+            log.error("get url["+url+"] fail",e);
+        }
+        return "{}";
+    }
+
+
+    @RequestMapping("singleProjectList/{pageIndex}")
+    public String singleProjectList(HttpServletResponse response,@PathVariable Integer pageIndex) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"single/"+pageIndex;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("singleProject/{type}/{id}")
+    public ModelAndView singleProject(@PathVariable Integer type,@PathVariable String id,HttpServletResponse response,HttpServletRequest request) {
+        allowXRequested(response);
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("id",id);
+        map.put("type",type);
+        map.put("url",emailProp.getProperty("repeatUrl"));
+        if(type==1){
+            return new ModelAndView("repeat/singlep","command",map);
+        }else{
+            return new ModelAndView("repeat/singlem","command",map);
+        }
+    }
+
+    @RequestMapping("exhibition/table/{id}")
+    public String exhibitiontable(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"exhibition/table/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "{}";
+    }
+     @RequestMapping("exhibition/radar/{id}")
+    public String exhibitionradar(@PathVariable String id,HttpServletResponse response) {
+
+         allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"exhibition/radar/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("exhibition/trend_report/{id}")
+    public String trend_report(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"exhibition/trend_report/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("exhibition/time_media_list/{id}")
+    public String time_media_list(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"exhibition/time_media_list/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("exhibition/time_media/{id}")
+    public String time_media(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"exhibition/time_media/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+
+    @RequestMapping("exhibition/media_impact/{id}")
+    public String media_impact(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"exhibition/media_impact/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("exhibition/media_location/{id}")
+    public String media_location(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"exhibition/media_location/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("exhibition/media_structure/{id}")
+    public String media_structure(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"exhibition/media_structure/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    //媒体
+    @RequestMapping("media/trend_report/{id}")
+    public String mediatrend_report(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"media/trend_report/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("media/time_media_list/{id}")
+    public String mtime_media_list(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"media/time_media_list/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("media/time_media/{id}")
+    public String mtime_media(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"media/time_media/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("media/media_impact/{id}")
+    public String mmedia_impact(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"media/media_impact/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("media/media_location/{id}")
+    public String mmedia_location(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"media/media_location/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("media/media_structure/{id}")
+    public String mmedia_structure(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"media/media_structure/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+//对比
+    @RequestMapping("compareProjectList")
+    public String compareProjectList(HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"compare";
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "[]";
+    }
+    @RequestMapping("compareProject/{type}/{id}")
+    public ModelAndView compareProject(@PathVariable Integer type,@PathVariable String id,HttpServletRequest request,HttpServletResponse response) {
+        allowXRequested(response);
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("id",id);
+        map.put("type",type);
+        String name1=request.getParameter("name1");
+        String name2=request.getParameter("name2");
+        map.put("url",emailProp.getProperty("repeatUrl"));
+        try {
+            name1= URLDecoder.decode(name1,"UTF-8");
+            name2= URLDecoder.decode(name2,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        map.put("name1",name1);
+        map.put("name2",name2);
+        if(type==2){
+            return new ModelAndView("repeat/compares","command",map);
+        }else{
+            return new ModelAndView("repeat/compared","command",map);
+        }
+    }
+    @RequestMapping("diff_compare/table/{id}")
+    public String dtable(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"diff_compare/table/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("diff_compare/num/{id}")
+    public String dnum(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"diff_compare/num/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("diff_compare/media_structure/{id}")
+    public String dmedia_structure(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"diff_compare/media_structure/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("diff_compare/seminate/{id}")
+    public String seminate(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"diff_compare/seminate/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("same_compare/radar/{id}")
+    public String sradar(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"same_compare/radar/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("same_compare/trend_report/{id}")
+    public String strend_report(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"same_compare/trend_report/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("same_compare/time_media/{id}")
+    public String stime_media(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"same_compare/time_media/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "{}";
+    }
+    @RequestMapping("same_compare/media_structure/{id}")
+    public String smedia_structure(@PathVariable String id,HttpServletResponse response) {
+        allowXRequested(response);
+        String base = emailProp.getProperty("repeatUrl")+"same_compare/media_structure/"+id;
+        try{
+            return HttpUtils.get(base);
+        }catch (Exception e){
+            logger.error("get url["+base+"] fail",e);
+        }
+        return "{}";
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

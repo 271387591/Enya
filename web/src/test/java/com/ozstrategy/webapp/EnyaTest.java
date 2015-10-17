@@ -1,15 +1,20 @@
 package com.ozstrategy.webapp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.ozstrategy.util.Base64Utils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
@@ -41,14 +46,83 @@ import java.util.regex.Pattern;
 public class EnyaTest {
     private String baseUrl="http://120.24.228.68/Tenant/html/app/";
 //    private String baseUrl="http://127.0.0.1:8085/Tenant/html/app/";
+//    private String baseUrl="http://192.168.168.91:8085/Tenant/html/app/";
     /***
      * 密码正则 :6-16位字母或数字
      */
     @Test
     public void testPassword(){
-        Pattern pattern=Pattern.compile("^[0-9a-zA-Z]{6,16}$");
-        Matcher matcher = pattern.matcher("sdfdsfsf");
+//        Pattern pattern=Pattern.compile("^[0-9a-zA-Z]{6,16}$");
+//        Matcher matcher = pattern.matcher("sdfdsfsf");
+//        System.out.println(matcher.matches());
+        Pattern pattern=Pattern.compile(".*(.jpg|.png|.gif|.jpeg|.bmp)$");
+        Matcher matcher = pattern.matcher(".JPG");
         System.out.println(matcher.matches());
+        ObjectMapper objectMapper=new ObjectMapper();
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("imageActionName","uploadimage");
+        node.put("upfile","upfile");
+        node.put("imageMaxSize",2048000);
+        ArrayNode arrayNode= objectMapper.createArrayNode();
+        arrayNode.add(".png").add(".jpg").add(".jpeg").add(".gif").add(".bmp");
+        node.put("imageAllowFiles",arrayNode);
+        node.put("imageCompressEnable",true);
+        node.put("imageCompressBorder",1600);
+        node.put("imageInsertAlign","none");
+        node.put("imageUrlPrefix","22");
+        node.put("imagePathFormat","/updload/ue/{yyyy}{mm}{dd}{time}{rand:6}");
+
+        String configContent=node.toString();
+        System.out.println(configContent);
+
+
+    }
+    @Test
+    public void testZX() throws Exception{
+        Hashtable hints= new Hashtable();
+        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+        BitMatrix bitMatrix = new MultiFormatWriter().encode(baseUrl+"download", BarcodeFormat.QR_CODE, 200, 200,hints);
+        File outputFile = new File("/Users/lihao1/Downloads/zx.png");
+        MatrixToImageWriter.writeToStream(bitMatrix, "png", FileUtils.openOutputStream(outputFile));
+    }
+    @Test
+    public void testisUpdate() {
+        String versionStr="1.0.2";
+        System.out.println("versionStr=="+versionStr);
+        String sv="";
+        try {
+            String versiona[]=versionStr.split("\\.");
+            for(String s:versiona){
+                sv+=s;
+            }
+
+
+//			for(int i=versiona.length-1;i>0;i--){
+//				version+=Integer.parseInt(versiona[i])*(100*i+1);
+//			}
+        } catch (Exception e) {
+            sv = "0";
+        }
+//		int nativeVersion=0;
+        String nsv="";
+        try {
+
+
+            String nversiona[]="1.0.0".split("\\.");
+
+
+
+            for(String s:nversiona){
+                nsv+=s;
+            }
+
+//			for(int i=versiona.length-1;i>0;i--){
+//				nativeVersion+=Integer.parseInt(versiona[i])*(100*i+1);
+//			}
+        } catch (Exception e) {
+            nsv = "0";
+        }
+        System.out.println(sv+"---"+nsv);
 
     }
 
@@ -744,6 +818,151 @@ public class EnyaTest {
         System.out.println(body);
         httpclient.getConnectionManager().shutdown();
     }
+    /**
+     * 获取展会服务
+     * * start:数据起始量，比如：从第0条数据开始，start=0,从第34条数据开始：start=34 （必须，并且为数字）
+     * limit:每次获取的数据量,默认每次25条，（可以不传，默认25条）
+     *
+     * 参数示例：比如每页显示30条数据，参数传递为：
+     * 第一页：start=0&limit=30
+     * 第二页：start=31&limit=30
+     * 第三页：start=61&limit=30
+     * .......
+     *
+     *
+     * 请求方式：POST
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetExhServices() throws Exception{
+        String url=baseUrl+"getExhServices";
+        HttpPost httpost = new HttpPost(url);
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new BasicNameValuePair("start", "0"));
+        nvps.add(new BasicNameValuePair("limit", "2"));
+        httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpResponse response = null;
+        response = httpclient.execute(httpost);
+        HttpEntity entity = response.getEntity();
+
+        String charset = EntityUtils.getContentCharSet(entity);
+
+        String body = null;
+        body = EntityUtils.toString(entity);
+        System.out.println(body);
+        httpclient.getConnectionManager().shutdown();
+    }
+
+    /**
+     * 获取单条展会服务
+     * 返回的参数中，如果outUrl有值（不为null或空串）则需要链接到该值的外网站。如果outUrl没有值，则需要展示该条记录content字段内容
+
+     * @throws Exception
+     */
+
+     @Test
+    public void testGetExhService() throws Exception{
+        String url=baseUrl+"getExhService/"+13;
+        HttpPost httpost = new HttpPost(url);
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpResponse response = null;
+        response = httpclient.execute(httpost);
+        HttpEntity entity = response.getEntity();
+
+        String charset = EntityUtils.getContentCharSet(entity);
+
+        String body = null;
+        body = EntityUtils.toString(entity);
+        System.out.println(body);
+        httpclient.getConnectionManager().shutdown();
+    }
+     /**
+     * 新闻资讯
+     * * start:数据起始量，比如：从第0条数据开始，start=0,从第34条数据开始：start=34 （必须，并且为数字）
+     * limit:每次获取的数据量,默认每次25条，（可以不传，默认25条）
+     *
+     * 参数示例：比如每页显示30条数据，参数传递为：
+     * 第一页：start=0&limit=30
+     * 第二页：start=31&limit=30
+     * 第三页：start=61&limit=30
+     * .......
+     *
+     *
+     * 请求方式：POST
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetNews() throws Exception{
+        String url=baseUrl+"getNews";
+        HttpPost httpost = new HttpPost(url);
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new BasicNameValuePair("start", "0"));
+        nvps.add(new BasicNameValuePair("limit", "2"));
+        httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpResponse response = null;
+        response = httpclient.execute(httpost);
+        HttpEntity entity = response.getEntity();
+
+        String charset = EntityUtils.getContentCharSet(entity);
+
+        String body = null;
+        body = EntityUtils.toString(entity);
+        System.out.println(body);
+        httpclient.getConnectionManager().shutdown();
+    }
+
+    /**
+     * 获取单条展会服务
+     * 返回的参数中，如果outUrl有值（不为null或空串）则需要链接到该值的外网站。如果outUrl没有值，则需要展示该条记录content字段内容
+
+     * @throws Exception
+     */
+
+     @Test
+    public void testGetNew() throws Exception{
+        String url=baseUrl+"getNew/"+13;
+        HttpPost httpost = new HttpPost(url);
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpResponse response = null;
+        response = httpclient.execute(httpost);
+        HttpEntity entity = response.getEntity();
+
+        String charset = EntityUtils.getContentCharSet(entity);
+
+        String body = null;
+        body = EntityUtils.toString(entity);
+        System.out.println(body);
+        httpclient.getConnectionManager().shutdown();
+    }
+    @Test
+    public void testNI() throws Exception{
+        String url="http://112.126.83.10:8000/api/ninecity/";
+        HttpGet httpost = new HttpGet(url);
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+//        httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        HttpResponse response = null;
+        response = httpclient.execute(httpost);
+        HttpEntity entity = response.getEntity();
+
+        String charset = EntityUtils.getContentCharSet(entity);
+
+        String body = null;
+        body = EntityUtils.toString(entity);
+        System.out.println(body);
+        httpclient.getConnectionManager().shutdown();
+    }
+
+
+
 
 
 

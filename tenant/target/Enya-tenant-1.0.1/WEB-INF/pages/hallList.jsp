@@ -12,7 +12,7 @@
         <div class="clearfix pt-3">
             <div class="index-news-img spanm3 pull-left pt-5">
                 <a href="<c:url value="/html/web/hallDetail/${hall.id}"/>" title="${hall.name}" target="_blank" rel="bookmark">
-                    <img  class="lazyloadimg" alt="${hall.name}" src="${hall.logo1Url}"/>
+                    <img  style="border: 1px solid #bababa;width: 300px;height: 110px"  class="lazyloadimg" alt="${hall.name}" src="${hall.logo1Url}"/>
                 </a>
             </div>
             <div class="offset3 intro mmwidth">

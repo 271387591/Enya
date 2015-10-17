@@ -17,8 +17,8 @@
 <script src="<c:url value="/resources/lib/jplugin/biobox.js"/>"></script>
 <script src="<c:url value="/resources/lib/jplugin/doT.js"/>"></script>
 <script src="<c:url value="/resources/lib/jplugin/bootstrap.min.js"/>"></script>
-<%--<script src="<c:url value="/resources/lib/jplugin/modal.js"/>"></script>--%>
 <script src="<c:url value="/resources/lib/jplugin/jquery.simplePagination1.js"/>"></script>
+<script src="<c:url value="/resources/lib/jplugin/jquery.quicksearch.js"/>"></script>
 <!--[if IE 6]>
 <script src="<c:url value="/resources/lib/web/DD_belatedPNG.js"/>"></script>
 <script type="text/javascript">

@@ -1,6 +1,8 @@
 package com.ozstrategy.model.exh;
 
 import com.ozstrategy.annotations.Id;
+import com.ozstrategy.annotations.NamedQueries;
+import com.ozstrategy.annotations.NamedQuery;
 import com.ozstrategy.annotations.Table;
 import com.ozstrategy.model.BaseEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -12,6 +14,11 @@ import java.util.Date;
  * Created by lihao1 on 8/13/15.
  */
 @Table(name = "t_appraisal")
+@NamedQueries({
+        @NamedQuery(name = "getAppraisal",query = "select id,title,createDate from t_appraisal where 1=1 "),
+        @NamedQuery(name = "getAppraisals",query = "select id,title,createDate from t_appraisal where 1=1 "),
+        @NamedQuery(name = "getAppraisalCount",query = "select count(*) from t_appraisal where 1=1 ")
+})
 public class Appraisal extends BaseEntity{
     @Id
     private Long id;

@@ -2,6 +2,7 @@ package com.ozstrategy.webapp.controller.exh;
 
 import com.ozstrategy.model.dictionary.Dictionary;
 import com.ozstrategy.model.exh.ExhNews;
+import com.ozstrategy.model.exh.ExhPlan;
 import com.ozstrategy.model.exh.ExhSponsor;
 import com.ozstrategy.model.exh.Exhibition;
 import com.ozstrategy.service.dictionary.DictionaryManager;
@@ -11,6 +12,7 @@ import com.ozstrategy.webapp.command.JsonReaderResponse;
 import com.ozstrategy.webapp.command.JsonReaderSingleResponse;
 import com.ozstrategy.webapp.command.dictionary.DictionaryCommand;
 import com.ozstrategy.webapp.command.exh.ExhNewsCommand;
+import com.ozstrategy.webapp.command.exh.ExhPlanCommand;
 import com.ozstrategy.webapp.command.exh.ExhSponsorCommand;
 import com.ozstrategy.webapp.controller.BaseController;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +47,7 @@ public class ExhNewsController extends BaseController {
     private DictionaryManager dictionaryManager;
     @Autowired
     private ExhibitionManager exhibitionManager;
+    private final static String imgUrl=System.getProperty("img.url");
 
 
     @RequestMapping("security/newsList/{exhId}")
@@ -65,17 +68,40 @@ public class ExhNewsController extends BaseController {
         return new ModelAndView("exh/addNews","command",new ExhNewsCommand(exhNews));
     }
 
+    @RequestMapping("security/index")
+    public ModelAndView index() {
+        return new ModelAndView("exh/news");
+    }
+    @RequestMapping("security/add")
+    public ModelAndView add() {
+        ExhNewsCommand exhNewsCommand=new ExhNewsCommand();
+        return new ModelAndView("exh/addNews2","command",exhNewsCommand);
+    }
+    @RequestMapping("security/edit/{id}")
+    public ModelAndView edit(@PathVariable Long id) {
+        ExhNews exhNews=exhNewsManager.get(id);
+        ExhNewsCommand exhNewsCommand=new ExhNewsCommand(exhNews);
+        exhNewsCommand.setImgUrl(imgUrl);
+        return new ModelAndView("exh/addNews2","command",exhNewsCommand);
+    }
+
+
 
     @RequestMapping("list")
     public JsonReaderResponse<ExhNewsCommand> list(HttpServletRequest request){
         List<ExhNewsCommand> commands=new ArrayList<ExhNewsCommand>();
             Map<String,Object> map=requestMap(request);
             try{
+                Integer pageIndex=obtainStart(request)/obtainLimit(request)+1;
+                int i=1;
             List<ExhNews> models= exhNewsManager.list(map,obtainStart(request),obtainLimit(request));
                 if(models!=null && models.size()>0){
                     for(ExhNews model:models){
+                        int index=((pageIndex-1)*obtainLimit(request))+i;
                         ExhNewsCommand command=new ExhNewsCommand(model);
+                        command.setIndex(index);
                         commands.add(command);
+                        i++;
                     }
                 }
                 Integer count=exhNewsManager.count(map);
@@ -138,6 +164,41 @@ public class ExhNewsController extends BaseController {
             }
             news.setKeywordIds(StringUtils.join(keyIds,","));
             news.setKeywordNames(StringUtils.join(keyNames, ","));
+
+
+            Set<Long> tradeids=new HashSet<Long>();
+            Set<String> tradenames=new HashSet<String>();
+            String trade=command.getTradeIds();
+            if(isNotEmpty(trade)){
+                String[] kes=trade.split(",");
+                for(String tr:kes){
+                    Dictionary dictionary=dictionaryManager.get(parseLong(tr));
+                    if(dictionary!=null){
+                        tradeids.add(dictionary.getId());
+                        tradenames.add(dictionary.getKeyValue());
+                    }
+                }
+            }
+            news.setTradeIds(StringUtils.join(tradeids,","));
+            news.setTradeNames(StringUtils.join(tradenames,","));
+
+            Set<Long> exhids=new HashSet<Long>();
+            Set<String> exhnames=new HashSet<String>();
+            String exh=command.getExhIds();
+            if(isNotEmpty(exh)){
+                String[] kes=exh.split(",");
+                for(String tr:kes){
+                    Exhibition exhibition=exhibitionManager.get(parseLong(tr));
+                    if(exhibition!=null){
+                        exhids.add(exhibition.getId());
+                        exhnames.add(exhibition.getName());
+                    }
+                }
+            }
+            news.setExhIds(StringUtils.join(exhids,","));
+            news.setExhNames(StringUtils.join(exhnames, ","));
+
+
             exhNewsManager.saveOrUpdate(news);
             return new JsonReaderSingleResponse(true);
         }catch (Exception e){
@@ -157,5 +218,81 @@ public class ExhNewsController extends BaseController {
             logger.error("delete fail",e);
         }
         return new JsonReaderSingleResponse(null,false,"删除失败");
+    }
+    @RequestMapping("security/publish/{id}")
+    public JsonReaderSingleResponse<ExhPlanCommand> pub(@PathVariable Long id){
+        try{
+            ExhNews exhPlan=exhNewsManager.get(id);
+            if(exhPlan!=null){
+                exhPlan.setPublish(Boolean.TRUE);
+                exhPlan.setPubDate(new Date());
+                Map<String,Object> map=new HashMap<String, Object>();
+                map.put("Q_publish_EQ",1);
+                Integer maxidx=exhNewsManager.max("idx",map);
+                exhPlan.setIdx(maxidx+inxcount+1);
+                exhNewsManager.update(exhPlan);
+            }
+
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
+    }
+    @RequestMapping("security/nopublish/{id}")
+    public JsonReaderSingleResponse<ExhPlanCommand> nopublish(@PathVariable Long id){
+        try{
+            ExhNews exhPlan=exhNewsManager.get(id);
+            if(exhPlan!=null){
+                exhPlan.setPublish(Boolean.FALSE);
+                exhNewsManager.update(exhPlan);
+            }
+
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
+    }
+    @RequestMapping("security/sort")
+    public ModelAndView sort() {
+        List<ExhNewsCommand> commands=new ArrayList<ExhNewsCommand>();
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("Q_publish_EQ",1);
+        map.put("Q_idx","DESC");
+        List<ExhNews> models= exhNewsManager.list(map,0,inxcount);
+        int i=1;
+        if(models!=null && models.size()>0){
+            for(ExhNews model:models){
+                int index=i;
+                ExhNewsCommand command=new ExhNewsCommand(model);
+                command.setIndex(index);
+                commands.add(command);
+                i++;
+            }
+        }
+        return new ModelAndView("exh/newssort","commands",commands);
+    }
+
+    @RequestMapping("security/idx")
+    public JsonReaderSingleResponse<ExhPlanCommand> idx(@RequestBody List<ExhNewsCommand> commands){
+        try{
+            List<ExhNews> plans=new ArrayList<ExhNews>();
+            Map<String,Object> map=new HashMap<String, Object>();
+            map.put("Q_publish_EQ",1);
+            Integer max=exhNewsManager.max("idx",map);
+            if(commands!=null && commands.size()>0){
+                for(ExhNewsCommand command:commands){
+                    ExhNews exhPlan=exhNewsManager.get(command.getId());
+                    exhPlan.setIdx(max-command.getIndex()+1);
+                    plans.add(exhPlan);
+                }
+            }
+            exhNewsManager.idx(plans);
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
     }
 }

@@ -45,7 +45,7 @@
 
                 <div style="margin-top: 4px;" class="clearfix pl-25 pr-25">
                     <div class="pull-left">
-                        <span class="r-15 pull-left"><span class="fc999 l-5">时间：<fmt:formatDate value="${news.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/></span></span>
+                        <span class="r-15 pull-left"><span class="fc999 l-5">时间：${news.year}年，${news.holdDate}</span></span>
                     </div>
 
                 </div>
@@ -71,6 +71,14 @@
 <%@include file="footer.jsp"%>
 <script type="text/javascript">
     backToTop('body');
+    $('#mbdesctriptionContent').find('img').each(function(){
+        var src=$(this).attr('src') || '';
+        var index=src.indexOf("updload/ue");
+        if(index!=-1){
+            src='${homeCommand.imgUrl}'+src.substr(index);
+            $(this).attr("src",src);
+        }
+    });
 </script>
 
 </body>

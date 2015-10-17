@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import java.util.Map;
 public class ExhPlanController extends BaseController {
     @Autowired
     private ExhPlanManager exhPlanManager;
+    private final static String imgUrl=System.getProperty("img.url");
     @RequestMapping("security/index")
     public ModelAndView tables(HttpServletRequest request, HttpServletResponse response) {
         return new ModelAndView("exh/exhplan");
@@ -43,6 +45,7 @@ public class ExhPlanController extends BaseController {
         ExhPlanCommand command=new ExhPlanCommand();
         try{
             command=new ExhPlanCommand(exhPlanManager.get(id));
+            command.setImgUrl(imgUrl);
         }catch (Exception e){
             logger.error("addAdvert fail",e);
         }
@@ -53,14 +56,20 @@ public class ExhPlanController extends BaseController {
         List<ExhPlanCommand> commands=new ArrayList<ExhPlanCommand>();
             Map<String,Object> map=requestMap(request);
             try{
-            List<ExhPlan> models= exhPlanManager.list(map,obtainStart(request),obtainLimit(request));
+                Integer count=exhPlanManager.count(map);
+                List<ExhPlan> models= exhPlanManager.list(map,obtainStart(request),obtainLimit(request));
+                Integer pageIndex=obtainStart(request)/obtainLimit(request)+1;
+                int i=1;
                 if(models!=null && models.size()>0){
                     for(ExhPlan model:models){
+                        int index=((pageIndex-1)*obtainLimit(request))+i;
                         ExhPlanCommand command=new ExhPlanCommand(model);
+                        command.setIndex(index);
                         commands.add(command);
+                        i++;
                     }
                 }
-                Integer count=exhPlanManager.count(map);
+
                 return new JsonReaderResponse(commands,true,count,"");
             }catch (Exception e){
                 logger.error("list fail",e);
@@ -87,6 +96,7 @@ public class ExhPlanController extends BaseController {
             exhPlan.setOutUrl(command.getOutUrl());
             exhPlan.setHoldDate(command.getHoldDate());
             exhPlan.setAddress(command.getAddress());
+            exhPlan.setYear(command.getYear());
             exhPlanManager.saveOrUpdate(exhPlan);
             return new JsonReaderSingleResponse(true);
         }catch (Exception e){
@@ -108,4 +118,83 @@ public class ExhPlanController extends BaseController {
         }
         return new JsonReaderSingleResponse(null,false,"删除失败");
     }
+     @RequestMapping("security/publish/{id}")
+    public JsonReaderSingleResponse<ExhPlanCommand> pub(@PathVariable Long id){
+        try{
+            ExhPlan exhPlan=exhPlanManager.get(id);
+            if(exhPlan!=null){
+                exhPlan.setPublish(Boolean.TRUE);
+                exhPlan.setPubDate(new Date());
+                Map<String,Object> map=new HashMap<String, Object>();
+                map.put("Q_publish_EQ",1);
+                Integer maxidx=exhPlanManager.max("idx",map);
+                exhPlan.setIdx(maxidx+inxcount+1);
+                exhPlanManager.update(exhPlan);
+            }
+
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
+    }
+    @RequestMapping("security/nopublish/{id}")
+    public JsonReaderSingleResponse<ExhPlanCommand> nopublish(@PathVariable Long id){
+        try{
+            ExhPlan exhPlan=exhPlanManager.get(id);
+            if(exhPlan!=null){
+                exhPlan.setPublish(Boolean.FALSE);
+                exhPlanManager.update(exhPlan);
+            }
+
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
+    }
+    @RequestMapping("security/sort")
+    public ModelAndView sort() {
+        List<ExhPlanCommand> commands=new ArrayList<ExhPlanCommand>();
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("Q_publish_EQ",1);
+        map.put("Q_idx","DESC");
+        List<ExhPlan> models= exhPlanManager.list(map,0,inxcount);
+        int i=1;
+        if(models!=null && models.size()>0){
+            for(ExhPlan model:models){
+                int index=i;
+                ExhPlanCommand command=new ExhPlanCommand(model);
+                command.setIndex(index);
+                commands.add(command);
+                i++;
+            }
+        }
+        return new ModelAndView("exh/plansort","commands",commands);
+    }
+
+    @RequestMapping("security/idx")
+    public JsonReaderSingleResponse<ExhPlanCommand> idx(@RequestBody List<ExhPlanCommand> commands){
+        try{
+            List<ExhPlan> plans=new ArrayList<ExhPlan>();
+            Map<String,Object> map=new HashMap<String, Object>();
+            map.put("Q_publish_EQ",1);
+            Integer max=exhPlanManager.max("idx",map);
+            if(commands!=null && commands.size()>0){
+                for(ExhPlanCommand command:commands){
+                    ExhPlan exhPlan=exhPlanManager.get(command.getId());
+                    exhPlan.setIdx(max-command.getIndex()+1);
+                    plans.add(exhPlan);
+                }
+            }
+            exhPlanManager.idx(plans);
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
+    }
+
+
+
 }

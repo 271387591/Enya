@@ -45,8 +45,8 @@
                 <div class="table-title">
                     <button class="btn btn-primary btn-add" onclick="edit();">添加</button>
                     <ul class="nav nav-tabs" role="tablist">
-                        <li id="tab-generalHall" role="presentation" class="active"><a href="#generalHall" aria-controls="home" role="tab" data-toggle="tab">普通展馆</a></li>
-                        <li id="tab-hotHall" role="presentation"><a href="#hotHall" aria-controls="profile" role="tab" data-toggle="tab">热门展馆</a></li>
+                        <li id="tab-generalHall" role="presentation" class="active"><a href="#generalHall" aria-controls="home" role="tab" data-toggle="tab">未发布</a></li>
+                        <li id="tab-hotHall" role="presentation"><a href="#hotHall" aria-controls="profile" role="tab" data-toggle="tab">已发布</a></li>
                     </ul>
                 </div>
                 <div class="clear"></div>
@@ -71,15 +71,17 @@
                         </div>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="hotHall">
-
+                        <div >
+                            <a class="btn btn-primary  " style="margin: 5px 20px" href="<c:url value="/html/exhibitionHall/security/sort"/>">手工排序</a>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-striped table-bordered table-hover" id="hotHallTable">
                                 <thead>
                                 <tr>
                                     <th>展馆名称</th>
                                     <th>地址</th>
-                                    <th>修改时间</th>
-                                    <th>录入时间</th>
+                                    <th>发布时间</th>
+                                    <th>默认排序</th>
                                     <th></th>
                                 </tr>
                                 </thead>

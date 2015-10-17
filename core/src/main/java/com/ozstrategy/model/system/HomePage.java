@@ -24,6 +24,7 @@ public class HomePage extends BaseEntity{
     private String logoUrl;
     private String logoPath;
     private String copyright;
+    private String zxUrl;
 
     public HomePage() {
     }
@@ -114,6 +115,14 @@ public class HomePage extends BaseEntity{
 
     public void setCopyright(String copyright) {
         this.copyright = copyright;
+    }
+
+    public String getZxUrl() {
+        return zxUrl;
+    }
+
+    public void setZxUrl(String zxUrl) {
+        this.zxUrl = zxUrl;
     }
 
     @Override

@@ -1,4 +1,4 @@
-<%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
+<%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" isErrorPage="true"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
@@ -33,9 +33,13 @@
 <body>
 <div id="page" style="border-style:dashed;border-color:#e4e4e4;line-height:30px;background:url(sorry.png) no-repeat right;">
     <h1>抱歉，服务器出错啦~</h1>
-    <div class="button">
-        <a href="<c:url value="/login.jsp"/>" title="返回登录">返回登录</a>
-    </div>
+    <% if (exception != null) { %>
+    <pre><% exception.printStackTrace(new java.io.PrintWriter(out)); %></pre>
+    <% } else if ((Exception)request.getAttribute("javax.servlet.error.exception") != null) { %>
+                    <pre><% ((Exception)request.getAttribute("javax.servlet.error.exception"))
+                            .printStackTrace(new java.io.PrintWriter(out)); %></pre>
+    <% } %>
+
 </div>
 </body>
 </html>

@@ -15,11 +15,14 @@ public interface BaseManager<T> {
     T get(Serializable id);
     T getByParam(Map<String,Object> map);
     Map<String,Object> queryMap(Map<String,Object> params);
+    Map<String,Object> queryMap(Map<String,Object> params,String... columns);
     T save(T obj);
     T saveOrUpdate(T obj);
     int update(T obj);
     int delete(T obj);
     int deleteById(Serializable id);
+
+    Integer max(String field,Map<String,Object> map);
 
     void batchSave(List<T> list);
     void batchUpdate(List<T> list);
@@ -43,4 +46,9 @@ public interface BaseManager<T> {
 
     List<Map<String,Object>> listMap(Map<String,Object> params);
     List<Map<String,Object>> listPageMap(Map<String,Object> params,Integer start,Integer limit);
+
+    List<Map<String,Object>> listPageMap(Map<String,Object> params,Integer start,Integer limit,String... columns);
+
+
+    void idx(List<T> list);
 }

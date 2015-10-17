@@ -1,5 +1,10 @@
 package com.ozstrategy.webapp.controller.system;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
 import com.ozstrategy.Constants;
 import com.ozstrategy.model.system.HomePage;
 import com.ozstrategy.service.system.AdvertManager;
@@ -26,6 +31,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +55,7 @@ public class HomePageController extends BaseController {
     private static final String logoNameKey="logoName";
     private static final String icpKey="icp";
     private static final String copyrightKey="copyright";
+    private final static String imgUrl=System.getProperty("img.url");
 
     @RequestMapping("security/index")
     public ModelAndView tables(HttpServletRequest request, HttpServletResponse response) {
@@ -56,13 +63,67 @@ public class HomePageController extends BaseController {
         List<HomePage> models= homePageManager.list(new HashMap<String, Object>(),0,1);
         if(models!=null && models.size()>0){
             command=new HomePageCommand(models.get(0));
+            command.setZxUrl(imgUrl+command.getZxUrl());
         }
         return new ModelAndView("system/homepage","command",command);
     }
+    @RequestMapping("security/savezx")
+    public JsonReaderSingleResponse<HomePageCommand> savezx(HttpServletRequest request){
+        try{
+            String url=request.getParameter("zx");
+            String id=request.getParameter("id");
+            if(StringUtils.isNotEmpty(url)){
+                Hashtable hints= new Hashtable();
+                hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+                BitMatrix bitMatrix = new MultiFormatWriter().encode(url+"html/app/download", BarcodeFormat.QR_CODE, 200, 200,hints);
+                String dir=randomAbsolutePath(request,Constants.updloadAdvert);
+                String str         = randomName("zx.png");
+                String zxurl=Constants.updloadAdvert+"/"+str;
+                File outputFile = new File(dir,str);
+                if(!outputFile.exists()){
+                    outputFile.createNewFile();
+                }
+                MatrixToImageWriter.writeToStream(bitMatrix, "png", FileUtils.openOutputStream(outputFile));
+                HomePage homePage=null;
+                if(isEmpty(id)){
+                    homePage=new HomePage();
+                }else{
+                    homePage=homePageManager.get(parseLong(id));
+                }
+                homePage.setZxUrl(zxurl);
+                homePageManager.saveOrUpdate(homePage);
+                return new JsonReaderSingleResponse(true);
+            }
+            return new JsonReaderSingleResponse(false);
+        }catch (Exception e){
+            logger.error("save fail",e);
+            e.printStackTrace();
+        }
+        return new JsonReaderSingleResponse(null,false,"生成失败");
+    }
+    @RequestMapping("security/gethomepage")
+    public JsonReaderSingleResponse<HomePageCommand> gethomepage(HttpServletRequest request){
+        try{
+            List<HomePage> models= homePageManager.list(new HashMap<String, Object>(), 0, 1);
+            if(models!=null && models.size()>0){
+                HomePageCommand command=new HomePageCommand(models.get(0));
+                String zxurl=command.getZxUrl();
+                if(zxurl!=null){
+                    zxurl=imgUrl+zxurl;
+                    command.setZxUrl(zxurl);
+                }
+                return new JsonReaderSingleResponse(command,true);
+            }
+            return new JsonReaderSingleResponse(false);
+        }catch (Exception e){
+            logger.error("save fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"获取失败");
+    }
+
 
     @RequestMapping(value = "security/upload")
     public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) {
-        String username    = request.getRemoteUser();
         String phone        = request.getParameter(phoneKey);
         String address = request.getParameter(addressKey);
         String email = request.getParameter(emailKey);
@@ -114,7 +175,7 @@ public class HomePageController extends BaseController {
                     String str         = randomName(logo1Name);
                     fileOnServer      = new File(attachDir,str);
                     logo1Path=fileOnServer.getAbsolutePath();
-                    logo1Url=toHttpUrl(request,true)+Constants.updloadAdvert+"/"+str;
+                    logo1Url=Constants.updloadAdvert+"/"+str;
                     fileItem.write(fileOnServer);
                 }
             }
@@ -176,6 +237,8 @@ public class HomePageController extends BaseController {
         }
         return new JsonReaderSingleResponse(null,false,"保存失败");
     }
+
+
     @RequestMapping("delete")
     public JsonReaderSingleResponse<HomePageCommand> delete(HttpServletRequest request){
         try{

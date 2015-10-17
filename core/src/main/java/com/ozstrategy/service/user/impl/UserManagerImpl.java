@@ -81,7 +81,6 @@ public class UserManagerImpl extends BaseManagerImpl<User> implements UserManage
     }
 
     public boolean changePassword(User user,String newPassword, String oldPassword, boolean admin) {
-        String pwd=user.getPassword();
         if(admin){
             user.setPassword(passwordEncoder.encodePassword(newPassword, null));
             userDao.update(user);

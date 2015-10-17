@@ -12,6 +12,11 @@ public class ExhServiceCommand {
     private String title;
     private String source;
     private Date createDate;
+    private Boolean publish=Boolean.FALSE;
+    private Integer idx=1;
+    private Date pubDate;
+    private Integer index;
+    private String imgUrl;
     public ExhServiceCommand() {
     }
     public ExhServiceCommand(ExhService model) {
@@ -20,6 +25,9 @@ public class ExhServiceCommand {
         this.title=model.getTitle();
         this.source=model.getSource();
         this.createDate=model.getCreateDate();
+        this.publish= model.getPublish();
+        this.pubDate= model.getPubDate();
+        this.idx= model.getIdx();
     }
     public String getContent() {
         return content;
@@ -50,5 +58,45 @@ public class ExhServiceCommand {
     }
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
+    }
+
+    public Boolean getPublish() {
+        return publish;
+    }
+
+    public void setPublish(Boolean publish) {
+        this.publish = publish;
+    }
+
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public Date getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(Date pubDate) {
+        this.pubDate = pubDate;
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }

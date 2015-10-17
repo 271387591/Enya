@@ -10,7 +10,8 @@
 
 <div class="label-div t-20 border-all">
     <div class="l-15"><h3 style="padding-bottom: 14px;" class="label-title border-b b-20 small clearfix">Android客户端下载</h3></div>
-    <div class="l-15 t-20"><img src="${homeCommand.qrUrl}"></div>
+    <%--<div class="l-15 t-20"><img src="${homeCommand.qrUrl}"></div>--%>
+    <div class="l-15 t-20"><img src="${homeCommand.imgUrl}"></div>
     <p style="margin-bottom: 0;" class="l-15 t-5 fc999">使用手机扫一扫，获取手机客户端</p>
 </div>
 

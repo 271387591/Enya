@@ -14,6 +14,13 @@ public class ExhPlanCommand {
     private String address;
     private String holdDate;
     private String outUrl;
+    private Integer year;
+    private Boolean publish=Boolean.FALSE;
+    private Integer idx=1;
+    private Date pubDate;
+    private Integer count;
+    private Integer index;
+    private String imgUrl;
     public ExhPlanCommand() {
     }
     public ExhPlanCommand(ExhPlan model) {
@@ -24,6 +31,10 @@ public class ExhPlanCommand {
         this.holdDate=model.getHoldDate();
         this.outUrl=model.getOutUrl();
         this.address=model.getAddress();
+        this.year=model.getYear();
+        this.publish=model.getPublish();
+        this.idx= model.getIdx();
+        this.pubDate= model.getPubDate();
     }
     public String getContent() {
         return content;
@@ -72,5 +83,61 @@ public class ExhPlanCommand {
 
     public void setOutUrl(String outUrl) {
         this.outUrl = outUrl;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public Boolean getPublish() {
+        return publish;
+    }
+
+    public void setPublish(Boolean publish) {
+        this.publish = publish;
+    }
+
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public Date getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(Date pubDate) {
+        this.pubDate = pubDate;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }

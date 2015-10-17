@@ -16,7 +16,7 @@ import java.util.Date;
 @Table(name = "t_exhibitionhall")
 @NamedQueries({
         @NamedQuery(name = "getHall",query = "select t.*,t1.commentCount from t_exhibitionhall t left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=1 GROUP BY c.itemId )t1 on t.id=t1.itemId where t.id=:id "),
-        @NamedQuery(name = "getHalls",query = "select t.*,t1.commentCount from t_exhibitionhall t left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=1 GROUP BY c.itemId )t1 on t.id=t1.itemId where 1=1"),
+        @NamedQuery(name = "getHalls",query = "select t.id,t.idx,t.publish,t.pubDate,t.name,t.createDate,t.updateDate,t.address,t.logo1Name,t.logo1Url,t.logo2Name,t.logo2Url,t.lng,t.lat,t.hot,t.previewCount,t.shareCount,t1.commentCount from t_exhibitionhall t left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=1 GROUP BY c.itemId )t1 on t.id=t1.itemId where 1=1"),
         @NamedQuery(name = "getHallsCount",query = "select count(*) from (select t.*,t1.commentCount from t_exhibitionhall t left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=1 GROUP BY c.itemId )t1 on t.id=t1.itemId where 1=1)t where 1=1 ")
 })
 public class ExhibitionHall extends BaseEntity{
@@ -38,6 +38,9 @@ public class ExhibitionHall extends BaseEntity{
     private Boolean hot=Boolean.FALSE;
     private Integer previewCount=0;
     private Integer shareCount=0;
+    private Boolean publish=Boolean.FALSE;
+    private Integer idx=1;
+    private Date pubDate;
 
     public ExhibitionHall() {
     }
@@ -176,6 +179,30 @@ public class ExhibitionHall extends BaseEntity{
 
     public void setShareCount(Integer shareCount) {
         this.shareCount = shareCount;
+    }
+
+    public Boolean getPublish() {
+        return publish;
+    }
+
+    public void setPublish(Boolean publish) {
+        this.publish = publish;
+    }
+
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public Date getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(Date pubDate) {
+        this.pubDate = pubDate;
     }
 
     @Override

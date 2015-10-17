@@ -15,7 +15,7 @@ public abstract class WebAuthenticationLoggerHandler {
     protected RoleManager roleManager;
 
     protected ObjectMapper objectMapper=new ObjectMapper();
-    protected static String PLATFORM="PC";
+    protected final static String PLATFORM="PC";
     
     
 }

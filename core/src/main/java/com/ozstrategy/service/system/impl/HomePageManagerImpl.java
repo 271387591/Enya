@@ -11,6 +11,7 @@ import com.ozstrategy.model.system.FriendLink;
 import com.ozstrategy.model.system.HomePage;
 import com.ozstrategy.service.impl.BaseManagerImpl;
 import com.ozstrategy.service.system.HomePageManager;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,6 @@ public class HomePageManagerImpl extends BaseManagerImpl<HomePage> implements Ho
     }
 
     @Override
-    @Cacheable(value = "commonsCache",key = "'homePage'")
     public Map<String, Object> homePage() {
         Map<String,Object> homePages=homePageDao.queryMap(new HashMap<String, Object>());
         if(homePages!=null && homePages.size()>0){

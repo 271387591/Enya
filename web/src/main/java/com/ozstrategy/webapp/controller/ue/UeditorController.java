@@ -1,6 +1,8 @@
 package com.ozstrategy.webapp.controller.ue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ozstrategy.Constants;
 import com.ozstrategy.webapp.controller.BaseController;
 import org.apache.commons.fileupload.disk.DiskFileItem;
@@ -31,11 +33,11 @@ import java.util.*;
 @RestController
 @RequestMapping(value = "ue")
 public class UeditorController extends BaseController {
+    private final static String imgUrl=System.getProperty("img.url");
 
     String[] picFileType = {".gif" , ".png" , ".jpg" , ".jpeg" , ".bmp"};
     @RequestMapping(value = "security/upload")
     public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) {
-        String type        = request.getParameter("type");
         response.setContentType("text/html;charset=utf-8");
         response.setHeader("X-Frame-Options", "SAMEORIGIN");
         PrintWriter writer = null;
@@ -153,9 +155,24 @@ public class UeditorController extends BaseController {
 
                 }
             }else if(StringUtils.equals("config",action)){
+                ObjectMapper objectMapper=new ObjectMapper();
+                ObjectNode node = objectMapper.createObjectNode();
+                node.put("imageActionName","uploadimage");
+                node.put("upfile","upfile");
+                node.put("imageMaxSize",2048000);
+                ArrayNode arrayNode= objectMapper.createArrayNode();
+                arrayNode.add(".png").add(".jpg").add(".jpeg").add(".gif").add(".bmp");
+                node.put("imageAllowFiles",arrayNode);
+                node.put("imageCompressEnable",true);
+                node.put("imageCompressBorder",1600);
+                node.put("imageInsertAlign","none");
+                node.put("imageUrlPrefix",imgUrl);
+                node.put("imagePathFormat","/updload/ue/{yyyy}{mm}{dd}{time}{rand:6}");
 
-                InputStream inputStream=UeditorController.class.getResourceAsStream("/config.json");
-                String configContent=readFile(inputStream);
+                String configContent=node.toString();
+
+//                InputStream inputStream=UeditorController.class.getResourceAsStream("/config.json");
+//                String configContent=readFile(inputStream);
                 writer.write(configContent);
             }
 

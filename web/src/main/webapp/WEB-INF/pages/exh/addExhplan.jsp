@@ -47,12 +47,32 @@
                         <i class="notnull">*</i>
                     </div>
                     <div class="form-group">
+                        <label class="col-sm-1 control-label no-padding-right">举办年份</label>
+                        <div class="col-sm-5 no-padding-right">
+                            <select class="form-control" name="year">
+                                <option value="2010">2010年</option>
+                                <option value="2011">2011年</option>
+                                <option value="2012">2012年</option>
+                                <option value="2013">2013年</option>
+                                <option value="2014">2014年</option>
+                                <option value="2015">2015年</option>
+                                <option value="2016">2016年</option>
+                                <option value="2017">2017年</option>
+                                <option value="2018">2018年</option>
+                                <option value="2019">2019年</option>
+                                <option value="2020">2020年</option>
+                            </select>
+                        </div>
+                        <i class="notnull">*</i>
+                    </div>
+                    <div class="form-group">
                         <label class="col-sm-1 control-label no-padding-right">举办时间</label>
                         <div class="col-sm-5 no-padding-right">
                             <input type="text" class="form-control" name="holdDate" data-validate="required" value="${command.holdDate}" placeholder="举办时间"  />
                         </div>
                         <i class="notnull">*</i>
                     </div>
+
                     <div class="form-group">
                         <label class="col-sm-1 control-label no-padding-right">举办地点</label>
                         <div class="col-sm-5 no-padding-right">
@@ -98,8 +118,20 @@
         var desEditor = UE.getEditor('desEditor');
         if(${command.id!=null}){
             desEditor.ready(function() {
-                desEditor.setContent('${command.content}');
+                var div=$('<div></div>').append('${command.content}');
+                var des = div.find('img').each(function(){
+                    var src=$(this).attr('src') || '';
+                    var index=src.indexOf("updload/ue");
+                    if(index!=-1){
+                        src='${command.imgUrl}'+src.substr(index);
+                        $(this).attr("src",src);
+                    }
+                });
+                desEditor.setContent(div.html());
             });
+            $('select[name=year]').val('${command.year}')
+        }else{
+            $('select[name=year]').val(new Date().getFullYear());
         }
     });
 </script>

@@ -99,7 +99,6 @@ public class AppStoreController extends BaseController {
     }
     @RequestMapping(value = "security/upload")
     public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) {
-        String username    = request.getRemoteUser();
         String version        = request.getParameter("version");
         String enabled = request.getParameter("enabled");
         String id = request.getParameter("id");
@@ -158,7 +157,7 @@ public class AppStoreController extends BaseController {
 
                 fileOnServer = new File(attachDir,str);
                 logo1Path=fileOnServer.getAbsolutePath();
-                logo1Url=toHttpUrl(request,true)+Constants.updloadApp+"/"+str;
+                logo1Url=Constants.updloadApp+"/"+str;
                 fileItem.write(fileOnServer);
             }
             if(StringUtils.isNotEmpty(logo1Name)){
@@ -169,21 +168,22 @@ public class AppStoreController extends BaseController {
                 advert.setPacName(logo1Name);
                 advert.setPacPath(logo1Path);
                 advert.setPacUrl(logo1Url);
-                String qrName=UUID.randomUUID().toString()+".png";
-                String qrUrl=toHttpUrl(request,true)+Constants.updloadApp+"/"+qrName;
-                String qrPath=FilenameUtils.normalize(attachDir+"/"+qrName);
-                String text=advert.getPacUrl();
-                int width = 193;
-                int height = 193;
-                String format = "png";
-                Hashtable hints= new Hashtable();
-                hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
-                BitMatrix bitMatrix = new MultiFormatWriter().encode(text, BarcodeFormat.QR_CODE, width, height,hints);
-                File outputFile = new File(qrPath);
-                MatrixToImageWriter.writeToStream(bitMatrix, format, FileUtils.openOutputStream(outputFile));
-                advert.setQrName(qrName);
-                advert.setQrPath(qrPath);
-                advert.setQrUrl(qrUrl);
+//                String qrName=UUID.randomUUID().toString()+".png";
+//                String qrUrl=Constants.updloadApp+"/"+qrName;
+//                String qrPath=FilenameUtils.normalize(attachDir+"/"+qrName);
+//                String text=advert.getPacUrl();
+//                String text=toHttpUrl(request,true)+"html/app/download";
+//                int width = 200;
+//                int height = 200;
+//                String format = "png";
+//                Hashtable hints= new Hashtable();
+//                hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+//                BitMatrix bitMatrix = new MultiFormatWriter().encode(text, BarcodeFormat.QR_CODE, width, height,hints);
+//                File outputFile = new File(qrPath);
+//                MatrixToImageWriter.writeToStream(bitMatrix, format, FileUtils.openOutputStream(outputFile));
+//                advert.setQrName(qrName);
+//                advert.setQrPath(qrPath);
+//                advert.setQrUrl(qrUrl);
             }
             appStoreManager.saveApp(advert);
             writer.print("{\"success\":true,\"msg\":\"" + "" + "!\"}");

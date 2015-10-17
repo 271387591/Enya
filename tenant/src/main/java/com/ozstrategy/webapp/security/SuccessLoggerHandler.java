@@ -23,6 +23,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class SuccessLoggerHandler extends WebAuthenticationLoggerHandler implements AuthenticationSuccessHandler {
+  private final static String imgUrl=System.getProperty("img.url");
 
   public void onAuthenticationSuccess(HttpServletRequest request,
                                       HttpServletResponse response, Authentication authentication)
@@ -30,13 +31,15 @@ public class SuccessLoggerHandler extends WebAuthenticationLoggerHandler impleme
       request.setCharacterEncoding("UTF-8");
       response.setCharacterEncoding("UTF-8");
       response.setContentType("text/html;charset=UTF-8");
-      String platform=request.getParameter("platform");
       User user = (User)authentication.getPrincipal();
       user  = userManager.getUserByUsername(user.getUsername());
       if (user == null) {
           return;
       }
       UserCommand userCommand=new UserCommand(user);
+      String po=userCommand.getPortraitUrl();
+      po=imgUrl+po;
+      userCommand.setPortraitUrl(po);
 
       request.getSession().setAttribute("userinfo", userCommand);
       String result=objectMapper.writeValueAsString(new JsonReaderSingleResponse<UserCommand>(userCommand));

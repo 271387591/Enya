@@ -42,7 +42,7 @@
     <div class="row">
         <div class="span15">
             <div class="label-div b-5 border-all pt-5 t-20" style="position: relative; padding-left: 0;">
-                <div class="mmdh"><a href="<c:url value="/html/web/home"/>">首页</a> > <a href="<c:url value="/html/web/exh"/>">会展展会</a> > <span>展会详情</span></div>
+                <div id="exhdetailBramble" class="mmdh"><a href="<c:url value="/html/web/home"/>">首页</a> > <a href="<c:url value="/html/web/exh"/>">会展展会</a> > <span>展会详情</span></div>
                 <c:forEach var="keyword" items="${exh.keywordNames}">
                     <div class="mmkey pull-right">
                         <b><a href="javascript:void(0);" style="cursor: default;">${keyword}</a></b>
@@ -355,6 +355,53 @@
     $.get(appPath+'html/web/exhDes/'+exhId,{},function(result){
         $('#mbdesctriptionContent').html(result.data);
     });
+    if(isMobile()){
+        $('#exhdetailBramble').hide();
+    }
+    $('#mbdesctriptionContent').find('img').each(function(){
+        var src=$(this).attr('src') || '';
+        var index=src.indexOf("updload/ue");
+        if(index!=-1){
+            src='${homeCommand.imgUrl}'+src.substr(index);
+            $(this).attr("src",src);
+        }
+    });
+    $('#mbguideContent').find('img').each(function(){
+        var src=$(this).attr('src') || '';
+        var index=src.indexOf("updload/ue");
+        if(index!=-1){
+            src='${homeCommand.imgUrl}'+src.substr(index);
+            $(this).attr("src",src);
+        }
+    });
+    $('#mbguidetoContent').find('img').each(function(){
+        var src=$(this).attr('src') || '';
+        var index=src.indexOf("updload/ue");
+        if(index!=-1){
+            src='${homeCommand.imgUrl}'+src.substr(index);
+            $(this).attr("src",src);
+        }
+    });
+
+    $('#mbtarvelContent').find('img').each(function(){
+        var src=$(this).attr('src') || '';
+        var index=src.indexOf("updload/ue");
+        if(index!=-1){
+            src='${homeCommand.imgUrl}'+src.substr(index);
+            $(this).attr("src",src);
+        }
+    });
+    $('#mbsponsorContent').find('img').each(function(){
+        var src=$(this).attr('src') || '';
+        var index=src.indexOf("updload/ue");
+        if(index!=-1){
+            src='${homeCommand.imgUrl}'+src.substr(index);
+            $(this).attr("src",src);
+        }
+    });
+
+
+
 </script>
 
 <link rel="stylesheet" href="<c:url value="/resources/css/map.css"/>" />

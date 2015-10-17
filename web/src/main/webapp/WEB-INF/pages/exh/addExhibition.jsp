@@ -50,7 +50,7 @@
                         <li id="tab-sponsor" ${command.id==null?'class="disabled"':''} role="presentation"><a href="#sponsorExh" aria-controls="profile" role="tab" data-toggle="tab">主办信息</a></li>
                         <li id="tab-guideto" ${command.id==null?'class="disabled"':''} role="presentation"><a href="#guidetoExh" aria-controls="profile" role="tab" data-toggle="tab">出行指南</a></li>
                         <li id="tab-travel" ${command.id==null?'class="disabled"':''} role="presentation"><a href="#travelExh" aria-controls="profile" role="tab" data-toggle="tab">观展攻略</a></li>
-                        <li id="tab-news" ${command.id==null?'class="disabled"':''} role="presentation"><a href="#newsExh" aria-controls="profile" role="tab" data-toggle="tab">展会资讯</a></li>
+                        <li id="tab-news" class="hidden" role="presentation"><a href="#newsExh" aria-controls="profile" role="tab" data-toggle="tab">展会资讯</a></li>
                     </ul>
                 </div>
                 <div class="clear"></div>
@@ -275,7 +275,6 @@
 <script type="text/javascript" src="<c:url value="/resources/js/admin/exh/exhNews.js"/>"></script>
 <script type="text/javascript">
     changeMenu($('#menu-exh'));
-    <%--console.log('${command.tradeIds}')--%>
     initComboData($("#basicInfoExh #hallSelector"),'html/exhibitionHall/list',{start:0,limit:20000},'id','name','${command.hallId}');
     initComboData($("#basicInfoExh #hySelector"),'html/dictionary/security/list',{start:0,limit:20000,Q_type_EQ:4},'id','keyValue','${command.tradeIds}'.split(","));
     initComboData($("#basicInfoExh #keywordSelector"),'html/dictionary/security/list',{start:0,limit:20000,Q_type_EQ:0},'id','keyValue','${command.keywordIds}'.split(','));
@@ -316,23 +315,68 @@
         if(${command.id!=null}){
             var desEditor = UE.getEditor('desEditor');
             desEditor.ready(function() {
-                desEditor.setContent('${command.description}');
+                var div=$('<div></div>').append('${command.description}');
+                var des = div.find('img').each(function(){
+                    var src=$(this).attr('src') || '';
+                    var index=src.indexOf("updload/ue");
+                    if(index!=-1){
+                        src='${command.imgUrl}'+src.substr(index);
+                        $(this).attr("src",src);
+                    }
+                });
+                desEditor.setContent(div.html());
             });
             var guideEditor = UE.getEditor('guideEditor');
             guideEditor.ready(function() {
-                guideEditor.setContent('${command.guide}');
+                var div=$('<div></div>').append('${command.guide}');
+                var des = div.find('img').each(function(){
+                    var src=$(this).attr('src') || '';
+                    var index=src.indexOf("updload/ue");
+                    if(index!=-1){
+                        src='${command.imgUrl}'+src.substr(index);
+                        $(this).attr("src",src);
+                    }
+                });
+                guideEditor.setContent(div.html());
             });
             var sponsorEditor = UE.getEditor('sponsorEditor');
             sponsorEditor.ready(function() {
-                sponsorEditor.setContent('${command.sponsor}');
+                var div=$('<div></div>').append('${command.sponsor}');
+                var des = div.find('img').each(function(){
+                    var src=$(this).attr('src') || '';
+                    var index=src.indexOf("updload/ue");
+                    if(index!=-1){
+                        src='${command.imgUrl}'+src.substr(index);
+                        $(this).attr("src",src);
+                    }
+                });
+                sponsorEditor.setContent(div.html());
             });
             var guidetoEditor = UE.getEditor('guidetoEditor');
             guidetoEditor.ready(function() {
-                guidetoEditor.setContent('${command.guideTo}');
+                var div=$('<div></div>').append('${command.guideTo}');
+                var des = div.find('img').each(function(){
+                    var src=$(this).attr('src') || '';
+                    var index=src.indexOf("updload/ue");
+                    if(index!=-1){
+                        src='${command.imgUrl}'+src.substr(index);
+                        $(this).attr("src",src);
+                    }
+                });
+                guidetoEditor.setContent(div.html());
             });
             var travelEditor = UE.getEditor('travelEditor');
             travelEditor.ready(function() {
-                travelEditor.setContent('${command.travel}');
+                var div=$('<div></div>').append('${command.travel}');
+                var des = div.find('img').each(function(){
+                    var src=$(this).attr('src') || '';
+                    var index=src.indexOf("updload/ue");
+                    if(index!=-1){
+                        src='${command.imgUrl}'+src.substr(index);
+                        $(this).attr("src",src);
+                    }
+                });
+                travelEditor.setContent(div.html());
             });
 
 

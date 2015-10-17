@@ -202,17 +202,129 @@ var columns=[
                 '<a class="'+updateDiv+'" href="javascript:void(0);" data-rel="tooltip" onclick="edit('+rec.id+');" title="编辑">'+
                 '<i class="fa fa-lg fa-edit bigger-130"></i>'+
                 '</a>'+
+                '<a class="blue" href="javascript:void(0);" data-rel="tooltip" onclick="pub('+rec.id+');" title="发布">'+
+                '<i class="fa fa-lg fa-mail-forward bigger-130"></i>'+
+                '</a>'+
                 '</div>';
         }
 
     }
 ];
+var pubcolumns=[
+    {
+        name:'name',
+        width:200,
+        renderer:function(v,rec){
+            return '<a href="javascript:void(0);" onclick="edit('+rec.id+')">'+v+'</a>';
+        }
+    },
+    {
+        width:150,
+        name:'hallName'
+    },
+    {
+        width:100,
+        name:'address'
+    },
+    {
+        width:80,
+        name:'tradeNames'
+    },
+    {
+        name:'startDate',
+        width:120,
+        renderer:function(v){
+            return new Date(v).format("yyyy-MM-dd");
+        }
+    },
+    {
+        name:'endDate',
+        width:120,
+        renderer:function(v){
+            return new Date(v).format("yyyy-MM-dd");
+        }
+    },
+    {
+        name:'pubDate',
+        width:140,
+        renderer:function(v){
+            if(!v)return '';
+            return new Date(v).format("yyyy-MM-dd hh:mm:ss");
+        }
+    },
+    {
+        name:'index',
+        width:40
+    },
+    {
+        width:80,
+        renderer:function(v,rec){
+            var pTitle="'设为热门'",pContent="'您确定要将该展馆设为热门展馆?'",delDiv=v?"hidden":"red",updateDiv=v?"hidden":"green";
+            return '<div class="visible-md visible-lg hidden-sm hidden-xs action-buttons">'+
+                '<a class="'+delDiv+'" href="javascript:void(0);" data-rel="tooltip" title="删除" onclick="createDeleteModal('+rec.id+',null,removeUser)">'+
+                '<i class="fa fa-lg fa-trash bigger-130"></i>'+
+                '</a>'+
+                '<a class="'+updateDiv+'" href="javascript:void(0);" data-rel="tooltip" onclick="edit('+rec.id+');" title="编辑">'+
+                '<i class="fa fa-lg fa-edit bigger-130"></i>'+
+                '</a>'+
+                '<a class="blue" href="javascript:void(0);" data-rel="tooltip" onclick="nopub('+rec.id+');" title="取消发布">'+
+                '<i class="fa fa-lg fa-mail-reply bigger-130"></i>'+
+                '</a>'+
+                '</div>';
+        }
+
+    }
+];
+function initList(tabIndex){
+    if(tabIndex==0){
+        listTable();
+    }else{
+        listPubTable();
+    }
+    $('#tab-generalHall a').click(function (e) {
+        e.preventDefault()
+        $(this).tab('show');
+        listTable();
+        tabIndex=0;
+        $('#userSearch input[name="user.hot"]').val(tabIndex);
+    });
+    $('#tab-hotHall a').click(function (e) {
+        e.preventDefault()
+        $(this).tab('show');
+        listPubTable();
+        tabIndex=1;
+        $('#userSearch input[name="user.hot"]').val(tabIndex);
+    });
+    $('#searchBtn').click(function(){
+        if(tabIndex==0){
+            searchForm($('#userSearch'),'user',listTable);
+        }else if(tabIndex==1){
+            searchForm($('#userSearch'),'user',listPubTable);
+        }
+
+    });
+    $('#clearBtn').click(function(){
+        if(tabIndex==0){
+            clearSearchForm($('#userSearch'),listTable);
+        }else if(tabIndex==1){
+            clearSearchForm($('#userSearch'),listPubTable);
+        }
+    });
+}
 function listTable(params){
     $('#userTable').htable({
         url:appPath+'html/exhibition/list',
-        params: $.extend({},params),
+        params: $.extend({'Q_exh.publish_EQ':0,'Q_exh.createDate':'DESC'},params),
         columns:columns,
         pager:$('#paging')
+    });
+}
+function listPubTable(params){
+    $('#hotHallTable').htable({
+        url:appPath+'html/exhibition/list',
+        params: $.extend({'Q_exh.publish_EQ':1,'Q_exh.idx':'DESC'},params),
+        columns:pubcolumns,
+        pager:$('#hotHallTablePager')
     });
 }
 
@@ -242,5 +354,51 @@ function removeUser(id,modal){
     }
     return true;
 }
+function pub(id){
+    var result=requestStringData('html/exhibition/security/publish/'+id);
+    if(result.success){
+        alertSuccess('操作成功');
+        listTable();
+    }else{
+        alertError(result.message);
+    }
+}
+function nopub(id){
+    var result=requestStringData('html/exhibition/security/nopublish/'+id);
+    if(result.success){
+        alertSuccess('操作成功');
+        listPubTable();
+    }else{
+        alertError(result.message);
+    }
+}
+function idx(){
+    var datas=[];
+    var v=true;
+    $('#hotHallTable').find('tbody tr').each(function(){
+        var id=$(this).find('td input[name=id]').val();
+        var index=$(this).find('td input[name=index]').val();
+        if(!index){
+            v=false;
+            return false;
+        }
+        var obj={
+            id:id,
+            index:index
+        };
+        datas.push(obj);
+    });
+    if(!v){
+        alertNotify('请输入数字');
+        return
+    }
+    var result=requestJSONData('html/exhibition/security/idx',datas);
+    if(result.success){
+        alertSuccess('操作成功');
+        reloadPage('html/exhibition/security/index');
+    }else{
+        alertSuccess(result.message);
+    }
 
+}
 

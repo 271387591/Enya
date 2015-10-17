@@ -59,6 +59,7 @@
         <module>core</module>
         <module>web</module>
         <module>tenant</module>
+        <module>img</module>
     </modules>
 
     <!-- Dependencies calculated by AppFuse when running full-source plugin -->

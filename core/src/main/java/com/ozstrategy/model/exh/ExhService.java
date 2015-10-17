@@ -20,7 +20,9 @@ public class ExhService extends BaseEntity{
     private Date createDate;
     private String source;
     private Date lastUpdateDate;
-
+    private Boolean publish=Boolean.FALSE;
+    private Integer idx=1;
+    private Date pubDate;
 
     public ExhService() {
     }
@@ -71,6 +73,30 @@ public class ExhService extends BaseEntity{
 
     public void setLastUpdateDate(Date lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public Boolean getPublish() {
+        return publish;
+    }
+
+    public void setPublish(Boolean publish) {
+        this.publish = publish;
+    }
+
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public Date getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(Date pubDate) {
+        this.pubDate = pubDate;
     }
 
     @Override

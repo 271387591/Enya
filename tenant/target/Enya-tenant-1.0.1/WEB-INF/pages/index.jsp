@@ -20,7 +20,7 @@
     <link href="<c:url value="/resources/css/index.css"/> " rel="stylesheet" />
     <style>
         #hallAdvertImg{
-            border:0;
+            border:1px solid;
             margin:0;
             padding:0;
             max-width:619px;
@@ -55,7 +55,7 @@
                                         {{ for (var i = 0, l = it.data.length; i < l; i++) { }}
                                             <div class="slides-css" style="display:none;height:260px;">
                                                 <a target="_blank" href="<c:url value="/html/web/hallDetail/{{=it.data[i].id}}"/>" title="{{=it.data[i].name}}"  rel="bookmark" >
-                                                    <img id="hallAdvertImg" alt="{{=it.data[i].name}}" src="{{=it.data[i].logo2Url}}"/>
+                                                    <img style="width: 586px;height: 252px;border: 1px solid #bababa;"  id="hallAdvertImg" alt="{{=it.data[i].name}}" src="{{=it.data[i].logo2Url}}"/>
                                                 </a>
                                             </div>
 
@@ -89,7 +89,7 @@
                                 <div class="news-list b-30 clearfix">
                                     <div class="spanm3 pull-left" style="padding-top:7px;">
                                         <a href="<c:url value="/html/web/hallDetail/{{=it.data[i].id}}"/>" rel="bookmark" title="标题" style="display: block;" target="_blank">
-                                            <img src="{{=it.data[i].logo1Url}}"/>
+                                            <img style="width: 300px;height: 110px;border: 1px solid #bababa;" src="{{=it.data[i].logo1Url}}" style="border: 1px solid" />
                                         </a>
                                     </div>
                                     <div class="offsetindex3 intro">
@@ -99,8 +99,8 @@
                                         <div><span class="label green arrowed arrowed-righ">近期有展会</span> </div>
                                         {{ } }}
                                         <div class="clearfix">
-                                            <a class="follow-btn pr-10 ie6png news-follow-btn" href="javascript:void(0);" title="1人关注	2人分享	3人评论" data-id="104423" data-type="news">6人</a>
-                                            <a class="read-btn ie6png" href="javascript:void(0);" title="370次阅读">370次</a>
+                                            <a class="follow-btn pr-10 ie6png news-follow-btn" href="javascript:void(0);" title="{{=it.data[i].shareCount}}人分享">{{=it.data[i].shareCount}}人</a>
+                                            <a class="read-btn ie6png" href="javascript:void(0);" title="{{=it.data[i].previewCount}}次阅读">{{=it.data[i].previewCount}}次</a>
                                         </div>
                                     </div>
                                 </div>
@@ -135,7 +135,7 @@
                                 <div class="clearfix">
                                     <div class="span1 pull-left">
                                         <a href="<c:url value="/html/web/exhDetail/{{=it.data[i].id}}"/>" rel="bookmark" title="{{=it.data[i].name}}" target="_blank">
-                                            <img class="lazyloadimg" alt="{{=it.data[i].name}}" src="{{=it.data[i].logoUrl?it.data[i].logoUrl:''}}"/>
+                                            <img style="margin-top: 20px;border: 1px solid #bababa;width: 62px;height: 62px" class="lazyloadimg" alt="{{=it.data[i].name}}" src="{{=it.data[i].logoUrl?it.data[i].logoUrl:''}}"/>
                                         </a>
                                     </div>
 
@@ -147,8 +147,8 @@
                                 </div>
                                 <div class="intro l-20">
                                     <div class="clearfix">
-                                        <a class="follow-btn pr-10 ie6png" href="javascript:void(0);" title="1人关注">1人</a>
-                                        <a class="read-btn ie6png" href="javascript:void(0);" title="277次浏览">277次</a>
+                                        <a class="follow-btn pr-10 ie6png" href="javascript:void(0);" title="{{=it.data[i].shareCount}}人分享">{{=it.data[i].shareCount}}人</a>
+                                        <a class="read-btn ie6png" href="javascript:void(0);" title="{{=it.data[i].previewCount}}次浏览">{{=it.data[i].previewCount}}次</a>
                                     </div>
                                 </div>
                             </div>

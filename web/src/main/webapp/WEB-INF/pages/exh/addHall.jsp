@@ -128,7 +128,16 @@
         var desEditor = UE.getEditor('desEditor');
         if(${command.id!=null}){
             desEditor.ready(function() {
-                desEditor.setContent('${command.description}');
+                var div=$('<div></div>').append('${command.description}');
+                var des = div.find('img').each(function(){
+                    var src=$(this).attr('src') || '';
+                    var index=src.indexOf("updload/ue");
+                    if(index!=-1){
+                        src='${command.imgUrl}'+src.substr(index);
+                        $(this).attr("src",src);
+                    }
+                });
+                desEditor.setContent(div.html());
             });
         }
     });

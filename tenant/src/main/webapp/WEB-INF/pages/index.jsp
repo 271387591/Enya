@@ -55,7 +55,7 @@
                                         {{ for (var i = 0, l = it.data.length; i < l; i++) { }}
                                             <div class="slides-css" style="display:none;height:260px;">
                                                 <a target="_blank" href="<c:url value="/html/web/hallDetail/{{=it.data[i].id}}"/>" title="{{=it.data[i].name}}"  rel="bookmark" >
-                                                    <img id="hallAdvertImg" alt="{{=it.data[i].name}}" src="{{=it.data[i].logo2Url}}"/>
+                                                    <img style="width: 586px;height: 252px;border: 1px solid #bababa;"  id="hallAdvertImg" alt="{{=it.data[i].name}}" src="{{=it.data[i].logo2Url}}"/>
                                                 </a>
                                             </div>
 
@@ -89,7 +89,7 @@
                                 <div class="news-list b-30 clearfix">
                                     <div class="spanm3 pull-left" style="padding-top:7px;">
                                         <a href="<c:url value="/html/web/hallDetail/{{=it.data[i].id}}"/>" rel="bookmark" title="标题" style="display: block;" target="_blank">
-                                            <img src="{{=it.data[i].logo1Url}}" style="border: 1px solid" />
+                                            <img style="width: 300px;height: 110px;border: 1px solid #bababa;" src="{{=it.data[i].logo1Url}}" style="border: 1px solid" />
                                         </a>
                                     </div>
                                     <div class="offsetindex3 intro">
@@ -135,7 +135,7 @@
                                 <div class="clearfix">
                                     <div class="span1 pull-left">
                                         <a href="<c:url value="/html/web/exhDetail/{{=it.data[i].id}}"/>" rel="bookmark" title="{{=it.data[i].name}}" target="_blank">
-                                            <img style="margin-top: 20px;border: 1px solid" class="lazyloadimg" alt="{{=it.data[i].name}}" src="{{=it.data[i].logoUrl?it.data[i].logoUrl:''}}"/>
+                                            <img style="margin-top: 20px;border: 1px solid #bababa;width: 62px;height: 62px" class="lazyloadimg" alt="{{=it.data[i].name}}" src="{{=it.data[i].logoUrl?it.data[i].logoUrl:''}}"/>
                                         </a>
                                     </div>
 

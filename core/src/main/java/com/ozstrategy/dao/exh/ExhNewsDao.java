@@ -12,4 +12,7 @@ import java.util.Set;
 public interface ExhNewsDao extends BaseDao<ExhNews> {
     List<Map<String,Object>> getExhTrade(String trades ,Integer start,Integer limit);
     Integer getExhTradeCount(String trades);
+    List<Map<String,Object>> getExhNews(Long id ,Integer start,Integer limit);
+    Integer getExhNewsCount(Long id);
+
 }

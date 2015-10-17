@@ -34,12 +34,12 @@
     <div class="row">
         <div class="span15">
             <div class="label-div b-30 border-all pt-5 t-20" style="position: relative; padding-left: 0;">
-                <div class="mmdh"><a href="<c:url value="/html/web/home"/>">首页</a> > <a href="<c:url value="/html/web/hall"/>">会展展馆</a> > <span>展馆详情</span></div>
+                <div id="exhdetailBramble" class="mmdh"><a href="<c:url value="/html/web/home"/>">首页</a> > <a href="<c:url value="/html/web/hall"/>">会展展馆</a> > <span>展馆详情</span></div>
                 <div class="news-list">
                     <div class="clearfix pt-3">
                         <div class="index-news-img spanm3 pull-left pt-5" style="height: 150px;">
                             <a href="javascript:void(0);" title="${hall.name}" style="cursor: default;" rel="bookmark">
-                                <img class="lazyloadimg" alt="${hall.name}" src="${hall.logo1Url}"/>
+                                <img style="width: 300px;height: 110px;border: 1px solid #bababa;" class="lazyloadimg" alt="${hall.name}" src="${hall.logo1Url}"/>
                             </a>
                         </div>
                         <div class="offset3 intro">
@@ -70,7 +70,7 @@
             <div class="label-div b-30 border-all pt-5 t-20" style="position:relative; padding-left:26px;">
                 <div class="second">
                     <h5 class="mmh5 b-20">展馆介绍</h5>
-                    <div class="mmcontent">
+                    <div class="mmcontent" id="hallDescription">
                         ${hall.description}
                     </div>
                     <h5 class="mmh5 t-20 b-20">展馆位置</h5>
@@ -230,6 +230,9 @@
 </script>
 <script type="text/javascript">
     backToTop('body');
+    if(isMobile()){
+        $('#exhdetailBramble').hide();
+    }
     var hallId='${hall.id}';
     $('#form_comment #commentBtn').click(function(){
         if(${userinfo==null}){
@@ -274,6 +277,14 @@
     map.addControl(top_left_control);
     map.addControl(top_left_navigation);
     map.addControl(top_right_navigation);
+    $('#hallDescription').find('img').each(function(){
+        var src=$(this).attr('src') || '';
+        var index=src.indexOf("updload/ue");
+        if(index!=-1){
+            src='${homeCommand.imgUrl}'+src.substr(index);
+            $(this).attr("src",src);
+        }
+    })
 </script>
 </body>
 </html>

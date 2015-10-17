@@ -8,6 +8,8 @@ import com.google.zxing.common.BitMatrix;
 import com.ozstrategy.Constants;
 import com.ozstrategy.model.appstore.AppStore;
 import com.ozstrategy.model.appstore.AppStorePlat;
+import com.ozstrategy.model.exh.ExhNews;
+import com.ozstrategy.model.exh.ExhService;
 import com.ozstrategy.model.exh.Exhibition;
 import com.ozstrategy.model.exh.ExhibitionHall;
 import com.ozstrategy.service.exh.ExhibitionHallManager;
@@ -15,6 +17,8 @@ import com.ozstrategy.service.exh.ExhibitionManager;
 import com.ozstrategy.webapp.command.JsonReaderResponse;
 import com.ozstrategy.webapp.command.JsonReaderSingleResponse;
 import com.ozstrategy.webapp.command.dictionary.DictionaryCommand;
+import com.ozstrategy.webapp.command.exh.ExhNewsCommand;
+import com.ozstrategy.webapp.command.exh.ExhPlanCommand;
 import com.ozstrategy.webapp.command.exh.ExhibitionHallCommand;
 import com.ozstrategy.webapp.controller.BaseController;
 import org.apache.commons.fileupload.disk.DiskFileItem;
@@ -25,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +57,7 @@ public class ExhibitionHallController extends BaseController {
     private ExhibitionHallManager exhibitionHallManager;
     @Autowired
     private ExhibitionManager exhibitionManager;
+    private final static String imgUrl=System.getProperty("img.url");
 
     @RequestMapping("security/index")
     public ModelAndView tables(HttpServletRequest request, HttpServletResponse response) {
@@ -67,6 +73,8 @@ public class ExhibitionHallController extends BaseController {
         ExhibitionHallCommand command=new ExhibitionHallCommand();
         try{
             command=new ExhibitionHallCommand(exhibitionHallManager.get(id));
+            command.setImgUrl(imgUrl);
+
         }catch (Exception e){
             logger.error("addAdvert fail",e);
         }
@@ -77,8 +85,15 @@ public class ExhibitionHallController extends BaseController {
     public JsonReaderResponse<ExhibitionHallCommand> list(HttpServletRequest request){
         Map<String,Object> map=requestMap(request);
         try{
-            map.put("Q_t.createDate","DESC");
+            Integer pageIndex=obtainStart(request)/obtainLimit(request)+1;
+            int i=1;
+//            map.put("Q_t.createDate","DESC");
             List<Map<String,Object>> models= exhibitionHallManager.findByNamedQuery("getHalls", map, obtainStart(request), obtainLimit(request));
+            for(Map<String,Object> stringObjectMap:models){
+                int index=((pageIndex-1)*obtainLimit(request))+i;
+                stringObjectMap.put("index",index);
+                i++;
+            }
             Integer count=exhibitionHallManager.findByNamedQueryClass("getHallsCount", Integer.class, map);
             return new JsonReaderResponse(models,true,count,"");
         }catch (Exception e){
@@ -101,7 +116,6 @@ public class ExhibitionHallController extends BaseController {
 
     @RequestMapping(value = "security/upload")
     public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) {
-        String username    = request.getRemoteUser();
         String name        = request.getParameter("name");
         String address = request.getParameter("address");
         String id = request.getParameter("id");
@@ -171,7 +185,7 @@ public class ExhibitionHallController extends BaseController {
                     String str         = randomName(logo1Name);
                     fileOnServer      = new File(attachDir,str);
                     logo1Path=fileOnServer.getAbsolutePath();
-                    logo1Url=toHttpUrl(request,true)+Constants.updloadHall+"/"+str;
+                    logo1Url=Constants.updloadHall+"/"+str;
 
                 }else if(StringUtils.equals(controlName,"logo2")){
                     logo2Name    = fileItem.getName();
@@ -181,7 +195,7 @@ public class ExhibitionHallController extends BaseController {
                     String str         = randomName(logo2Name);
                     fileOnServer      = new File(attachDir,str);
                     logo2Path=fileOnServer.getAbsolutePath();
-                    logo2Url=toHttpUrl(request,true)+Constants.updloadHall+"/"+str;
+                    logo2Url=Constants.updloadHall+"/"+str;
                 }
                 fileItem.write(fileOnServer);
             }
@@ -272,6 +286,82 @@ public class ExhibitionHallController extends BaseController {
             logger.error("delete fail",e);
         }
         return new JsonReaderSingleResponse(null,false,"设置失败");
+    }
+    @RequestMapping("security/publish/{id}")
+    public JsonReaderSingleResponse<ExhPlanCommand> pub(@PathVariable Long id){
+        try{
+            ExhibitionHall exhPlan=exhibitionHallManager.get(id);
+            if(exhPlan!=null){
+                exhPlan.setPublish(Boolean.TRUE);
+                exhPlan.setPubDate(new Date());
+                Map<String,Object> map=new HashMap<String, Object>();
+                map.put("Q_publish_EQ",1);
+                Integer maxidx=exhibitionHallManager.max("idx",map);
+                exhPlan.setIdx(maxidx+inxcount+1);
+                exhibitionHallManager.update(exhPlan);
+            }
+
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
+    }
+    @RequestMapping("security/nopublish/{id}")
+    public JsonReaderSingleResponse<ExhPlanCommand> nopublish(@PathVariable Long id){
+        try{
+            ExhibitionHall exhPlan=exhibitionHallManager.get(id);
+            if(exhPlan!=null){
+                exhPlan.setPublish(Boolean.FALSE);
+                exhibitionHallManager.update(exhPlan);
+            }
+
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
+    }
+    @RequestMapping("security/sort")
+    public ModelAndView sort() {
+        List<ExhibitionHallCommand> commands=new ArrayList<ExhibitionHallCommand>();
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("Q_publish_EQ",1);
+        map.put("Q_idx","DESC");
+        List<ExhibitionHall> models= exhibitionHallManager.list(map,0,inxcount);
+        int i=1;
+        if(models!=null && models.size()>0){
+            for(ExhibitionHall model:models){
+                int index=i;
+                ExhibitionHallCommand command=new ExhibitionHallCommand(model);
+                command.setIndex(index);
+                commands.add(command);
+                i++;
+            }
+        }
+        return new ModelAndView("exh/hallsort","commands",commands);
+    }
+
+    @RequestMapping("security/idx")
+    public JsonReaderSingleResponse<ExhPlanCommand> idx(@RequestBody List<ExhibitionHallCommand> commands){
+        try{
+            List<ExhibitionHall> plans=new ArrayList<ExhibitionHall>();
+            Map<String,Object> map=new HashMap<String, Object>();
+            map.put("Q_publish_EQ",1);
+            Integer max=exhibitionHallManager.max("idx",map);
+            if(commands!=null && commands.size()>0){
+                for(ExhibitionHallCommand command:commands){
+                    ExhibitionHall exhPlan=exhibitionHallManager.get(command.getId());
+                    exhPlan.setIdx(max-command.getIndex()+1);
+                    plans.add(exhPlan);
+                }
+            }
+            exhibitionHallManager.idx(plans);
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
     }
 
 

@@ -4,6 +4,7 @@ import com.ozstrategy.dao.BaseDao;
 import com.ozstrategy.jdbc.*;
 import com.ozstrategy.model.BaseEntity;
 import com.ozstrategy.model.user.User;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
         String sql=EntityBuilder.select(this.clazz);
 
         QuerySearch queryField=new QuerySearch(sql,params);
-        queryField.addSort(EntityBuilder.getIdColumn(this.clazz),"DESC");
+//        queryField.addSort(EntityBuilder.getIdColumn(this.clazz),"DESC");
         Object[] args = queryField.getArgs();
         sql=queryField.pageSql(start, limit);
         if(log.isDebugEnabled()){
@@ -140,6 +141,21 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     @Override
     public List<Map<String, Object>> listPageMap(Map<String, Object> params, Integer start, Integer limit) {
         String sql=EntityBuilder.select(this.clazz);
+        QuerySearch queryField=new QuerySearch(sql,params);
+//        queryField.addSort(EntityBuilder.getIdColumn(this.clazz),"DESC");
+        Object[] args = queryField.getArgs();
+        sql=queryField.pageSql(start, limit);
+        if(log.isDebugEnabled()){
+            log.debug("sql:====>"+sql.replaceAll("\\n"," "));
+        }
+        return jdbcTemplate.queryForList(sql,args);
+    }
+
+    @Override
+    public List<Map<String, Object>> listPageMap(Map<String, Object> params, Integer start, Integer limit, String... columns) {
+        String sql=EntityBuilder.select(this.clazz);
+        String cls= StringUtils.join(columns,",");
+        sql=sql.replace("*",cls);
         QuerySearch queryField=new QuerySearch(sql,params);
 //        queryField.addSort(EntityBuilder.getIdColumn(this.clazz),"DESC");
         Object[] args = queryField.getArgs();
@@ -245,6 +261,15 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
         return new HashMap<String, Object>();
     }
 
+    @Override
+    public Map<String, Object> queryMap(Map<String, Object> params, String... columns) {
+        List<Map<String,Object>> list=listPageMap(params,0,1,columns);
+        if(list!=null && list.size()>0){
+            return list.get(0);
+        }
+        return new HashMap<String, Object>();
+    }
+
     public int deleteById(Serializable id) {
         final String sql=EntityBuilder.delete(this.clazz);
         if(log.isDebugEnabled()){
@@ -265,6 +290,15 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
         }
         Object[] args=querySearch.getArgs();
         return jdbcTemplate.update(sql,args);
+    }
+
+    @Override
+    public Integer max(String filed,Map<String,Object> map) {
+        String sql="select max("+filed+") from "+EntityBuilder.getTableName(clazz)+" where 1=1 ";
+        QuerySearch querySearch=new QuerySearch(sql,map);
+        sql=querySearch.sql();
+        Integer max=jdbcTemplate.queryForObject(sql,Integer.class,querySearch.getArgs());
+        return max!=null?max:0;
     }
 
 

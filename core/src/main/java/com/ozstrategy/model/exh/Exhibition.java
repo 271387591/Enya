@@ -39,6 +39,10 @@ public class Exhibition extends BaseEntity {
     private Integer previewCount=0;
     private Integer shareCount=0;
 
+    private Boolean publish=Boolean.FALSE;
+    private Integer idx=1;
+    private Date pubDate;
+
 
 
     public Exhibition() {
@@ -196,6 +200,30 @@ public class Exhibition extends BaseEntity {
 
     public void setShareCount(Integer shareCount) {
         this.shareCount = shareCount;
+    }
+
+    public Boolean getPublish() {
+        return publish;
+    }
+
+    public void setPublish(Boolean publish) {
+        this.publish = publish;
+    }
+
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public Date getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(Date pubDate) {
+        this.pubDate = pubDate;
     }
 
     @Override

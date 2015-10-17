@@ -15,6 +15,7 @@ public class HomePageCommand {
     private String logoUrl;
     private String logoPath;
     private String copyright;
+    private String zxUrl;
     public HomePageCommand() {
     }
     public HomePageCommand(HomePage model) {
@@ -28,6 +29,7 @@ public class HomePageCommand {
         this.logoName= model.getLogoName();
         this.logoUrl= model.getLogoUrl();
         this.copyright= model.getCopyright();
+        this.zxUrl=model.getZxUrl();
     }
     public Long getId() {
         return id;
@@ -114,5 +116,13 @@ public class HomePageCommand {
 
     public void setCopyright(String copyright) {
         this.copyright = copyright;
+    }
+
+    public String getZxUrl() {
+        return zxUrl;
+    }
+
+    public void setZxUrl(String zxUrl) {
+        this.zxUrl = zxUrl;
     }
 }

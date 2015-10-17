@@ -35,6 +35,7 @@
                         <li id="basicInfo" role="presentation" class="active"><a href="#basicInfoExh" aria-controls="home" role="tab" data-toggle="tab">基础信息</a></li>
                         <li id="tab-friend"  aria-disabled="true" role="presentation"><a href="#friendTab" role="tab" data-toggle="tab">友情链接配置</a></li>
                         <li id="tab-email"  aria-disabled="true" role="presentation"><a href="#emailTab" role="tab" data-toggle="tab">系统邮箱配置</a></li>
+                        <li id="tab-zx"  aria-disabled="true" role="presentation"><a href="#emailZx" role="tab" data-toggle="tab">二维码生成</a></li>
                         <%--<li id="tab-advert"  aria-disabled="true" role="presentation"><a href="#advertTab" role="tab" data-toggle="tab">广告位配置</a></li>--%>
                     </ul>
                 </div>
@@ -131,6 +132,32 @@
                     <div role="tabpanel" class="tab-pane active" id="emailTab">
 
                     </div>
+                    <div role="tabpanel" class="tab-pane" id="emailZx">
+                        <form class="form-horizontal padding-10" id="zxForm">
+                            <div class="form-group">
+                                <label class="col-sm-1 control-label">访问地址前缀</label>
+                                <div class="col-sm-5 no-padding-right">
+                                    <input type="text" class="form-control" name="zx" data-validate="required"  placeholder="访问地址"  />
+                                </div>
+                                <i class="notnull">*</i>
+                            </div>
+                            <div class="clearfix form-actions clear">
+                                <div class="col-md-offset-3 col-md-9 btn-group">
+                                    <button type="button" class="btn btn-primary" onclick="saveZx('${command.id}');">
+                                        <span><i class="fa fa-save"></i>生成二维码</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-1 control-label">二维码</label>
+                                <div class="col-sm-5 no-padding-right">
+                                    <img id="zxImg" src="${command.zxUrl}">
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
                 </div>
             </div>
         </div>

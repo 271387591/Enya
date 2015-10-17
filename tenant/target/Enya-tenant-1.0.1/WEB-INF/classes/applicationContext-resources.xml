@@ -23,6 +23,9 @@
     <util:properties id="emailProp">
         <prop key="content">${mail.content}</prop>
         <prop key="subject">${mail.subject}</prop>
+        <prop key="repeatUrl">${repeat.url}</prop>
+        <prop key="imgUrl">${img.url}</prop>
+        <prop key="upPath">${upPath}</prop>
     </util:properties>
 
   <!--<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">-->

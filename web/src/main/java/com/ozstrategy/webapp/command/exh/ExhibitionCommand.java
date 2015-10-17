@@ -31,6 +31,11 @@ public class ExhibitionCommand {
     private String logoName;
     private String logoPath;
     private String logoUrl;
+    private Boolean publish=Boolean.FALSE;
+    private Integer idx=1;
+    private Date pubDate;
+    private Integer index;
+    private String imgUrl;
     public ExhibitionCommand() {
     }
     public ExhibitionCommand(Exhibition model) {
@@ -49,6 +54,9 @@ public class ExhibitionCommand {
         this.keywordNames=model.getKeywordNames();
         this.logoName=model.getLogoName();
         this.logoUrl= model.getLogoUrl();
+        this.pubDate= model.getPubDate();
+        this.publish= model.getPublish();
+        this.idx= model.getIdx();
     }
     public String getPicPath() {
         return picPath;
@@ -225,5 +233,45 @@ public class ExhibitionCommand {
 
     public void setLogoUrl(String logoUrl) {
         this.logoUrl = logoUrl;
+    }
+
+    public Boolean getPublish() {
+        return publish;
+    }
+
+    public void setPublish(Boolean publish) {
+        this.publish = publish;
+    }
+
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public Date getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(Date pubDate) {
+        this.pubDate = pubDate;
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }

@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Created by lihao1 on 6/8/15.
  */
-public abstract class BaseManagerImpl<T> implements BaseManager<T> {
+public abstract  class BaseManagerImpl<T> implements BaseManager<T> {
     public abstract BaseDao<T> baseDao();
 
     public List<T> list(Map<String, Object> map, Integer start, Integer limit) {
@@ -43,6 +43,11 @@ public abstract class BaseManagerImpl<T> implements BaseManager<T> {
         return baseDao().queryMap(params);
     }
 
+    @Override
+    public Map<String, Object> queryMap(Map<String, Object> params, String... columns) {
+        return baseDao().queryMap(params, columns);
+    }
+
     public T save(T obj) {
         return baseDao().save(obj);
     }
@@ -64,6 +69,11 @@ public abstract class BaseManagerImpl<T> implements BaseManager<T> {
     public int deleteById(Serializable id) {
         return baseDao().deleteById(id);
 
+    }
+
+    @Override
+    public Integer max(String field,Map<String,Object> map) {
+        return baseDao().max(field,map);
     }
 
     public void batchSave(List<T> list) {
@@ -124,6 +134,18 @@ public abstract class BaseManagerImpl<T> implements BaseManager<T> {
     @Override
     public List<Map<String, Object>> listPageMap(Map<String, Object> params, Integer start, Integer limit) {
         return baseDao().listPageMap(params,start,limit);
+    }
+
+    @Override
+    public List<Map<String, Object>> listPageMap(Map<String, Object> params, Integer start, Integer limit, String... columns) {
+        return baseDao().listPageMap(params, start, limit, columns);
+    }
+
+    @Override
+    public void idx(List<T> list) {
+        for(T o:list){
+            baseDao().update(o);
+        }
     }
 
 

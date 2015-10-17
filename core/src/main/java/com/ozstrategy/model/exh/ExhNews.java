@@ -16,7 +16,7 @@ import java.util.Date;
 @Table(name = "t_exhnews")
 @NamedQueries({
         @NamedQuery(name = "getNew",query = "select en.*,t.commentCount from t_exhnews en left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=2 GROUP BY c.itemId )t on en.id=t.itemId where en.id=:id "),
-        @NamedQuery(name = "getNews",query = "select en.*,t.commentCount from t_exhnews en left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=2 GROUP BY c.itemId )t on en.id=t.itemId where 1=1 ")
+        @NamedQuery(name = "getNews",query = "select en.id,en.title,en.createDate,en.keywordIds,en.keywordNames,en.previewCount,en.shareCount,t.commentCount from t_exhnews en left join (select count(c.id) as commentCount,c.itemId from t_comment c where c.typeId=2 GROUP BY c.itemId )t on en.id=t.itemId where 1=1 ")
 })
 public class ExhNews extends BaseEntity{
     @Id
@@ -29,6 +29,16 @@ public class ExhNews extends BaseEntity{
     private String keywordNames;
     private Integer previewCount=0;
     private Integer shareCount=0;
+
+    private String exhIds;
+    private String exhNames;
+
+    private String tradeIds;
+    private String tradeNames;
+
+    private Boolean publish=Boolean.FALSE;
+    private Integer idx=1;
+    private Date pubDate;
 
     public ExhNews() {
     }
@@ -103,6 +113,62 @@ public class ExhNews extends BaseEntity{
 
     public void setShareCount(Integer shareCount) {
         this.shareCount = shareCount;
+    }
+
+    public String getExhIds() {
+        return exhIds;
+    }
+
+    public void setExhIds(String exhIds) {
+        this.exhIds = exhIds;
+    }
+
+    public String getExhNames() {
+        return exhNames;
+    }
+
+    public void setExhNames(String exhNames) {
+        this.exhNames = exhNames;
+    }
+
+    public String getTradeIds() {
+        return tradeIds;
+    }
+
+    public void setTradeIds(String tradeIds) {
+        this.tradeIds = tradeIds;
+    }
+
+    public String getTradeNames() {
+        return tradeNames;
+    }
+
+    public void setTradeNames(String tradeNames) {
+        this.tradeNames = tradeNames;
+    }
+
+    public Boolean getPublish() {
+        return publish;
+    }
+
+    public void setPublish(Boolean publish) {
+        this.publish = publish;
+    }
+
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public Date getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(Date pubDate) {
+        this.pubDate = pubDate;
     }
 
     @Override

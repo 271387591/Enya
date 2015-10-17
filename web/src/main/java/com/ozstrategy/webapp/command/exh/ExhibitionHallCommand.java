@@ -21,6 +21,11 @@ public class ExhibitionHallCommand {
     private Float lat;
     private String logo1Path;
     private Boolean hot;
+    private Boolean publish=Boolean.FALSE;
+    private Integer idx=1;
+    private Date pubDate;
+    private Integer index;
+    private String imgUrl;
     public ExhibitionHallCommand() {
     }
     public ExhibitionHallCommand(ExhibitionHall model) {
@@ -36,6 +41,9 @@ public class ExhibitionHallCommand {
         this.createDate=model.getCreateDate();
         this.lat=model.getLat();
         this.hot=model.getHot();
+        this.publish= model.getPublish();
+        this.pubDate= model.getPubDate();
+        this.idx= model.getIdx();
     }
     public String getLogo2Url() {
         return logo2Url;
@@ -122,5 +130,45 @@ public class ExhibitionHallCommand {
 
     public void setHot(Boolean hot) {
         this.hot = hot;
+    }
+
+    public Boolean getPublish() {
+        return publish;
+    }
+
+    public void setPublish(Boolean publish) {
+        this.publish = publish;
+    }
+
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public Date getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(Date pubDate) {
+        this.pubDate = pubDate;
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }

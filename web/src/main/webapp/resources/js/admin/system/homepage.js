@@ -28,6 +28,23 @@ function saveAdvert(type,publish){
         }
     });
 }
+function saveZx(id){
+    var form=$('#zxForm');
+    if(!checkForm(form)){
+        return;
+    }
+    var vls=form.find('input[name=zx]').val();
+    var result=requestStringData('html/homePage/security/savezx',{
+        id:id,
+        zx:vls
+    });
+    if(result.success){
+        var re=requestStringData('html/homePage/security/gethomepage');
+        $('#zxImg').attr('src',re.data.zxUrl);
+    }else{
+        alertError('生成失败');
+    }
+}
 var friendColumns=[
     {
         name:'name'

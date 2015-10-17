@@ -24,7 +24,8 @@
                     <li id="nav-news" class=""><a href="<c:url value="/html/web/news"/>"><b>会展资讯</b></a></li>
                     <li id="nav-hall" class=""><a href="<c:url value="/html/web/hall"/>"><b>会展展馆</b></a></li>
                     <li id="nav-exhservice" class=""><a href="<c:url value="/html/web/exhservice"/>"><b>会展政策</b></a></li>
-                    <li id="nav-appraisal" class=""><a href="<c:url value="/html/web/appraisal"/>"><b>评估报告</b></a></li>
+                    <%--<li id="nav-appraisal" class=""><a href="<c:url value="/html/web/appraisal"/>"><b>评估报告</b></a></li>--%>
+                    <li id="nav-appraisal" class=""><a href="<c:url value="/html/web/appraisal"/>"><b>首页</b></a></li>
                     <li id="nav-survey" class=""><a href="<c:url value="/html/web/survey"/>"><b>在线调查</b></a></li>
                     <li id="nav-usercomment" class=""><a href="<c:url value="/html/web/usercomment"/>"><b>意见反馈</b></a></li>
                 </ul>

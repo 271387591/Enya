@@ -168,12 +168,11 @@ public class BaseController {
     public String toHttpUrl(HttpServletRequest request,boolean hasPort){
         String host=request.getServerName();
         String contextPath=request.getContextPath();
-//        int port = request.getServerPort();
-//        if(hasPort){
-//            return  "http://"+host+":"+port+contextPath+"/";
-//        }
+        if(isEmpty(uploadPath)){
+            int port = request.getServerPort();
+            return  "http://"+host+":"+port+contextPath+"/";
+        }
         return  "http://"+host+contextPath+"/";
-
     }
     public String randomAbsolutePath(HttpServletRequest request,String dir){
 //        String attachDir = request.getSession().getServletContext().getRealPath("/") + File.separator + dir + File.separator;
@@ -191,5 +190,9 @@ public class BaseController {
     }
     public String getExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf("."));
+    }
+    public void allowXRequested(HttpServletResponse response){
+        response.addHeader("Access-Control-Allow-Origin","*");
+        response.addHeader("Access-Control-Allow-Headers","X-Requested-With");
     }
 }

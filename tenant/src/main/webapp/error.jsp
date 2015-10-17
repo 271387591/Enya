@@ -33,9 +33,28 @@
 <body>
     <div id="page" style="border-style:dashed;border-color:#e4e4e4;line-height:30px;background:url(sorry.png) no-repeat right;">
         <h1>抱歉，服务器出错啦~</h1>
-        <div class="button">
+        <div class="button" id="btn">
             <a href="<c:url value="/html/web/home"/>" title="进入官网">进入官网</a>
         </div>
     </div>
+    <script type="text/javascript">
+        function IsPC() {
+            var userAgentInfo = navigator.userAgent;
+            var Agents = ["Android", "iPhone",
+                "SymbianOS", "Windows Phone",
+                "iPad", "iPod"];
+            var flag = true;
+            for (var v = 0; v < Agents.length; v++) {
+                if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                    flag = false;
+                    break;
+                }
+            }
+            return flag;
+        }
+        if(!IsPC){
+            document.getElementById('btn').style.display='none';
+        }
+    </script>
 </body>
 </html>

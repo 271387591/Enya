@@ -239,6 +239,8 @@
                             <excludes>
                                 <exclude>**/*.xml</exclude>
                                 <exclude>resources/lib/umeditor/**</exclude>
+                                <!--<exclude>resources/lib/echarts/**</exclude>-->
+                                <exclude>www/**</exclude>
                             </excludes>
                             <resources>
                                 <resource>${basedir}/src/main/webapp/**/*</resource>
@@ -267,6 +269,7 @@
                                         <include>resources/lib/jplugin/biobox.js</include>
                                         <include>resources/lib/jplugin/borsertocss.js</include>
                                         <include>resources/lib/jplugin/login.js</include>
+                                        <include>resources/lib/jplugin/jquery.quicksearch.js</include>
                                     </includes>
                                 </aggregation>
                                 <aggregation>
@@ -315,10 +318,10 @@
                         <artifactId>maven-war-plugin</artifactId>
                         <configuration>
                             <warSourceExcludes>
-                                updload/**,resources/lib/jplugin/**,resources/css/basic.css,resources/css/biobox2.css,resources/css/login.css,resources/css/simplePagination.css
+                                updload/**,resources/lib/jplugin/**,www/**,resources/css/basic.css,resources/css/biobox2.css,resources/css/login.css,resources/css/simplePagination.css
                             </warSourceExcludes>
                             <packagingExcludes>
-                                updload/**,resources/lib/jplugin/**,resources/css/basic.css,resources/css/biobox2.css,resources/css/login.css,resources/css/simplePagination.css
+                                updload/**,resources/lib/jplugin/**,www/**,resources/css/basic.css,resources/css/biobox2.css,resources/css/login.css,resources/css/simplePagination.css
                             </packagingExcludes>
                         </configuration>
                     </plugin>

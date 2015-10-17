@@ -5,6 +5,7 @@ import com.ozstrategy.model.dictionary.Dictionary;
 import com.ozstrategy.model.exh.ExhDescription;
 import com.ozstrategy.model.exh.ExhGuide;
 import com.ozstrategy.model.exh.ExhGuideTo;
+import com.ozstrategy.model.exh.ExhService;
 import com.ozstrategy.model.exh.ExhSponsor;
 import com.ozstrategy.model.exh.ExhTravel;
 import com.ozstrategy.model.exh.Exhibition;
@@ -19,8 +20,10 @@ import com.ozstrategy.service.exh.ExhibitionHallManager;
 import com.ozstrategy.service.exh.ExhibitionManager;
 import com.ozstrategy.webapp.command.JsonReaderResponse;
 import com.ozstrategy.webapp.command.JsonReaderSingleResponse;
+import com.ozstrategy.webapp.command.exh.ExhPlanCommand;
 import com.ozstrategy.webapp.command.exh.ExhTravelCommand;
 import com.ozstrategy.webapp.command.exh.ExhibitionCommand;
+import com.ozstrategy.webapp.command.exh.ExhibitionHallCommand;
 import com.ozstrategy.webapp.controller.BaseController;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FileUtils;
@@ -28,6 +31,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,6 +76,7 @@ public class ExhibitionController extends BaseController {
     private ExhTravelManager exhTravelManager;
     @Autowired
     private ExhibitionHallManager exhibitionHallManager;
+    private final static String imgUrl=System.getProperty("img.url");
 
 
 
@@ -91,6 +96,7 @@ public class ExhibitionController extends BaseController {
         ExhibitionCommand command=new ExhibitionCommand();
         try{
             command=new ExhibitionCommand(exhibitionManager.get(id));
+            command.setImgUrl(imgUrl);
             Map<String,Object> map=new HashMap<String, Object>();
             map.put("Q_exhId_EQ",id);
             ExhDescription exhDescription=exhDescriptionManager.getByParam(map);
@@ -127,12 +133,14 @@ public class ExhibitionController extends BaseController {
     public JsonReaderResponse list(HttpServletRequest request){
         Map<String,Object> map=requestMap(request);
         try{
-            Object createDate=map.get("Q_exh.createDate");
-            Object hname=map.get("Q_h.name");
-            Object tradeNames=map.get("Q_exh.tradeNames");
-            if(createDate==null && hname==null && tradeNames==null){
-                map.put("Q_exh.createDate","DESC");
-            }
+//            Object createDate=map.get("Q_exh.createDate");
+//            Object hname=map.get("Q_h.name");
+//            Object tradeNames=map.get("Q_exh.tradeNames");
+//            if(createDate==null && hname==null && tradeNames==null){
+//                map.put("Q_exh.createDate","DESC");
+//            }
+            Integer pageIndex=obtainStart(request)/obtainLimit(request)+1;
+            int i=1;
             List<Map<String,Object>> models= exhibitionManager.findByNamedQuery("getExhs", map, obtainStart(request), obtainLimit(request));
             if(models!=null && models.size()>0){
                 Calendar calendar=Calendar.getInstance();
@@ -145,6 +153,9 @@ public class ExhibitionController extends BaseController {
                     }else{
                         objectMap.put("willStart",false);
                     }
+                    int index=((pageIndex-1)*obtainLimit(request))+i;
+                    objectMap.put("index",index);
+                    i++;
                 }
             }
             Integer count=exhibitionManager.findByNamedQueryClass("getExhsCount",Integer.class,map);
@@ -188,7 +199,6 @@ public class ExhibitionController extends BaseController {
     }
     @RequestMapping(value = "security/upload")
     public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) {
-        String username    = request.getRemoteUser();
         String name        = request.getParameter("name");
         String startDate = request.getParameter("startDate");
         String endDate = request.getParameter("endDate");
@@ -254,7 +264,7 @@ public class ExhibitionController extends BaseController {
                     String str         = randomName(logo1Name);
                     fileOnServer      = new File(attachDir,str);
                     logo1Path=fileOnServer.getAbsolutePath();
-                    logo1Url=toHttpUrl(request,true)+Constants.updloadExh+"/"+str;
+                    logo1Url=Constants.updloadExh+"/"+str;
 
                 }else if(StringUtils.equals(controlName,"picLogo")){
                     logo2Name    = fileItem.getName();
@@ -264,7 +274,7 @@ public class ExhibitionController extends BaseController {
                     String str         = randomName(logo2Name);
                     fileOnServer      = new File(attachDir,str);
                     logo2Path=fileOnServer.getAbsolutePath();
-                    logo2Url=toHttpUrl(request,true)+Constants.updloadExh+"/"+str;
+                    logo2Url=Constants.updloadExh+"/"+str;
                 }
                 fileItem.write(fileOnServer);
             }
@@ -347,6 +357,82 @@ public class ExhibitionController extends BaseController {
             logger.error("delete fail",e);
         }
         return new JsonReaderSingleResponse(null,false,"删除失败");
+    }
+    @RequestMapping("security/publish/{id}")
+    public JsonReaderSingleResponse<ExhPlanCommand> pub(@PathVariable Long id){
+        try{
+            Exhibition exhPlan=exhibitionManager.get(id);
+            if(exhPlan!=null){
+                exhPlan.setPublish(Boolean.TRUE);
+                exhPlan.setPubDate(new Date());
+                Map<String,Object> map=new HashMap<String, Object>();
+                map.put("Q_publish_EQ",1);
+                Integer maxidx=exhibitionManager.max("idx",map);
+                exhPlan.setIdx(maxidx+inxcount+1);
+                exhibitionManager.update(exhPlan);
+            }
+
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
+    }
+    @RequestMapping("security/nopublish/{id}")
+    public JsonReaderSingleResponse<ExhPlanCommand> nopublish(@PathVariable Long id){
+        try{
+            Exhibition exhPlan=exhibitionManager.get(id);
+            if(exhPlan!=null){
+                exhPlan.setPublish(Boolean.FALSE);
+                exhibitionManager.update(exhPlan);
+            }
+
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
+    }
+    @RequestMapping("security/sort")
+    public ModelAndView sort() {
+        List<ExhibitionCommand> commands=new ArrayList<ExhibitionCommand>();
+        Map<String,Object> map=new HashMap<String, Object>();
+        map.put("Q_publish_EQ",1);
+        map.put("Q_idx","DESC");
+        List<Exhibition> models= exhibitionManager.list(map,0,inxcount);
+        int i=1;
+        if(models!=null && models.size()>0){
+            for(Exhibition model:models){
+                int index=i;
+                ExhibitionCommand command=new ExhibitionCommand(model);
+                command.setIndex(index);
+                commands.add(command);
+                i++;
+            }
+        }
+        return new ModelAndView("exh/exhibitionsort","commands",commands);
+    }
+
+    @RequestMapping("security/idx")
+    public JsonReaderSingleResponse<ExhPlanCommand> idx(@RequestBody List<ExhibitionCommand> commands){
+        try{
+            List<Exhibition> plans=new ArrayList<Exhibition>();
+            Map<String,Object> map=new HashMap<String, Object>();
+            map.put("Q_publish_EQ",1);
+            Integer max=exhibitionManager.max("idx",map);
+            if(commands!=null && commands.size()>0){
+                for(ExhibitionCommand command:commands){
+                    Exhibition exhPlan=exhibitionManager.get(command.getId());
+                    exhPlan.setIdx(max-command.getIndex()+1);
+                    plans.add(exhPlan);
+                }
+            }
+            exhibitionManager.idx(plans);
+            return new JsonReaderSingleResponse(true);
+        }catch (Exception e){
+            logger.error("delete fail",e);
+        }
+        return new JsonReaderSingleResponse(null,false,"操作失败");
     }
 
 }

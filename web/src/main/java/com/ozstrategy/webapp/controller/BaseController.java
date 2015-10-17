@@ -30,6 +30,7 @@ public class BaseController {
     private ApplicationContext context;
     protected static final List emptyData= Collections.EMPTY_LIST;
     private static String uploadPath=System.getProperty("upPath");
+    public static final int inxcount=20;
     
     public String getMessage(String key,HttpServletRequest request) {
         return context.getMessage(key, null, Locale.SIMPLIFIED_CHINESE);
@@ -174,7 +175,6 @@ public class BaseController {
             return  "http://"+host+":"+port+contextPath+"/";
         }
         return  "http://"+host+contextPath+"/";
-
     }
     public String randomAbsolutePath(HttpServletRequest request,String dir){
         String attachDir=null;

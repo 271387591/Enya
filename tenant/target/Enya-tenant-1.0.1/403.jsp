@@ -34,9 +34,28 @@
 <div id="page" style="border-style:dashed;border-color:#e4e4e4;line-height:30px;background:url(sorry.png) no-repeat right;">
     <h1>抱歉，该资源不允许访问，或者你没有访问的权限~</h1>
     <font color="#666666">我们建议你返回首页官网进行浏览，谢谢！</font><br /><br />
-    <div class="button">
+    <div class="button" id="btn">
         <a href="<c:url value="/html/web/home"/>" title="进入官网">进入官网</a>
     </div>
 </div>
+<script type="text/javascript">
+    function IsPC() {
+        var userAgentInfo = navigator.userAgent;
+        var Agents = ["Android", "iPhone",
+            "SymbianOS", "Windows Phone",
+            "iPad", "iPod"];
+        var flag = true;
+        for (var v = 0; v < Agents.length; v++) {
+            if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+    if(!IsPC){
+        document.getElementById('btn').style.display='none';
+    }
+</script>
 </body>
 </html>

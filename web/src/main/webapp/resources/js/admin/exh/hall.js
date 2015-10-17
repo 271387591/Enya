@@ -174,8 +174,8 @@ var gencolumns=[
                 '<a class="green" href="javascript:void(0);" data-rel="tooltip" title="编辑" onclick="edit('+rec.id+')">'+
                 '<i class="fa fa-lg fa-edit bigger-130"></i>'+
                 '</a>'+
-                '<a class="blue" href="javascript:void(0);" data-rel="tooltip" onclick="createModal('+rec.id+','+pTitle+','+pContent+',setHot);" title="设为热门">'+
-                '<i class="fa fa-lg fa-thumbs-up bigger-130"></i>'+
+                '<a class="blue" href="javascript:void(0);" data-rel="tooltip" onclick="pub('+rec.id+');" title="发布">'+
+                '<i class="fa fa-lg fa-mail-forward bigger-130"></i>'+
                 '</a>'+
                 '</div>';
         }
@@ -185,7 +185,7 @@ var gencolumns=[
 function listGenTable(params){
     $('#generalHallTable').htable({
         url:appPath+'html/exhibitionHall/list',
-        params: $.extend({'Q_t.hot_EQ':0},params),
+        params: $.extend({'Q_t.publish_EQ':0,'Q_t.updateDate':'DESC'},params),
         columns:gencolumns,
         pager:$('#generalHallTablePager')
     });
@@ -202,23 +202,16 @@ var hotcolumns=[
         name:'address'
     },
     {
-        name:'updateDate',
+        name:'pubDate',
         width:140,
         renderer:function(v){
-            if(v){
-                return new Date(v).format("yyyy-MM-dd hh:mm:ss");
-            }
+            if(!v)return '';
+            return new Date(v).format("yyyy-MM-dd hh:mm:ss");
         }
     },
     {
-        name:'createDate',
-        width:140,
-        renderer:function(v){
-            if(v){
-                return new Date(v).format("yyyy-MM-dd hh:mm:ss");
-            }
-
-        }
+        name:'index',
+        width:40
     },
     {
         width:90,
@@ -231,8 +224,9 @@ var hotcolumns=[
                 '<a class="green" href="javascript:void(0);" data-rel="tooltip" title="编辑" onclick="edit('+rec.id+')">'+
                 '<i class="fa fa-lg fa-edit bigger-130"></i>'+
                 '</a>'+
-                '<a class="blue" href="javascript:void(0);" data-rel="tooltip" onclick="createModal('+rec.id+','+pTitle+','+pContent+',setHot);" title="设为普通">'+
-                '<i class="fa fa-lg fa-thumbs-down bigger-130"></i>'+
+
+                '<a class="blue" href="javascript:void(0);" data-rel="tooltip" onclick="nopub('+rec.id+');" title="取消发布">'+
+                '<i class="fa fa-lg fa-mail-reply bigger-130"></i>'+
                 '</a>'+
                 '</div>';
         }
@@ -242,7 +236,7 @@ var hotcolumns=[
 function listHotTable(params){
     $('#hotHallTable').htable({
         url:appPath+'html/exhibitionHall/list',
-        params: $.extend({'Q_t.hot_EQ':1},params),
+        params: $.extend({'Q_t.publish_EQ':1,'Q_t.idx':'DESC'},params),
         columns:hotcolumns,
         pager:$('#hotHallTablePager')
     });
@@ -288,5 +282,52 @@ function deleteUser(id,modal){
         alertError(result.message);
     }
     return true;
+}
+function pub(id){
+    var result=requestStringData('html/exhibitionHall/security/publish/'+id);
+    if(result.success){
+        alertSuccess('操作成功');
+        listGenTable();
+    }else{
+        alertError(result.message);
+    }
+}
+function nopub(id){
+    var result=requestStringData('html/exhibitionHall/security/nopublish/'+id);
+    if(result.success){
+        alertSuccess('操作成功');
+        listHotTable();
+    }else{
+        alertError(result.message);
+    }
+}
+function idx(){
+    var datas=[];
+    var v=true;
+    $('#hotHallTable').find('tbody tr').each(function(){
+        var id=$(this).find('td input[name=id]').val();
+        var index=$(this).find('td input[name=index]').val();
+        if(!index){
+            v=false;
+            return false;
+        }
+        var obj={
+            id:id,
+            index:index
+        };
+        datas.push(obj);
+    });
+    if(!v){
+        alertNotify('请输入数字');
+        return
+    }
+    var result=requestJSONData('html/exhibitionHall/security/idx',datas);
+    if(result.success){
+        alertSuccess('操作成功');
+        reloadPage('html/exhibitionHall/security/index');
+    }else{
+        alertSuccess(result.message);
+    }
+
 }
 

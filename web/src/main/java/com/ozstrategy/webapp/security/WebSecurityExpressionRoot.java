@@ -20,10 +20,6 @@ import java.util.Set;
 
 
 public class WebSecurityExpressionRoot {
-  public final boolean denyAll = false;
-
-  public final boolean permitAll = true;
-
   public HttpServletRequest request;
   private Authentication    authentication;
   private RoleHierarchy     roleHierarchy;
@@ -48,7 +44,6 @@ public class WebSecurityExpressionRoot {
   }
 
   public final boolean hasAnyFeature(String... features) {
-    Set<String> roleSet = getAuthoritySet();
 
     return false;
   }

@@ -12,4 +12,7 @@ import java.util.Map;
 public interface ExhNewsManager extends BaseManager<ExhNews> {
     List<Map<String,Object>> getExhTrade(String trades ,Integer start,Integer limit);
     Integer getExhTradeCount(String trades);
+
+    List<Map<String,Object>> getExhNews(Long ids ,Integer start,Integer limit);
+    Integer getExhNewsCount(Long ids);
 }

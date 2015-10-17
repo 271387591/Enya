@@ -25,7 +25,6 @@ function saveAdvert(type){
         },
         success: function(response) {
             var result=JSON.parse(response);
-            console.log(result)
             if(result.success){
                 alertSuccess("保存成功")
                 ajaxReloadPage('mainContent','html/appstore/security/appList');

@@ -36,7 +36,7 @@
     <div class="row">
         <div class="span15">
             <div class="label-div b-5 border-all pt-5 t-20" style="position: relative; padding-left: 0;">
-                <div class="mmdh"><a href="<c:url value="/html/web/home"/>">首页</a> > <a href="<c:url value="/html/web/news"/>">新闻资讯</a> > <span>资讯详情</span></div>
+                <div id="exhdetailBramble" class="mmdh"><a href="<c:url value="/html/web/home"/>">首页</a> > <a href="<c:url value="/html/web/news"/>">新闻资讯</a> > <span>资讯详情</span></div>
                 <c:forEach var="keyword" items="${news.keywordNames}">
                     <div class="mmkey pull-right">
                         <b><a href="javascript:void(0);" style="cursor: default;">${keyword}</a></b>
@@ -215,6 +215,9 @@
 <script type="text/javascript">
 
     backToTop('body');
+    if(isMobile()){
+        $('#exhdetailBramble').hide();
+    }
     var newsId='${news.id}';
     $('#form_comment #commentBtn').click(function(){
     if(${userinfo==null}){
@@ -240,6 +243,16 @@
 <script src="<c:url value="/resources/lib/web/newsDetail.js"/>"></script>
 <script type="text/javascript">
     getComment(1);
+
+    $('#mbdesctriptionContent').find('img').each(function(){
+        var src=$(this).attr('src') || '';
+        var index=src.indexOf("updload/ue");
+        if(index!=-1){
+            src='${homeCommand.imgUrl}'+src.substr(index);
+            $(this).attr("src",src);
+        }
+    })
+
 </script>
 
 <script type="text/javascript" ckharset="utf-8" src="<c:url value="/resources/lib/web/bshare.js"/>"></script>

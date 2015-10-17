@@ -21,6 +21,10 @@ public class ExhPlan extends BaseEntity{
     private String address;
     private String holdDate;
     private String outUrl;
+    private Integer year;
+    private Boolean publish=Boolean.FALSE;
+    private Integer idx=1;
+    private Date pubDate;
 
     public ExhPlan() {
     }
@@ -79,6 +83,38 @@ public class ExhPlan extends BaseEntity{
 
     public void setOutUrl(String outUrl) {
         this.outUrl = outUrl;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public Boolean getPublish() {
+        return publish;
+    }
+
+    public void setPublish(Boolean publish) {
+        this.publish = publish;
+    }
+
+    public Integer getIdx() {
+        return idx;
+    }
+
+    public void setIdx(Integer idx) {
+        this.idx = idx;
+    }
+
+    public Date getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(Date pubDate) {
+        this.pubDate = pubDate;
     }
 
     @Override

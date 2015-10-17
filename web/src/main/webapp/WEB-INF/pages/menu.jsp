@@ -39,6 +39,10 @@
                 <li id="menu-appraisal">
                     <a href="<c:url value="/html/appraisal/security/index" />"><i class="fa fa-recycle submenu-icon grey"></i>评估报告</a>
                 </li>
+                <li id="menu-exhNews">
+                    <a href="<c:url value="/html/exhNews/security/index" />"><i class="fa fa-server submenu-icon grey"></i>新闻管理</a>
+                </li>
+
             </ul>
         </li>
 

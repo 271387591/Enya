@@ -86,6 +86,14 @@
 <%@include file="footer.jsp"%>
 <script type="text/javascript">
     backToTop('body');
+    $('#mbdesctriptionContent').find('img').each(function(){
+        var src=$(this).attr('src') || '';
+        var index=src.indexOf("updload/ue");
+        if(index!=-1){
+            src='${homeCommand.imgUrl}'+src.substr(index);
+            $(this).attr("src",src);
+        }
+    })
 </script>
 
 <script type="text/javascript" ckharset="utf-8" src="<c:url value="/resources/lib/web/bshare.js"/>"></script>

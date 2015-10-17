@@ -21,7 +21,7 @@
             <div class="clearfix pt-3">
                 <div class="index-news-img spanm2 pull-left pt-5">
                     <a href="<c:url value="/html/web/exhDetail/${exh.id}"/>" title="${exh.name}" target="_blank" rel="bookmark">
-                        <img id="exhLogoImg" class="lazyloadimg" style="overflow: hidden;" alt="${exh.name}" src="${exh.picUrl}"/>
+                        <img id="exhLogoImg" class="lazyloadimg" style="overflow: hidden;border: 1px solid #bababa;width: 168px;height: 104px" alt="${exh.name}" src="${exh.picUrl}"/>
                     </a>
                 </div>
                 <div class="offset3 intro">
