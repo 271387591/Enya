@@ -44,117 +44,9 @@ import java.util.regex.Pattern;
  * Created by lihao on 12/30/14.
  */
 public class EnyaTest {
-    private String baseUrl="http://120.24.228.68/Tenant/html/app/";
-//    private String baseUrl="http://127.0.0.1:8085/Tenant/html/app/";
+//    private String baseUrl="http://120.24.228.68/Tenant/html/app/";
+    private String baseUrl="http://127.0.0.1:8085/Tenant/html/app/";
 //    private String baseUrl="http://192.168.168.91:8085/Tenant/html/app/";
-    /***
-     * 密码正则 :6-16位字母或数字
-     */
-    @Test
-    public void testPassword(){
-//        Pattern pattern=Pattern.compile("^[0-9a-zA-Z]{6,16}$");
-//        Matcher matcher = pattern.matcher("sdfdsfsf");
-//        System.out.println(matcher.matches());
-        Pattern pattern=Pattern.compile(".*(.jpg|.png|.gif|.jpeg|.bmp)$");
-        Matcher matcher = pattern.matcher(".JPG");
-        System.out.println(matcher.matches());
-        ObjectMapper objectMapper=new ObjectMapper();
-        ObjectNode node = objectMapper.createObjectNode();
-        node.put("imageActionName","uploadimage");
-        node.put("upfile","upfile");
-        node.put("imageMaxSize",2048000);
-        ArrayNode arrayNode= objectMapper.createArrayNode();
-        arrayNode.add(".png").add(".jpg").add(".jpeg").add(".gif").add(".bmp");
-        node.put("imageAllowFiles",arrayNode);
-        node.put("imageCompressEnable",true);
-        node.put("imageCompressBorder",1600);
-        node.put("imageInsertAlign","none");
-        node.put("imageUrlPrefix","22");
-        node.put("imagePathFormat","/updload/ue/{yyyy}{mm}{dd}{time}{rand:6}");
-
-        String configContent=node.toString();
-        System.out.println(configContent);
-
-
-    }
-    @Test
-    public void testZX() throws Exception{
-        Hashtable hints= new Hashtable();
-        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
-        BitMatrix bitMatrix = new MultiFormatWriter().encode(baseUrl+"download", BarcodeFormat.QR_CODE, 200, 200,hints);
-        File outputFile = new File("/Users/lihao1/Downloads/zx.png");
-        MatrixToImageWriter.writeToStream(bitMatrix, "png", FileUtils.openOutputStream(outputFile));
-    }
-    @Test
-    public void testisUpdate() {
-        String versionStr="1.0.2";
-        System.out.println("versionStr=="+versionStr);
-        String sv="";
-        try {
-            String versiona[]=versionStr.split("\\.");
-            for(String s:versiona){
-                sv+=s;
-            }
-
-
-//			for(int i=versiona.length-1;i>0;i--){
-//				version+=Integer.parseInt(versiona[i])*(100*i+1);
-//			}
-        } catch (Exception e) {
-            sv = "0";
-        }
-//		int nativeVersion=0;
-        String nsv="";
-        try {
-
-
-            String nversiona[]="1.0.0".split("\\.");
-
-
-
-            for(String s:nversiona){
-                nsv+=s;
-            }
-
-//			for(int i=versiona.length-1;i>0;i--){
-//				nativeVersion+=Integer.parseInt(versiona[i])*(100*i+1);
-//			}
-        } catch (Exception e) {
-            nsv = "0";
-        }
-        System.out.println(sv+"---"+nsv);
-
-    }
-
-
-    /***
-     * 邮件正则
-     */
-    @Test
-    public void testEmail(){
-        Pattern pattern=Pattern.compile("^((([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6}\\;))*(([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})))$");
-        Matcher matcher = pattern.matcher("sdfdsfsf");
-        System.out.println(matcher.matches());
-    }
-    /***
-     * 用户名：3-16位字母或数字或下划线
-     */
-    @Test
-    public void testUsername(){
-        Pattern pattern=Pattern.compile("^[a-zA-Z0-9_]{3,16}$");
-        Matcher matcher = pattern.matcher("sdfdsfsf");
-        System.out.println(matcher.matches());
-    }
-
-
-    /**
-     * 接口连接：http://121.42.153.185:8080/Alizee
-     *
-     * 后台登录地址：http://121.42.153.185:8080/Alizee/login
-     * 用户名：admin密码：tomcat
-     * 广告和美食故事，登录后台自己添加和修改
-     *
-     */
 
 
 //    -----------------用户模块--------------------------------------------------
@@ -170,7 +62,7 @@ public class EnyaTest {
         String url=baseUrl+"register";
         HttpPost httpost = new HttpPost(url);
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new BasicNameValuePair("username", "lihao1"));
+        nvps.add(new BasicNameValuePair("username", "lihao11"));
         nvps.add(new BasicNameValuePair("password", "tomcat"));
         nvps.add(new BasicNameValuePair("nickName", "李浩"));
         nvps.add(new BasicNameValuePair("email", "639143@qq.com"));
@@ -237,7 +129,7 @@ public class EnyaTest {
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair("gender", "F"));
         httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-        httpost.addHeader("Cookie", "JSESSIONID=16tjer2b2wujo");
+        httpost.addHeader("Cookie", "JSESSIONID=blq0hlj55ugp");
         DefaultHttpClient httpclient = new DefaultHttpClient();
         HttpResponse response = null;
         response = httpclient.execute(httpost);
@@ -417,7 +309,7 @@ public class EnyaTest {
 //        nvps.add(new BasicNameValuePair("Q_exh.tradeNames", "DESC"));
 //        nvps.add(new BasicNameValuePair("Q_exh.name_LK", "水水"));
         nvps.add(new BasicNameValuePair("start", "0"));
-        nvps.add(new BasicNameValuePair("limit", "5"));
+        nvps.add(new BasicNameValuePair("limit", "1"));
         httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
         DefaultHttpClient httpclient = new DefaultHttpClient();
         HttpResponse response = null;
@@ -902,7 +794,7 @@ public class EnyaTest {
         HttpPost httpost = new HttpPost(url);
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair("start", "0"));
-        nvps.add(new BasicNameValuePair("limit", "2"));
+        nvps.add(new BasicNameValuePair("limit", "1"));
         httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
         DefaultHttpClient httpclient = new DefaultHttpClient();
         HttpResponse response = null;
